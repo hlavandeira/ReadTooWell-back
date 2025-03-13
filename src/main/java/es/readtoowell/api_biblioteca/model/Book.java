@@ -1,10 +1,9 @@
 package es.readtoowell.api_biblioteca.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import jakarta.validation.constraints.*;
 
 @Entity
 @Getter
@@ -14,18 +13,24 @@ import lombok.*;
 @Table(name = "libro")
 public class Book {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_libro", unique = true, updatable = false)
     private Long id;
+    @NotBlank(message="El título no puede ser nulo")
     private String titulo;
+    @NotBlank(message="El autor no puede ser nulo")
     private String autor;
+    @Positive(message="El año no puede ser un número negativo")
     @Column(name = "año_publicacion")
     private int añoPublicacion;
+    @Positive(message="El número de páginas no puede ser un número negativo")
     @Column(name = "numero_paginas")
     private int numeroPaginas;
     private String editorial;
     @Column(name = "sinopsis", length = 2000)
     private String sinopsis;
     private String portada;
+    @Pattern(regexp="^(\\d{10}|\\d{13})$")
     private String isbn;
     private boolean activo;
     @Column(name = "id_coleccion")
@@ -63,5 +68,9 @@ public class Book {
     }
     public Integer getIdColeccion() {
         return idColeccion;
+    }
+
+    public void delete() {
+        this.activo = false;
     }
 }

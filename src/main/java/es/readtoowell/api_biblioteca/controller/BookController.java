@@ -1,6 +1,7 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.Book;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/libros")
 public class BookController {
-
     @Autowired
     private BookService bookService;
 
@@ -37,7 +37,20 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
         return ResponseEntity.created(URI.create("/libros/libroID")).body(bookService.createBook(book));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Book> deleteBook(@PathVariable Long id) {
+        Optional<Book> libro = bookService.getBook(id);
+
+        if (libro.isPresent()) {
+            libro.get().delete();
+            bookService.deleteBook(libro.get());
+            return ResponseEntity.ok(libro.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

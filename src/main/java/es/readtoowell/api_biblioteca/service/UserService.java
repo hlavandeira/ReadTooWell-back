@@ -10,7 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -27,5 +30,41 @@ public class UserService {
 
     public User createBook(User user) {
         return userRepository.save(user);
+    }
+
+    public User deleteUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public Set<User> getFollows(Long id) {
+        return userRepository.findById(id)
+                .map(User::getSeguidos)
+                .orElse(Collections.emptySet());
+    }
+
+    public Set<User> getFollowers(Long id) {
+        return userRepository.findById(id)
+                .map(User::getSeguidores)
+                .orElse(Collections.emptySet());
+    }
+
+    public User followUser(Long idUser, Long idFollowedUser) {
+        User user = userRepository.findById(idUser).orElseThrow();
+        User followedUser = userRepository.findById(idFollowedUser).orElseThrow();
+
+        user.getSeguidos().add(followedUser);
+        followedUser.getSeguidores().add(user);
+
+        return followedUser;
+    }
+
+    public User unfollowUser(Long idUser, Long idUnfollowedUser) {
+        User user = userRepository.findById(idUser).orElseThrow();
+        User unfollowedUser = userRepository.findById(idUnfollowedUser).orElseThrow();
+
+        user.getSeguidos().remove(unfollowedUser);
+        unfollowedUser.getSeguidores().remove(user);
+
+        return unfollowedUser;
     }
 }
