@@ -33,4 +33,10 @@ public class BookService {
     public Book deleteBook(Book book) {
         return bookRepository.save(book);
     }
+
+    public Page<Book> filterBooks(String searchString, Integer minPags, Integer maxPags,
+                                  Integer minAño, Integer maxAño, int page, int size) {
+        return bookRepository.filterBooks(searchString, minPags, maxPags, minAño,
+                maxAño, PageRequest.of(page, size));
+    }
 }

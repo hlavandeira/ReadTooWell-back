@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,8 +34,10 @@ public class Book {
     @Pattern(regexp="^(\\d{10}|\\d{13})$")
     private String isbn;
     private boolean activo;
-    @Column(name = "id_coleccion")
-    private Integer idColeccion;
+    @ManyToOne
+    @JoinColumn(name = "id_coleccion", referencedColumnName = "id_coleccion", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Collection coleccion;
 
     public Long getId() {
         return id;
@@ -66,8 +69,11 @@ public class Book {
     public boolean isActivo() {
         return activo;
     }
-    public Integer getIdColeccion() {
-        return idColeccion;
+    public Long getIdColeccion() {
+        if (coleccion != null) {
+            return coleccion.getId();
+        }
+        return null;
     }
 
     public void delete() {

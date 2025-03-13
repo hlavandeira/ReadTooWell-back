@@ -53,4 +53,20 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<Book>> searchBooks(
+            @RequestParam(required = false) String searchString,
+            @RequestParam(required = false) Integer minPags,
+            @RequestParam(required = false) Integer maxPags,
+            @RequestParam(required = false) Integer minAño,
+            @RequestParam(required = false) Integer maxAño,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
+        Page<Book> libros = bookService.filterBooks(searchString, minPags, maxPags, minAño,
+                maxAño, page, size);
+
+        return ResponseEntity.ok(libros);
+    }
 }
