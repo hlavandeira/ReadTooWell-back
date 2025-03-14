@@ -1,6 +1,5 @@
 package es.readtoowell.api_biblioteca.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,12 +49,11 @@ public class User {
             joinColumns = @JoinColumn(name= "id_seguidor"),
             inverseJoinColumns = @JoinColumn(name = "id_seguido")
     )
-    @JsonBackReference
     private Set<User> seguidos = new HashSet<>();
     @ManyToMany(mappedBy = "seguidos")
-    @JsonBackReference
     private Set<User> seguidores = new HashSet<>();
 
+    // Métodos Getters
     public Long getId() {
         return id;
     }
@@ -85,6 +83,38 @@ public class User {
     }
     public Set<User> getSeguidores() {
         return seguidores;
+    }
+    public boolean isActivo() {
+        return activo;
+    }
+
+    // Métodos Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+    public void setNombrePerfil(String nombrePerfil) {
+        this.nombrePerfil = nombrePerfil;
+    }
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+    public void setRol(int rol) {
+        this.rol = rol;
+    }
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+    public void setBiografia(String biografia) {
+        this.biografia = biografia;
+    }
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public void delete() {

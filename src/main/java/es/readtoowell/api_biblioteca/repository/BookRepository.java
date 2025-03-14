@@ -14,6 +14,13 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findById(Long id);
 
+    Optional<Book> findByIsbn(String isbn);
+
+    /**
+     * Busca otros libros que tengan el ISBN indicado
+     */
+    Optional<Book> findByIsbnAndIdNot(String isbn, Long id);
+
     @Query("""
             select b from Book b left join b.coleccion c 
             where (:searchString is null or 

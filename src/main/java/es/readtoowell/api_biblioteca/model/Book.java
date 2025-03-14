@@ -6,6 +6,9 @@ import lombok.*;
 
 import jakarta.validation.constraints.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -38,7 +41,15 @@ public class Book {
     @JoinColumn(name = "id_coleccion", referencedColumnName = "id_coleccion", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Collection coleccion;
+    @Column(name = "num_coleccion")
+    private Integer numColeccion;
+    @ManyToMany
+    @JoinTable(name = "libro_genero",
+            joinColumns = @JoinColumn(name = "id_libro"),
+            inverseJoinColumns = @JoinColumn(name = "id_genero"))
+    private Set<Genre> generos = new HashSet<>();
 
+    // Métodos Getters
     public Long getId() {
         return id;
     }
@@ -74,6 +85,53 @@ public class Book {
             return coleccion.getId();
         }
         return null;
+    }
+    public Integer getNumColeccion() {
+        return numColeccion;
+    }
+    public Set<Genre> getGeneros() {
+        return generos;
+    }
+
+    // Métodos Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public void setTitulo(String newTitulo) {
+        this.titulo = newTitulo;
+    }
+    public void setAutor(String newAutor) {
+        this.autor = newAutor;
+    }
+    public void setAñoPublicacion(int newAño) {
+        this.añoPublicacion = newAño;
+    }
+    public void setNumeroPaginas(int newNumPags) {
+        this.numeroPaginas = newNumPags;
+    }
+    public void setEditorial(String newEditorial) {
+        this.editorial = newEditorial;
+    }
+    public void setSinopsis(String newSinopsis) {
+        this.sinopsis = newSinopsis;
+    }
+    public void setPortada(String newPortada) {
+        this.portada = newPortada;
+    }
+    public void setIsbn(String newIsbn) {
+        this.isbn = newIsbn;
+    }
+    public void setGeneros(Set<Genre> newGeneros) {
+        this.generos = newGeneros;
+    }
+    public void setColeccion(Collection newColeccion) {
+        this.coleccion = newColeccion;
+    }
+    public void setNumColeccion(Integer newNumCol) {
+        this.numColeccion = newNumCol;
+    }
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public void delete() {
