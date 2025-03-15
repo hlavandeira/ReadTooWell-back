@@ -47,6 +47,13 @@ public class BookService {
 
     public Book createBook(BookDTO bookDTO, Set<Long> genreIds) {
         Book book = new Book();
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        Set<GenreDTO> genreDTOs = genres.stream()
+                .map(genreMapper::toDTO)
+                .collect(Collectors.toSet());
+
+        bookDTO.setGeneros(genreDTOs);
         fillBookData(null, book, bookDTO);
 
         return bookRepository.save(book);

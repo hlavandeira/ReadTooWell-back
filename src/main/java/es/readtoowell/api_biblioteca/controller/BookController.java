@@ -49,6 +49,7 @@ public class BookController {
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO book,
                                            @RequestParam Set<Long> genreIds) {
         Book newBook = bookService.createBook(book, genreIds);
+        System.out.println("Géneros en el controlador: " + genreIds);
         return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDTO(newBook));
     }
 
