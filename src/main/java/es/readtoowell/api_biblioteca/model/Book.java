@@ -20,21 +20,16 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_libro", unique = true, updatable = false)
     private Long id;
-    @NotBlank(message="El título no puede ser nulo")
     private String titulo;
-    @NotBlank(message="El autor no puede ser nulo")
     private String autor;
-    @Positive(message="El año no puede ser un número negativo")
     @Column(name = "año_publicacion")
     private int añoPublicacion;
-    @Positive(message="El número de páginas no puede ser un número negativo")
     @Column(name = "numero_paginas")
     private int numeroPaginas;
     private String editorial;
     @Column(name = "sinopsis", length = 2000)
     private String sinopsis;
     private String portada;
-    @Pattern(regexp="^(\\d{10}|\\d{13})$")
     private String isbn;
     private boolean activo;
     @ManyToOne

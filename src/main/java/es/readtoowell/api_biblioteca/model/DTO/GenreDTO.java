@@ -1,10 +1,12 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class GenreDTO {
     private Long id;
+    @NotBlank(message = "El nombre del género no puede ser nulo")
     private String nombre;
 
     // Métodos Getters y Setters

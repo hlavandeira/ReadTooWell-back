@@ -15,6 +15,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long id);
 
+    boolean existsByCorreo(String correo);
+
+    Optional<User> findByCorreo(String correo);
+
     @Query("""
             select u from User u
             where (:searchString is null or 

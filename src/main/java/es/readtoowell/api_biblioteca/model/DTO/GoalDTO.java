@@ -3,6 +3,8 @@ package es.readtoowell.api_biblioteca.model.DTO;
 import es.readtoowell.api_biblioteca.model.GoalDuration;
 import es.readtoowell.api_biblioteca.model.GoalType;
 import es.readtoowell.api_biblioteca.model.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,12 +12,16 @@ import java.util.Date;
 @Data
 public class GoalDTO {
     private Long id;
+    @NotBlank(message = "La cantidad del objetivo no puede ser nula")
+    @Positive(message = "La cantidad debe ser mayor que 0")
     private int cantidad;
     private int cantidadActual;
     private Date fechaInicio;
     private Date fechaFin;
     private User usuario;
+    @NotBlank(message = "El tipo de objetivo no puede ser nulo")
     private GoalType type;
+    @NotBlank(message = "La duración del objetivo no puede ser nula")
     private GoalDuration duration;
 
     // Atributos adicionales para los detalles
