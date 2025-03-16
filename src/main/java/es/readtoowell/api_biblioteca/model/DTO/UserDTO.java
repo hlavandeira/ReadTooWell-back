@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.DTO;
+package es.readtoowell.api_biblioteca.model.DTO;
 
 import lombok.Data;
 
@@ -14,6 +14,7 @@ public class UserDTO {
     private String biografia;
     private boolean activo;
 
+    // Métodos Getters y Setters
     public Long getId() {
         return id;
     }

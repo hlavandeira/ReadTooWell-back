@@ -39,7 +39,6 @@ public class Book {
     private boolean activo;
     @ManyToOne
     @JoinColumn(name = "id_coleccion", referencedColumnName = "id_coleccion", nullable = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Collection coleccion;
     @Column(name = "num_coleccion")
     private Integer numColeccion;

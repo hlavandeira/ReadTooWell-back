@@ -1,7 +1,7 @@
 package es.readtoowell.api_biblioteca.service;
 
-import es.readtoowell.api_biblioteca.DTO.BookDTO;
-import es.readtoowell.api_biblioteca.DTO.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
+import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.mapper.BookMapper;
 import es.readtoowell.api_biblioteca.mapper.GenreMapper;
 import es.readtoowell.api_biblioteca.model.Book;
@@ -36,16 +36,17 @@ public class BookService {
     @Autowired
     private GenreMapper genreMapper;
 
-    public Page<Book> getAllBooks(int page, int size) {
+    public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "añoPublicacion"));
-        return bookRepository.findAll(pageable);
+        return bookRepository.findAll(pageable).map(bookMapper::toDTO);
     }
 
-    public Optional<Book> getBook(Long id) {
-        return bookRepository.findById(id);
+    public Optional<BookDTO> getBook(Long id) {
+        Optional<Book>book = bookRepository.findById(id);
+        return book.map(bookMapper::toDTO);
     }
 
-    public Book createBook(BookDTO bookDTO, Set<Long> genreIds) {
+    public BookDTO createBook(BookDTO bookDTO, Set<Long> genreIds) {
         Book book = new Book();
 
         Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
@@ -56,10 +57,12 @@ public class BookService {
         bookDTO.setGeneros(genreDTOs);
         fillBookData(null, book, bookDTO);
 
-        return bookRepository.save(book);
+        book = bookRepository.save(book);
+
+        return bookMapper.toDTO(book);
     }
 
-    public Book updateBook(Long id, BookDTO book, Set<Long> genreIds) {
+    public BookDTO updateBook(Long id, BookDTO book, Set<Long> genreIds) {
         Book libro = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + id + " no encontrado"));
 
@@ -72,7 +75,9 @@ public class BookService {
         book.setGeneros(genreDTOs);
         fillBookData(id, libro, book);
 
-        return bookRepository.save(libro);
+        libro = bookRepository.save(libro);
+
+        return bookMapper.toDTO(libro);
     }
 
     private void fillBookData(Long id, Book book, BookDTO bookDTO) {
@@ -98,9 +103,12 @@ public class BookService {
         book.setPortada(bookDTO.getPortada());
         book.setNumColeccion(bookDTO.getNumColeccion());
 
+        book.setActivo(true);
+
         if (bookDTO.getIdColeccion() != null) {
             Collection collection = collectionRepository.findById(bookDTO.getIdColeccion())
-                    .orElseThrow(() -> new EntityNotFoundException("Colección no encontrada con ID: " + bookDTO.getIdColeccion()));
+                    .orElseThrow(() -> new EntityNotFoundException("Colección no encontrada con ID: " +
+                            bookDTO.getIdColeccion()));
             book.setColeccion(collection);
         } else {
             book.setColeccion(null);
@@ -122,21 +130,17 @@ public class BookService {
         }
     }
 
-    public Book deleteBook(BookDTO book) {
+    public BookDTO deleteBook(BookDTO book) {
         Book libro = bookMapper.toEntity(book);
-
-        if (book.getIdColeccion() != null) {
-            Collection collection = collectionRepository.findById(book.getIdColeccion())
-                    .orElseThrow(() -> new EntityNotFoundException("Colección no encontrada"));
-            libro.setColeccion(collection);
-        }
-
-        return bookRepository.save(libro);
+        libro.delete();
+        libro = bookRepository.save(libro);
+        return bookMapper.toDTO(libro);
     }
 
-    public Page<Book> filterBooks(String searchString, Integer minPags, Integer maxPags,
+    public Page<BookDTO> filterBooks(String searchString, Integer minPags, Integer maxPags,
                                   Integer minAño, Integer maxAño, int page, int size) {
-        return bookRepository.filterBooks(searchString, minPags, maxPags, minAño,
+        Page<Book> librosFiltrados = bookRepository.filterBooks(searchString, minPags, maxPags, minAño,
                 maxAño, PageRequest.of(page, size));
+        return librosFiltrados.map(bookMapper::toDTO);
     }
 }

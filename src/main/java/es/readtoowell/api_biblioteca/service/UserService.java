@@ -1,6 +1,6 @@
 package es.readtoowell.api_biblioteca.service;
 
-import es.readtoowell.api_biblioteca.DTO.UserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
@@ -8,13 +8,13 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,29 +23,40 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public Page<User> getAllUsers(int page, int size) {
-        return userRepository.findAll(PageRequest.of(page, size, Sort.by("nombreUsuario")));
+    public Page<UserDTO> getAllUsers(int page, int size) {
+        Page<User> users = userRepository.findAll(PageRequest.of(page, size, Sort.by("nombreUsuario")));
+        return users.map(userMapper::toDTO);
     }
 
-    public Optional<User> getUser(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDTO> getUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.map(userMapper::toDTO);
     }
 
-    public User createUser(UserDTO user) {
-        return userRepository.save(userMapper.toEntity(user));
+    public UserDTO createUser(UserDTO user) {
+        User entity = userRepository.save(userMapper.toEntity(user));
+        return userMapper.toDTO(entity);
     }
 
-    public User deleteUser(UserDTO user) {
-        return userRepository.save(userMapper.toEntity(user));
+    public UserDTO deleteUser(Long id) {
+        Optional<User> usuario = userRepository.findById(id);
+        if (usuario.isPresent()) {
+            User user = usuario.get();
+            user.delete();
+            user = userRepository.save(user);
+            return userMapper.toDTO(user);
+        }
+        return null;
     }
 
-    public User updateUser(Long id, UserDTO user) {
+    public UserDTO updateUser(Long id, UserDTO user) {
         User usuario = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + id + " no encontrado"));
 
         fillUserData(usuario, user);
+        usuario = userRepository.save(usuario);
 
-        return userRepository.save(usuario);
+        return userMapper.toDTO(usuario);
     }
 
     private void fillUserData(User user, UserDTO dto) {
@@ -56,22 +67,27 @@ public class UserService {
         user.setBiografia(dto.getBiografia());
         user.setRol(dto.getRol());
         user.setFotoPerfil(dto.getFotoPerfil());
-        user.setActivo(dto.isActivo());
+
+        user.setActivo(true);
     }
 
-    public Set<User> getFollows(Long id) {
+    public Set<UserDTO> getFollows(Long id) {
         return userRepository.findById(id)
-                .map(User::getSeguidos)
+                .map(user -> user.getSeguidos().stream()
+                        .map(userMapper::toDTO)
+                        .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
     }
 
-    public Set<User> getFollowers(Long id) {
+    public Set<UserDTO> getFollowers(Long id) {
         return userRepository.findById(id)
-                .map(User::getSeguidores)
+                .map(user -> user.getSeguidores().stream()
+                        .map(userMapper::toDTO)
+                        .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
     }
 
-    public User followUser(Long idUser, Long idFollowedUser) {
+    public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser).orElseThrow();
         User followedUser = userRepository.findById(idFollowedUser).orElseThrow();
 
@@ -81,10 +97,10 @@ public class UserService {
         userRepository.save(user);
         userRepository.save(followedUser);
 
-        return followedUser;
+        return userMapper.toDTO(followedUser);
     }
 
-    public User unfollowUser(Long idUser, Long idUnfollowedUser) {
+    public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser).orElseThrow();
         User unfollowedUser = userRepository.findById(idUnfollowedUser).orElseThrow();
 
@@ -94,10 +110,11 @@ public class UserService {
         userRepository.save(user);
         userRepository.save(unfollowedUser);
 
-        return unfollowedUser;
+        return userMapper.toDTO(unfollowedUser);
     }
 
-    public Page<User> searchUsers(String searchString, int page, int size) {
-        return userRepository.searchUsers(searchString, PageRequest.of(page, size));
+    public Page<UserDTO> searchUsers(String searchString, int page, int size) {
+        Page<User> users =  userRepository.searchUsers(searchString, PageRequest.of(page, size));
+        return users.map(userMapper::toDTO);
     }
 }

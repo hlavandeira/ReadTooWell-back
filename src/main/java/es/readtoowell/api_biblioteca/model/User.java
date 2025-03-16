@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,9 +50,20 @@ public class User {
             joinColumns = @JoinColumn(name= "id_seguidor"),
             inverseJoinColumns = @JoinColumn(name = "id_seguido")
     )
+    @JsonIgnore
     private Set<User> seguidos = new HashSet<>();
     @ManyToMany(mappedBy = "seguidos")
+    @JsonIgnore
     private Set<User> seguidores = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Goal> objetivos = new HashSet<>();
+
+
+    public void delete() {
+        this.activo = false;
+    }
 
     // Métodos Getters
     public Long getId() {
@@ -117,7 +129,4 @@ public class User {
         this.activo = activo;
     }
 
-    public void delete() {
-        this.activo = false;
-    }
 }

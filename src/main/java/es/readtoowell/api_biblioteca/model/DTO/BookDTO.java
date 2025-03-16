@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.DTO;
+package es.readtoowell.api_biblioteca.model.DTO;
 
 import lombok.Data;
 
@@ -20,6 +20,7 @@ public class BookDTO {
     private Integer numColeccion;
     private Set<GenreDTO> generos;
 
+    // Métodos Getters y Setters
     public Long getId() {
         return id;
     }

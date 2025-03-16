@@ -1,8 +1,6 @@
 package es.readtoowell.api_biblioteca.controller;
 
-import es.readtoowell.api_biblioteca.DTO.BookDTO;
-import es.readtoowell.api_biblioteca.mapper.BookMapper;
-import es.readtoowell.api_biblioteca.model.Book;
+import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +19,22 @@ import java.util.Set;
 public class BookController {
     @Autowired
     private BookService bookService;
-    @Autowired
-    private BookMapper bookMapper;
 
     @GetMapping
     public ResponseEntity<Page<BookDTO>> getBooks(@RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        Page<Book> bookPage = bookService.getAllBooks(page, size);
-        Page<BookDTO> bookDTOPage = bookPage.map(bookMapper::toDTO);
+        Page<BookDTO> bookPage = bookService.getAllBooks(page, size);
 
-        return ResponseEntity.ok(bookDTOPage);
+        return ResponseEntity.ok(bookPage);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDTO> getBook(@PathVariable(value = "id") Long id) {
-        Optional<Book> libro = bookService.getBook(id);
+        Optional<BookDTO> libro = bookService.getBook(id);
 
         if (libro.isPresent()) {
-            return ResponseEntity.ok(bookMapper.toDTO(libro.get()));
+            return ResponseEntity.ok(libro.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -48,9 +43,8 @@ public class BookController {
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO book,
                                            @RequestParam Set<Long> genreIds) {
-        Book newBook = bookService.createBook(book, genreIds);
-        System.out.println("Géneros en el controlador: " + genreIds);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDTO(newBook));
+        BookDTO newBook = bookService.createBook(book, genreIds);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
     }
 
     @PutMapping("/{id}")
@@ -58,8 +52,8 @@ public class BookController {
                                          @Valid @RequestBody BookDTO book,
                                          @RequestParam Set<Long> genreIds) {
         try {
-            Book libro = bookService.updateBook(id, book, genreIds);
-            return ResponseEntity.ok(bookMapper.toDTO(libro));
+            BookDTO libro = bookService.updateBook(id, book, genreIds);
+            return ResponseEntity.ok(libro);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -67,12 +61,12 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BookDTO> deleteBook(@PathVariable Long id) {
-        Optional<Book> libro = bookService.getBook(id);
+        Optional<BookDTO> libro = bookService.getBook(id);
 
         if (libro.isPresent()) {
-            libro.get().delete();
-            bookService.deleteBook(bookMapper.toDTO(libro.get()));
-            return ResponseEntity.ok(bookMapper.toDTO(libro.get()));
+            BookDTO dto = libro.get();
+            dto = bookService.deleteBook(dto);
+            return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -88,10 +82,9 @@ public class BookController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size)
     {
-        Page<Book> libros = bookService.filterBooks(searchString, minPags, maxPags, minAño,
+        Page<BookDTO> libros = bookService.filterBooks(searchString, minPags, maxPags, minAño,
                 maxAño, page, size);
-        Page<BookDTO> bookDTOPage = libros.map(bookMapper::toDTO);
 
-        return ResponseEntity.ok(bookDTOPage);
+        return ResponseEntity.ok(libros);
     }
 }

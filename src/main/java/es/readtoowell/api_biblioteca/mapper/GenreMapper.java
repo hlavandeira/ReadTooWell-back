@@ -1,6 +1,6 @@
 package es.readtoowell.api_biblioteca.mapper;
 
-import es.readtoowell.api_biblioteca.DTO.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.model.Genre;
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
 package es.readtoowell.api_biblioteca.mapper;
 
-import es.readtoowell.api_biblioteca.DTO.BookDTO;
-import es.readtoowell.api_biblioteca.DTO.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
+import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.model.Book;
 import es.readtoowell.api_biblioteca.model.Genre;
 import org.springframework.beans.factory.annotation.Autowired;

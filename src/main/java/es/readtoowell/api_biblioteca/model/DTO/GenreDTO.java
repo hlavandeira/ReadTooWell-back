@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.DTO;
+package es.readtoowell.api_biblioteca.model.DTO;
 
 import lombok.Data;
 
@@ -7,6 +7,7 @@ public class GenreDTO {
     private Long id;
     private String nombre;
 
+    // Métodos Getters y Setters
     public Long getId() {
         return id;
     }
