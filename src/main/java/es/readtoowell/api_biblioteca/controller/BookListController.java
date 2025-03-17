@@ -5,12 +5,9 @@ import es.readtoowell.api_biblioteca.service.BookListService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -37,11 +34,39 @@ public class BookListController {
         return ResponseEntity.ok(listaCreada);
     }
 
+    @PutMapping("/{idUser}/{idList}")
+    public ResponseEntity<BookListDTO> updateList(@PathVariable Long idUser,
+                                                  @PathVariable Long idList,
+                                                  @Valid @RequestBody BookListDTO list,
+                                                  @RequestParam Set<Long> genreIds) {
+        BookListDTO lista = listService.updateList(idUser, idList, list, genreIds);
+
+        return ResponseEntity.ok(lista);
+    }
+
     @DeleteMapping("/{idUser}/{idList}")
     public ResponseEntity<BookListDTO> deleteList(@PathVariable Long idUser,
                                                   @PathVariable Long idList) {
         BookListDTO listaEliminada = listService.deleteList(idUser, idList);
 
         return ResponseEntity.ok(listaEliminada);
+    }
+
+    @PostMapping("/{idUser}/{idList}/añadir-libro/{idBook}")
+    public ResponseEntity<BookListDTO> addBookToList(@PathVariable Long idUser,
+                                                     @PathVariable Long idList,
+                                                     @PathVariable Long idBook) {
+        BookListDTO updatedList = listService.addBookToList(idUser, idList, idBook);
+
+        return ResponseEntity.ok(updatedList);
+    }
+
+    @DeleteMapping("/{idUser}/{idList}/eliminar-libro/{idBook}")
+    public ResponseEntity<BookListDTO> deleteBookFromList(@PathVariable Long idUser,
+                                                          @PathVariable Long idList,
+                                                          @PathVariable Long idBook) {
+        BookListDTO updatedList = listService.deleteBookFromList(idUser, idList, idBook);
+
+        return ResponseEntity.ok(updatedList);
     }
 }

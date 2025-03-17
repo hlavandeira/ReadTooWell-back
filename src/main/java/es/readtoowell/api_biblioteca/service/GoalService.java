@@ -12,6 +12,7 @@ import es.readtoowell.api_biblioteca.repository.GoalTypeRepository;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -100,6 +101,10 @@ public class GoalService {
     public GoalDTO eliminarObjetivo(Long idUser, Long idGoal) {
         Goal goal = goalRepository.findById(idGoal)
                 .orElseThrow(() -> new EntityNotFoundException("Objetivo con ID " + idGoal + " no encontrado."));
+
+        if (!goal.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
+            throw new AccessDeniedException("No tienes permiso para borrar este objetivo");
+        }
 
         goalRepository.delete(goal);
 
