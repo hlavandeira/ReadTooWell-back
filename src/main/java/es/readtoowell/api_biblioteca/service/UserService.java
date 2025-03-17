@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.service;
 
+import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
 import es.readtoowell.api_biblioteca.model.User;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -49,6 +52,7 @@ public class UserService {
         return null;
     }
 
+    @PreAuthorize("#id == authentication.principal.id")
     public UserDTO updateUser(Long id, UserDTO user) {
         User usuario = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + id + " no encontrado"));
@@ -87,6 +91,7 @@ public class UserService {
                 .orElse(Collections.emptySet());
     }
 
+    @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser).orElseThrow();
         User followedUser = userRepository.findById(idFollowedUser).orElseThrow();
@@ -100,6 +105,7 @@ public class UserService {
         return userMapper.toDTO(followedUser);
     }
 
+    @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser).orElseThrow();
         User unfollowedUser = userRepository.findById(idUnfollowedUser).orElseThrow();

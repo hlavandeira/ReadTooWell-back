@@ -5,6 +5,7 @@ import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
 import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
 import es.readtoowell.api_biblioteca.model.DTO.RegisteredDTO;
 import es.readtoowell.api_biblioteca.model.User;
+import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import es.readtoowell.api_biblioteca.config.security.JwtUtil;
 import jakarta.validation.ValidationException;
@@ -43,7 +44,7 @@ public class AuthenticationService {
         user.setActivo(true);
         user.setFotoPerfil("https://res.cloudinary.com/dfrgrfw4c/image/" +
                 "upload/v1741801696/readtoowell/profilepics/pfp.jpg");
-        user.setRol(0);
+        user.setRol(Role.USER.getValue());
         user.setNombrePerfil(registerDTO.getNombreUsuario().toLowerCase());
 
         user = userRepository.save(user);

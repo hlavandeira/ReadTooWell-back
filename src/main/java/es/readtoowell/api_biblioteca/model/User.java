@@ -1,12 +1,12 @@
 package es.readtoowell.api_biblioteca.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import es.readtoowell.api_biblioteca.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.validation.constraints.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,6 +54,13 @@ public class User {
 
     public void delete() {
         this.activo = false;
+    }
+    @Transient
+    public Role getRoleEnum() {
+        return Role.fromValue(this.rol);
+    }
+    public void setRoleEnum(Role role) {
+        this.rol = role.getValue();
     }
 
     // Métodos Getters

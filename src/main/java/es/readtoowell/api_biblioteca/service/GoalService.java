@@ -5,6 +5,7 @@ import es.readtoowell.api_biblioteca.mapper.GoalMapper;
 import es.readtoowell.api_biblioteca.model.Goal;
 import es.readtoowell.api_biblioteca.repository.GoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class GoalService {
     @Autowired
     private GoalMapper goalMapper;
 
+    @PreAuthorize("#idUser == authentication.principal.id")
     public Set<GoalDTO> obtenerObjetivosEnCurso(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
 
@@ -28,6 +30,7 @@ public class GoalService {
                 .collect(Collectors.toSet());
     }
 
+    @PreAuthorize("#idUser == authentication.principal.id")
     public Set<GoalDTO> obtenerObjetivosTerminados(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
 

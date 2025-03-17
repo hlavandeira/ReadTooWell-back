@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.config;
 
+import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import es.readtoowell.api_biblioteca.config.security.JwtFilter;
@@ -7,12 +8,15 @@ import es.readtoowell.api_biblioteca.config.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +25,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Collections;
+import java.util.List;
 
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
@@ -39,6 +45,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        // ADMIN
+                        .requestMatchers(HttpMethod.POST, "/usuarios").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/libros").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/libros/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/libros/*").hasRole("ADMIN")
+                        // USER y AUTHOR
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/*").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/*/seguir/*")
+                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/*/dejar-seguir/*")
+                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/objetivos/**")
+                                .hasAnyRole("USER", "AUTHOR")
+                        // TODOS
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/libros/**").authenticated()
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -71,11 +96,12 @@ public class SecurityConfig {
             User user = userRepository.findByCorreo(correo)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(user.getCorreo())
-                    .password(user.getContraseña())
-                    .authorities(Collections.emptyList()) // Si usas roles, agrégales aquí
-                    .build();
+            return new CustomUserDetails(
+                    user.getId(), // ✅ Pasamos el ID del usuario
+                    user.getCorreo(),
+                    user.getContraseña(),
+                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRoleEnum().name()))
+            );
         };
     }
 
