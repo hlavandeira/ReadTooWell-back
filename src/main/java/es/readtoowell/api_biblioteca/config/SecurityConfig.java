@@ -57,7 +57,11 @@ public class SecurityConfig {
                                 .hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/*/dejar-seguir/*")
                                 .hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/usuarios/objetivos/**")
+                        .requestMatchers(HttpMethod.GET, "/usuarios/objetivos/**")
+                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/objetivos")
+                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/objetivos")
                                 .hasAnyRole("USER", "AUTHOR")
                         // TODOS
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()

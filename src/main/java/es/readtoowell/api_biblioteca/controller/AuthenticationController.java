@@ -3,7 +3,6 @@ package es.readtoowell.api_biblioteca.controller;
 import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
 import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
 import es.readtoowell.api_biblioteca.model.DTO.RegisteredDTO;
-import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.service.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

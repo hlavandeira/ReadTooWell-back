@@ -1,6 +1,5 @@
 package es.readtoowell.api_biblioteca.repository;
 
-import es.readtoowell.api_biblioteca.model.Book;
 import es.readtoowell.api_biblioteca.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +13,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long id);
-
-    boolean existsByCorreo(String correo);
 
     Optional<User> findByCorreo(String correo);
 

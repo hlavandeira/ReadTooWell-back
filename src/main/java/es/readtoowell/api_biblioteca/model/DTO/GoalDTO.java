@@ -1,9 +1,8 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
-import es.readtoowell.api_biblioteca.model.GoalDuration;
-import es.readtoowell.api_biblioteca.model.GoalType;
 import es.readtoowell.api_biblioteca.model.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -12,17 +11,18 @@ import java.util.Date;
 @Data
 public class GoalDTO {
     private Long id;
-    @NotBlank(message = "La cantidad del objetivo no puede ser nula")
+    @NotNull(message = "La cantidad del objetivo no puede ser nula")
     @Positive(message = "La cantidad debe ser mayor que 0")
     private int cantidad;
     private int cantidadActual;
     private Date fechaInicio;
     private Date fechaFin;
+    private boolean activo;
     private User usuario;
-    @NotBlank(message = "El tipo de objetivo no puede ser nulo")
-    private GoalType type;
-    @NotBlank(message = "La duración del objetivo no puede ser nula")
-    private GoalDuration duration;
+    @NotNull(message = "El tipo de objetivo no puede ser nulo")
+    private Long tipo;
+    @NotNull(message = "La duración del objetivo no puede ser nula")
+    private Long duracion;
 
     // Atributos adicionales para los detalles
     private boolean completado;
@@ -65,6 +65,13 @@ public class GoalDTO {
         this.fechaFin = fechaFin;
     }
 
+    public boolean isActivo() {
+        return activo;
+    }
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
     public User getUsuario() {
         return usuario;
     }
@@ -72,18 +79,18 @@ public class GoalDTO {
         this.usuario = usuario;
     }
 
-    public GoalType getType() {
-        return type;
+    public Long getTipo() {
+        return tipo;
     }
-    public void setType(GoalType type) {
-        this.type = type;
+    public void setTipo(Long tipo) {
+        this.tipo = tipo;
     }
 
-    public GoalDuration getDuration() {
-        return duration;
+    public Long getDuracion() {
+        return duracion;
     }
-    public void setDuration(GoalDuration duration) {
-        this.duration = duration;
+    public void setDuracion(Long duracion) {
+        this.duracion = duracion;
     }
 
     public boolean isCompletado() {

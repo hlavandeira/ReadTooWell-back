@@ -16,11 +16,12 @@ public class GoalMapper {
         dto.setId(goal.getId());
         dto.setCantidad(goal.getCantidad());
         dto.setCantidadActual(goal.getCantidadActual());
-        dto.setDuration(goal.getDuracion());
-        dto.setType(goal.getTipo());
+        dto.setDuracion(goal.getDuracion().getId());
+        dto.setTipo(goal.getTipo().getId());
         dto.setUsuario(goal.getUsuario());
         dto.setFechaFin(goal.getFechaFin());
         dto.setFechaInicio(goal.getFechaInicio());
+        dto.setActivo(goal.isActivo());
 
         dto.setCompletado(objetivoCompletado(goal));
 
@@ -45,5 +46,20 @@ public class GoalMapper {
 
     private double calcularPorcentaje(Goal goal) {
         return (goal.getCantidadActual() * 100.0) / goal.getCantidad();
+    }
+
+    public Goal toEntity(GoalDTO dto) {
+        Goal goal = new Goal();
+
+        goal.setId(dto.getId());
+        goal.setCantidad(dto.getCantidad());
+        goal.setCantidadActual(dto.getCantidadActual());
+        goal.setUsuario(dto.getUsuario());
+        goal.setFechaFin(dto.getFechaFin());
+        goal.setFechaInicio(dto.getFechaInicio());
+        goal.setActivo(dto.isActivo());
+        // para tipo y duracion se hace un set en el servicio, para pasar la entidad en lugar de solo el id
+
+        return goal;
     }
 }

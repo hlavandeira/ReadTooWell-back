@@ -1,10 +1,7 @@
 package es.readtoowell.api_biblioteca.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-
-import jakarta.validation.constraints.*;
 
 import java.util.HashSet;
 import java.util.Set;

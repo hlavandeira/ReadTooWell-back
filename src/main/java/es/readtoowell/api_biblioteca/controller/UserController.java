@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -123,5 +121,23 @@ public class UserController {
     public ResponseEntity<Set<GoalDTO>> getFinishedGoals(@PathVariable Long idUser) {
         Set<GoalDTO> objetivos = goalService.obtenerObjetivosTerminados(idUser);
         return ResponseEntity.ok(objetivos);
+    }
+
+    @PostMapping("/{idUser}/objetivos")
+    public ResponseEntity<GoalDTO> createGoal(@PathVariable Long idUser,
+                                              @Valid @RequestBody GoalDTO goal) {
+        GoalDTO objetivo = goalService.crearObjetivo(idUser, goal);
+        return ResponseEntity.ok(objetivo);
+    }
+
+    @DeleteMapping("/{idUser}/objetivos/{idGoal}")
+    public ResponseEntity<GoalDTO> deleteGoal(@PathVariable Long idUser,
+                                              @PathVariable Long idGoal) {
+        GoalDTO objetivo = goalService.eliminarObjetivo(idUser, idGoal);
+        if (objetivo != null) {
+            return ResponseEntity.ok(objetivo);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -24,6 +24,7 @@ public class Goal {
     private Date fechaInicio;
     @Column(name = "fecha_fin")
     private Date fechaFin;
+    private boolean activo;
     @ManyToOne
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario", nullable = false)
     @JsonIgnore
@@ -34,6 +35,10 @@ public class Goal {
     @ManyToOne
     @JoinColumn(name = "id_duracion", referencedColumnName = "id_duracion", nullable = false)
     private GoalDuration duracion;
+
+    public void delete() {
+        this.activo = false;
+    }
 
     // Métodos Getters y Setters
     public Long getId() {
@@ -69,6 +74,13 @@ public class Goal {
     }
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public User getUsuario() {
