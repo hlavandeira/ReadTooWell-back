@@ -17,7 +17,6 @@ public class GoalDTO {
     private int cantidadActual;
     private Date fechaInicio;
     private Date fechaFin;
-    private boolean activo;
     private User usuario;
     @NotNull(message = "El tipo de objetivo no puede ser nulo")
     private Long tipo;
@@ -63,13 +62,6 @@ public class GoalDTO {
     }
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-    public void setActivo(boolean activo) {
-        this.activo = activo;
     }
 
     public User getUsuario() {

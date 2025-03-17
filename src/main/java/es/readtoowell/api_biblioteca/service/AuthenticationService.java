@@ -41,7 +41,6 @@ public class AuthenticationService {
 
         user.setContraseña(passwordEncoder.encode(registerDTO.getContraseña()));
 
-        user.setActivo(true);
         user.setFotoPerfil("https://res.cloudinary.com/dfrgrfw4c/image/" +
                 "upload/v1741801696/readtoowell/profilepics/pfp.jpg");
         user.setRol(Role.USER.getValue());

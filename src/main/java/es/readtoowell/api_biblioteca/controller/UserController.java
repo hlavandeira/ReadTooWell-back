@@ -20,8 +20,6 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private GoalService goalService;
 
     @GetMapping
     public ResponseEntity<Page<UserDTO>> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -107,37 +105,5 @@ public class UserController {
         Page<UserDTO> usuarios = userService.searchUsers(searchString, page, size);
 
         return ResponseEntity.ok(usuarios);
-    }
-
-    // Endpoints de Objetivos
-
-    @GetMapping("/{idUser}/objetivos/en-curso")
-    public ResponseEntity<Set<GoalDTO>> getGoalsInProgress(@PathVariable Long idUser) {
-        Set<GoalDTO> objetivos = goalService.obtenerObjetivosEnCurso(idUser);
-        return ResponseEntity.ok(objetivos);
-    }
-
-    @GetMapping("/{idUser}/objetivos/terminados")
-    public ResponseEntity<Set<GoalDTO>> getFinishedGoals(@PathVariable Long idUser) {
-        Set<GoalDTO> objetivos = goalService.obtenerObjetivosTerminados(idUser);
-        return ResponseEntity.ok(objetivos);
-    }
-
-    @PostMapping("/{idUser}/objetivos")
-    public ResponseEntity<GoalDTO> createGoal(@PathVariable Long idUser,
-                                              @Valid @RequestBody GoalDTO goal) {
-        GoalDTO objetivo = goalService.crearObjetivo(idUser, goal);
-        return ResponseEntity.ok(objetivo);
-    }
-
-    @DeleteMapping("/{idUser}/objetivos/{idGoal}")
-    public ResponseEntity<GoalDTO> deleteGoal(@PathVariable Long idUser,
-                                              @PathVariable Long idGoal) {
-        GoalDTO objetivo = goalService.eliminarObjetivo(idUser, idGoal);
-        if (objetivo != null) {
-            return ResponseEntity.ok(objetivo);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

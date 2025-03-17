@@ -33,8 +33,6 @@ public class User {
     private String fotoPerfil;
     @Column(name = "biografia", length = 2000)
     private String biografia;
-    private boolean activo;
-
     @ManyToMany
     @JoinTable(
             name="seguimiento",
@@ -51,10 +49,6 @@ public class User {
     @JsonIgnore
     private Set<Goal> objetivos = new HashSet<>();
 
-
-    public void delete() {
-        this.activo = false;
-    }
     @Transient
     public Role getRoleEnum() {
         return Role.fromValue(this.rol);
@@ -94,9 +88,6 @@ public class User {
     public Set<User> getSeguidores() {
         return seguidores;
     }
-    public boolean isActivo() {
-        return activo;
-    }
 
     // Métodos Setters
     public void setId(Long id) {
@@ -122,9 +113,6 @@ public class User {
     }
     public void setBiografia(String biografia) {
         this.biografia = biografia;
-    }
-    public void setActivo(boolean activo) {
-        this.activo = activo;
     }
 
 }

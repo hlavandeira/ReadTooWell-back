@@ -23,7 +23,6 @@ public class UserDTO {
     private String fotoPerfil;
     @Size(max=2000, message="La biografía no puede superar los 2000 caracteres")
     private String biografia;
-    private boolean activo;
 
     // Métodos Getters y Setters
     public Long getId() {
@@ -80,12 +79,5 @@ public class UserDTO {
     }
     public void setBiografia(String biografia) {
         this.biografia = biografia;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-    public void setActivo(boolean activo) {
-        this.activo = activo;
     }
 }

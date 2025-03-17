@@ -21,7 +21,6 @@ public class GoalMapper {
         dto.setUsuario(goal.getUsuario());
         dto.setFechaFin(goal.getFechaFin());
         dto.setFechaInicio(goal.getFechaInicio());
-        dto.setActivo(goal.isActivo());
 
         dto.setCompletado(objetivoCompletado(goal));
 
@@ -57,7 +56,6 @@ public class GoalMapper {
         goal.setUsuario(dto.getUsuario());
         goal.setFechaFin(dto.getFechaFin());
         goal.setFechaInicio(dto.getFechaInicio());
-        goal.setActivo(dto.isActivo());
         // para tipo y duracion se hace un set en el servicio, para pasar la entidad en lugar de solo el id
 
         return goal;

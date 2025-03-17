@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,13 +98,11 @@ public class GoalService {
 
     @PreAuthorize("#idUser == authentication.principal.id")
     public GoalDTO eliminarObjetivo(Long idUser, Long idGoal) {
-        Optional<Goal> goal = goalRepository.findById(idGoal);
-        if (goal.isPresent()) {
-            Goal goalEntity = goal.get();
-            goalEntity.delete();
-            goalEntity = goalRepository.save(goalEntity);
-            return goalMapper.toDTO(goalEntity);
-        }
-        return null;
+        Goal goal = goalRepository.findById(idGoal)
+                .orElseThrow(() -> new EntityNotFoundException("Objetivo con ID " + idGoal + " no encontrado."));
+
+        goalRepository.delete(goal);
+
+        return goalMapper.toDTO(goal);
     }
 }

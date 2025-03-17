@@ -17,7 +17,6 @@ public class UserMapper {
         dto.setBiografia(user.getBiografia());
         dto.setRol(user.getRol());
         dto.setFotoPerfil(user.getFotoPerfil());
-        dto.setActivo(user.isActivo());
 
         return dto;
     }
@@ -33,7 +32,6 @@ public class UserMapper {
         user.setBiografia(dto.getBiografia());
         user.setRol(dto.getRol());
         user.setFotoPerfil(dto.getFotoPerfil());
-        user.setActivo(dto.isActivo());
 
         return user;
     }

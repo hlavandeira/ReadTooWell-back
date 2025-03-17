@@ -40,20 +40,18 @@ public class UserService {
     }
 
     public UserDTO deleteUser(Long id) {
-        Optional<User> usuario = userRepository.findById(id);
-        if (usuario.isPresent()) {
-            User user = usuario.get();
-            user.delete();
-            user = userRepository.save(user);
-            return userMapper.toDTO(user);
-        }
-        return null;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + id + " no encontrado."));
+
+        userRepository.delete(user);
+
+        return userMapper.toDTO(user);
     }
 
-    @PreAuthorize("#id == authentication.principal.id")
-    public UserDTO updateUser(Long id, UserDTO user) {
-        User usuario = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + id + " no encontrado"));
+    @PreAuthorize("#idUser == authentication.principal.id")
+    public UserDTO updateUser(Long idUser, UserDTO user) {
+        User usuario = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + idUser + " no encontrado."));
 
         fillUserData(usuario, user);
         usuario = userRepository.save(usuario);
@@ -69,8 +67,6 @@ public class UserService {
         user.setBiografia(dto.getBiografia());
         user.setRol(dto.getRol());
         user.setFotoPerfil(dto.getFotoPerfil());
-
-        user.setActivo(true);
     }
 
     public Set<UserDTO> getFollows(Long id) {
