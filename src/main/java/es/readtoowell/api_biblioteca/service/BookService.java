@@ -39,21 +39,16 @@ public class BookService {
     private BookMapper bookMapper;
     @Autowired
     private GenreMapper genreMapper;
-    @Autowired
-    private SuggestionRepository suggestionRepository;
-    @Autowired
-    private SuggestionMapper suggestionMapper;
-    @Autowired
-    private UserRepository userRepository;
 
     public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "añoPublicacion"));
         return bookRepository.findAll(pageable).map(bookMapper::toDTO);
     }
 
-    public Optional<BookDTO> getBook(Long id) {
-        Optional<Book>book = bookRepository.findById(id);
-        return book.map(bookMapper::toDTO);
+    public BookDTO getBook(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + id + " no existe."));;
+        return bookMapper.toDTO(book);
     }
 
     public BookDTO createBook(BookDTO bookDTO, Set<Long> genreIds) {
@@ -74,7 +69,7 @@ public class BookService {
 
     public BookDTO updateBook(Long id, BookDTO book, Set<Long> genreIds) {
         Book libro = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + id + " no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + id + " no existe."));
 
         Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
 

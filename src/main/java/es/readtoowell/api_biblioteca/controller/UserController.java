@@ -31,19 +31,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getBook(@PathVariable(value = "id") Long id) {
-        Optional<UserDTO> usuario = userService.getUser(id);
+    public ResponseEntity<UserDTO> getUser(@PathVariable(value = "id") Long id) {
+        UserDTO usuario = userService.getUser(id);
 
-        if (usuario.isPresent()) {
-            return ResponseEntity.ok(usuario.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(usuario);
     }
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO user) {
         UserDTO newUser = userService.createUser(user);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
@@ -105,5 +102,12 @@ public class UserController {
         Page<UserDTO> usuarios = userService.searchUsers(searchString, page, size);
 
         return ResponseEntity.ok(usuarios);
+    }
+
+    @PutMapping("/{idUser}/autor")
+    public ResponseEntity<UserDTO> promoteToAuthor(@PathVariable Long idUser) {
+        UserDTO user = userService.promoteToAuthor(idUser);
+
+        return ResponseEntity.ok(user);
     }
 }

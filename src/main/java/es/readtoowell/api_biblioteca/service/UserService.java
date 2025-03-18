@@ -1,21 +1,29 @@
 package es.readtoowell.api_biblioteca.service;
 
+import es.readtoowell.api_biblioteca.model.AuthorRequest;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
 import es.readtoowell.api_biblioteca.model.User;
+import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
+import es.readtoowell.api_biblioteca.model.enums.Role;
+import es.readtoowell.api_biblioteca.repository.AuthorRequestRepository;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static es.readtoowell.api_biblioteca.model.enums.RequestStatus.PENDIENTE;
 
 @Service
 public class UserService {
@@ -23,15 +31,18 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private AuthorRequestRepository requestRepository;
 
     public Page<UserDTO> getAllUsers(int page, int size) {
         Page<User> users = userRepository.findAll(PageRequest.of(page, size, Sort.by("nombreUsuario")));
         return users.map(userMapper::toDTO);
     }
 
-    public Optional<UserDTO> getUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(userMapper::toDTO);
+    public UserDTO getUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + id + " no existe."));
+        return userMapper.toDTO(user);
     }
 
     public UserDTO createUser(UserDTO user) {
@@ -41,7 +52,7 @@ public class UserService {
 
     public UserDTO deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + id + " no encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + id + " no existe."));
 
         userRepository.delete(user);
 
@@ -51,7 +62,7 @@ public class UserService {
     @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO updateUser(Long idUser, UserDTO user) {
         User usuario = userRepository.findById(idUser)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + idUser + " no encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
 
         fillUserData(usuario, user);
         usuario = userRepository.save(usuario);
@@ -87,8 +98,10 @@ public class UserService {
 
     @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
-        User user = userRepository.findById(idUser).orElseThrow();
-        User followedUser = userRepository.findById(idFollowedUser).orElseThrow();
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+        User followedUser = userRepository.findById(idFollowedUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idFollowedUser + " no existe."));
 
         user.getSeguidos().add(followedUser);
         followedUser.getSeguidores().add(user);
@@ -101,8 +114,11 @@ public class UserService {
 
     @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
-        User user = userRepository.findById(idUser).orElseThrow();
-        User unfollowedUser = userRepository.findById(idUnfollowedUser).orElseThrow();
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+        User unfollowedUser = userRepository.findById(idUnfollowedUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " +
+                        idUnfollowedUser + " no existe."));
 
         user.getSeguidos().remove(unfollowedUser);
         unfollowedUser.getSeguidores().remove(user);
@@ -116,5 +132,25 @@ public class UserService {
     public Page<UserDTO> searchUsers(String searchString, int page, int size) {
         Page<User> users =  userRepository.searchUsers(searchString, PageRequest.of(page, size));
         return users.map(userMapper::toDTO);
+    }
+
+    public UserDTO promoteToAuthor(Long idUser) {
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+
+        user.setRol(Role.AUTHOR.getValue());
+
+        AuthorRequest request = requestRepository.findTopByUsuarioIdAndEstadoInAndActivoTrueOrderByFechaEnviadaDesc(
+                idUser, List.of(RequestStatus.PENDIENTE.getValue()))
+                .orElseThrow(() -> new EntityNotFoundException("El usuario no tienen ninguna solicitud pendiente."));
+
+        user.setNombrePerfil(request.getNombre());
+        user.setBiografia(request.getBiografia());
+
+        request.setActivo(false);
+
+        user = userRepository.save(user);
+
+        return userMapper.toDTO(user);
     }
 }

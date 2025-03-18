@@ -11,6 +11,10 @@ import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,6 +66,28 @@ public class SuggestionService {
         suggestion.setEstado(newStatus);
 
         suggestion = suggestionRepository.save(suggestion);
+
+        return suggestionMapper.toDTO(suggestion);
+    }
+
+    public Page<SuggestionDTO> getAllSuggestions(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+
+        return suggestionRepository.findAll(pageable).map(suggestionMapper::toDTO);
+    }
+
+    public Page<SuggestionDTO> getSuggestionsWithStatus(int page, int size, int status) {
+        if (status < 0 || status > 3) {
+            throw new ValidationException("El estado es inválido.");
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+
+        return suggestionRepository.findByEstado(status, pageable).map(suggestionMapper::toDTO);
+    }
+
+    public SuggestionDTO getSuggestion(Long idSuggestion) {
+        Suggestion suggestion = suggestionRepository.findById(idSuggestion)
+                .orElseThrow(() -> new EntityNotFoundException("La sugerencia con ID " + idSuggestion + " no existe."));
 
         return suggestionMapper.toDTO(suggestion);
     }

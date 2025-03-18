@@ -21,7 +21,7 @@ public class SuggestionMapper {
         return dto;
     }
 
-    public Suggestion toDTO(SuggestionDTO dto) {
+    public Suggestion toEntity(SuggestionDTO dto) {
         Suggestion sug = new Suggestion();
 
         sug.setId(dto.getId());

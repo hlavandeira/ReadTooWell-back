@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_coleccion")
+    @Column(name = "id_coleccion", unique = true, updatable = false)
     private Long id;
 
     private String nombre;

@@ -5,6 +5,7 @@ import es.readtoowell.api_biblioteca.service.BookListService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class BookListController {
                                                   @RequestParam Set<Long> genreIds) {
         BookListDTO listaCreada = listService.createList(idUser, list, genreIds);
 
-        return ResponseEntity.ok(listaCreada);
+        return ResponseEntity.status(HttpStatus.CREATED).body(listaCreada);
     }
 
     @PutMapping("/{idUser}/{idList}")

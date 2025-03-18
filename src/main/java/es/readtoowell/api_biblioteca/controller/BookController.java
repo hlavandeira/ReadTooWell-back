@@ -33,13 +33,9 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDTO> getBook(@PathVariable(value = "id") Long id) {
-        Optional<BookDTO> libro = bookService.getBook(id);
+        BookDTO libro = bookService.getBook(id);
 
-        if (libro.isPresent()) {
-            return ResponseEntity.ok(libro.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(libro);
     }
 
     @PostMapping
@@ -63,15 +59,10 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BookDTO> deleteBook(@PathVariable Long id) {
-        Optional<BookDTO> libro = bookService.getBook(id);
+        BookDTO libro = bookService.getBook(id);
 
-        if (libro.isPresent()) {
-            BookDTO dto = libro.get();
-            dto = bookService.deleteBook(dto);
-            return ResponseEntity.ok(dto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        BookDTO dto = bookService.deleteBook(libro);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/buscar")
