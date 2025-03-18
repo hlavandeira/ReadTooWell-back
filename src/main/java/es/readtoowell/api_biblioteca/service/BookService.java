@@ -1,23 +1,27 @@
 package es.readtoowell.api_biblioteca.service;
 
+import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
+import es.readtoowell.api_biblioteca.mapper.SuggestionMapper;
+import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.mapper.BookMapper;
 import es.readtoowell.api_biblioteca.mapper.GenreMapper;
-import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.Collection;
-import es.readtoowell.api_biblioteca.model.Genre;
-import es.readtoowell.api_biblioteca.repository.BookRepository;
-import es.readtoowell.api_biblioteca.repository.CollectionRepository;
-import es.readtoowell.api_biblioteca.repository.GenreRepository;
+import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
+import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
+import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +39,12 @@ public class BookService {
     private BookMapper bookMapper;
     @Autowired
     private GenreMapper genreMapper;
+    @Autowired
+    private SuggestionRepository suggestionRepository;
+    @Autowired
+    private SuggestionMapper suggestionMapper;
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "añoPublicacion"));

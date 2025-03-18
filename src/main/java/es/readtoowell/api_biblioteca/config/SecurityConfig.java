@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/libros").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/libros/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/libros/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/sugerencias/*").hasRole("ADMIN")
                         // USER y AUTHOR
                         .requestMatchers(HttpMethod.PUT, "/usuarios/*").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/*/seguir/*")
@@ -59,6 +60,8 @@ public class SecurityConfig {
                                 .hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/objetivos/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/listas/**").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/sugerencias/*")
+                                .hasAnyRole("USER", "AUTHOR")
                         // TODOS
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/libros/**").authenticated()
