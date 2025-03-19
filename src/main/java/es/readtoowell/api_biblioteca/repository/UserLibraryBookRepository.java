@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook, UserLibraryBookId> {
     Optional<UserLibraryBook> findByUsuarioAndLibro(User user, Book book);
     Page<UserLibraryBook> findByUsuario(User user, Pageable pageable);
+    Page<UserLibraryBook> findByUsuarioAndEstadoLectura(User user, int status, Pageable pageable);
 }
