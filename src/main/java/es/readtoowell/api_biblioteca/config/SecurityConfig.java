@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/listas/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/sugerencias/*")
                                 .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers("/biblioteca/**").hasAnyRole("USER", "AUTHOR")
                         // USER
                         .requestMatchers(HttpMethod.POST, "/solicitud-autor").hasRole("USER")
                         // TODOS

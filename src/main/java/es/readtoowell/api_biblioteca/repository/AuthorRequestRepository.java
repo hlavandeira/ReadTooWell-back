@@ -15,11 +15,15 @@ import java.util.Set;
 public interface AuthorRequestRepository extends JpaRepository<AuthorRequest, Long> {
     boolean existsByUsuarioIdAndEstadoIn(Long usuarioId, List<Integer> estados);
 
-    @Query("SELECT ar FROM AuthorRequest ar LEFT JOIN FETCH ar.libros WHERE ar.id = :id")
+    @Query("SELECT ar FROM AuthorRequest ar " +
+            "LEFT JOIN FETCH ar.libros WHERE ar.id = :id")
     Optional<AuthorRequest> findByIdWithBooks(@Param("id") Long id);
 
     Page<AuthorRequest> findByEstado(int estado, Pageable pageable);
 
-    Optional<AuthorRequest> findTopByUsuarioIdAndEstadoInAndActivoTrueOrderByFechaEnviadaDesc(
-            Long usuarioId, List<Integer> estados);
+    @Query("SELECT a FROM AuthorRequest a " +
+            "WHERE a.usuario.id = :userId AND a.estado IN :estados " +
+            "AND a.activo = true ORDER BY a.fechaEnviada DESC")
+    Optional<AuthorRequest> findLatestRequestByUserAndStatus(
+            @Param("userId") Long userId, @Param("estados") List<Integer> estados);
 }

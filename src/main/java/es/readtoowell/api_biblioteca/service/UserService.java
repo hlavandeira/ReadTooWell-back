@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -45,7 +47,20 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public User getAuthenticatedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User) {
+            return (User) principal;
+        } else if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return userRepository.findByCorreo(username).orElse(null);
+        }
+        return null;
+    }
+
     public UserDTO createUser(UserDTO user) {
+        user.setRol(Role.USER.getValue());
         User entity = userRepository.save(userMapper.toEntity(user));
         return userMapper.toDTO(entity);
     }
@@ -140,7 +155,7 @@ public class UserService {
 
         user.setRol(Role.AUTHOR.getValue());
 
-        AuthorRequest request = requestRepository.findTopByUsuarioIdAndEstadoInAndActivoTrueOrderByFechaEnviadaDesc(
+        AuthorRequest request = requestRepository.findLatestRequestByUserAndStatus(
                 idUser, List.of(RequestStatus.PENDIENTE.getValue()))
                 .orElseThrow(() -> new EntityNotFoundException("El usuario no tienen ninguna solicitud pendiente."));
 
