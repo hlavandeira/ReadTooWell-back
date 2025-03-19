@@ -56,21 +56,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/solicitud-autor/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/sugerencias/**").hasRole("ADMIN")
                         // USER y AUTHOR
-                        .requestMatchers(HttpMethod.PUT, "/usuarios/*").hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/usuarios/*/seguir/*")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/seguir/*")
                                 .hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/usuarios/*/dejar-seguir/*")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/dejar-seguir/*")
                                 .hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.GET, "/objetivos/**").hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.GET, "/listas/**").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers("/objetivos/**").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers("/listas/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/sugerencias/*")
                                 .hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/biblioteca/**").hasAnyRole("USER", "AUTHOR")
                         // USER
                         .requestMatchers(HttpMethod.POST, "/solicitud-autor").hasRole("USER")
                         // TODOS
-                        .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/libros/**").authenticated()
+                        .requestMatchers("/usuarios/**").authenticated()
+                        .requestMatchers("/libros/**").authenticated()
 
 
                         .anyRequest().authenticated()

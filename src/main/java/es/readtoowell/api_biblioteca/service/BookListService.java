@@ -36,7 +36,6 @@ public class BookListService {
     @Autowired
     private BookRepository bookRepository;
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public Page<BookListDTO> getListsByUser(Long idUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<BookList> lists = listRepository.findByUsuarioId(idUser, pageable);
@@ -44,36 +43,28 @@ public class BookListService {
         return lists.map(listMapper::toDTO);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
-    public BookListDTO createList(Long idUser, BookListDTO dto, Set<Long> genreIds) {
+    public BookListDTO createList(User user, BookListDTO dto, Set<Long> genreIds) {
         BookList lista = new BookList();
 
         lista.setNombre(dto.getNombre());
         lista.setDescripcion(dto.getDescripcion());
+        lista.setUsuario(user);
 
         Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
 
         lista.setGeneros(genres);
-
-        Optional<User> user = userRepository.findById(idUser);
-        if (user.isPresent()) {
-            lista.setUsuario(user.get());
-        } else {
-            throw new EntityNotFoundException("El usuario con ID " + idUser + " no existe.");
-        }
 
         lista = listRepository.save(lista);
 
         return listMapper.toDTO(lista);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public BookListDTO updateList(Long idUser, Long idList, BookListDTO dto, Set<Long> genreIds) {
         BookList lista = listRepository.findByIdWithRelations(idList)
-                .orElseThrow(() -> new EntityNotFoundException("La lista con ID " + idUser + " no existe."));
+                .orElseThrow(() -> new EntityNotFoundException("La lista con ID " + idList + " no existe."));
 
-        if (!lista.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
-            throw new AccessDeniedException("No tienes permiso para acceder a esta lista");
+        if (!lista.getUsuario().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para editar esta lista.");
         }
 
         lista.setNombre(dto.getNombre());
@@ -87,13 +78,12 @@ public class BookListService {
         return listMapper.toDTO(lista);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public BookListDTO deleteList(Long idUser, Long idList) {
         BookList list = listRepository.findByIdWithRelations(idList)
                 .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
 
-        if (!list.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
-            throw new AccessDeniedException("No tienes permiso para borrar esta lista");
+        if (!list.getUsuario().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para borrar esta lista.");
         }
 
         listRepository.delete(list);
@@ -101,12 +91,11 @@ public class BookListService {
         return listMapper.toDTO(list);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public BookListDTO addBookToList(Long idUser, Long idList, Long idBook) {
         BookList list = listRepository.findByIdWithRelations(idList)
                 .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
 
-        if (!list.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
+        if (!list.getUsuario().getId().equals(idUser)) {
             throw new AccessDeniedException("No tienes permiso para acceder a esta lista");
         }
 
@@ -121,12 +110,11 @@ public class BookListService {
         return listMapper.toDTO(list);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public BookListDTO deleteBookFromList(Long idUser, Long idList, Long idBook) {
         BookList list = listRepository.findByIdWithRelations(idList)
                 .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
 
-        if (!list.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
+        if (!list.getUsuario().getId().equals(idUser)) {
             throw new AccessDeniedException("No tienes permiso para acceder a esta lista");
         }
 

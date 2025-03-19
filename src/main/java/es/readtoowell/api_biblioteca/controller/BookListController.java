@@ -1,12 +1,15 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
+import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.BookListService;
+import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -16,57 +19,84 @@ import java.util.Set;
 public class BookListController {
     @Autowired
     private BookListService listService;
+    @Autowired
+    private UserService userService;
 
-    @GetMapping("/{idUser}")
-    public ResponseEntity<Page<BookListDTO>> getListsByUser(@PathVariable Long idUser,
-                                                        @RequestParam(value = "page", defaultValue = "0") int page,
-                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+    @GetMapping
+    public ResponseEntity<Page<BookListDTO>> getListsByUser(
+                                                    @RequestParam(value = "page", defaultValue = "0") int page,
+                                                    @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        Page<BookListDTO> listas = listService.getListsByUser(idUser, page, size);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<BookListDTO> listas = listService.getListsByUser(user.getId(), page, size);
         return ResponseEntity.ok(listas);
     }
 
-    @PostMapping("/{idUser}")
-    public ResponseEntity<BookListDTO> createList(@PathVariable Long idUser,
-                                                  @Valid @RequestBody BookListDTO list,
+    @PostMapping
+    public ResponseEntity<BookListDTO> createList(@Valid @RequestBody BookListDTO list,
                                                   @RequestParam Set<Long> genreIds) {
-        BookListDTO listaCreada = listService.createList(idUser, list, genreIds);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDTO listaCreada = listService.createList(user, list, genreIds);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(listaCreada);
     }
 
-    @PutMapping("/{idUser}/{idList}")
-    public ResponseEntity<BookListDTO> updateList(@PathVariable Long idUser,
-                                                  @PathVariable Long idList,
+    @PutMapping("/{idList}")
+    public ResponseEntity<BookListDTO> updateList(@PathVariable Long idList,
                                                   @Valid @RequestBody BookListDTO list,
                                                   @RequestParam Set<Long> genreIds) {
-        BookListDTO lista = listService.updateList(idUser, idList, list, genreIds);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDTO lista = listService.updateList(user.getId(), idList, list, genreIds);
 
         return ResponseEntity.ok(lista);
     }
 
-    @DeleteMapping("/{idUser}/{idList}")
-    public ResponseEntity<BookListDTO> deleteList(@PathVariable Long idUser,
-                                                  @PathVariable Long idList) {
-        BookListDTO listaEliminada = listService.deleteList(idUser, idList);
+    @DeleteMapping("/{idList}")
+    public ResponseEntity<BookListDTO> deleteList(@PathVariable Long idList) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDTO listaEliminada = listService.deleteList(user.getId(), idList);
 
         return ResponseEntity.ok(listaEliminada);
     }
 
-    @PostMapping("/{idUser}/{idList}/añadir-libro/{idBook}")
-    public ResponseEntity<BookListDTO> addBookToList(@PathVariable Long idUser,
-                                                     @PathVariable Long idList,
+    @PostMapping("/{idList}/añadir-libro/{idBook}")
+    public ResponseEntity<BookListDTO> addBookToList(@PathVariable Long idList,
                                                      @PathVariable Long idBook) {
-        BookListDTO updatedList = listService.addBookToList(idUser, idList, idBook);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDTO updatedList = listService.addBookToList(user.getId(), idList, idBook);
 
         return ResponseEntity.ok(updatedList);
     }
 
-    @DeleteMapping("/{idUser}/{idList}/eliminar-libro/{idBook}")
-    public ResponseEntity<BookListDTO> deleteBookFromList(@PathVariable Long idUser,
-                                                          @PathVariable Long idList,
+    @DeleteMapping("/{idList}/eliminar-libro/{idBook}")
+    public ResponseEntity<BookListDTO> deleteBookFromList(@PathVariable Long idList,
                                                           @PathVariable Long idBook) {
-        BookListDTO updatedList = listService.deleteBookFromList(idUser, idList, idBook);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDTO updatedList = listService.deleteBookFromList(user.getId(), idList, idBook);
 
         return ResponseEntity.ok(updatedList);
     }

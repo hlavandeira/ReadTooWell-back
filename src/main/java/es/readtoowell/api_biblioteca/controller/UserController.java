@@ -2,6 +2,7 @@ package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
+import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.GoalService;
 import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -44,15 +46,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id,
-                                              @Valid @RequestBody UserDTO user) {
-        try {
-            UserDTO usuario = userService.updateUser(id, user);
-            return ResponseEntity.ok(usuario);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+    @PutMapping
+    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
         }
+
+        UserDTO usuario = userService.updateUser(user.getId(), userDTO);
+        return ResponseEntity.ok(usuario);
     }
 
     @DeleteMapping("/{id}")
@@ -79,18 +81,26 @@ public class UserController {
         return ResponseEntity.ok(seguidores);
     }
 
-    @PostMapping("/{idUser}/seguir/{idFollowed}")
-    public ResponseEntity<UserDTO> followUser(@PathVariable Long idUser,
-                                           @PathVariable Long idFollowed) {
-        UserDTO followed = userService.followUser(idUser, idFollowed);
+    @PostMapping("/seguir/{idFollowed}")
+    public ResponseEntity<UserDTO> followUser(@PathVariable Long idFollowed) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        UserDTO followed = userService.followUser(user.getId(), idFollowed);
 
         return ResponseEntity.ok(followed);
     }
 
-    @DeleteMapping("/{idUser}/dejar-seguir/{idUnfollowed}")
-    public ResponseEntity<UserDTO> unfollowUser(@PathVariable Long idUser,
-                                             @PathVariable Long idUnfollowed) {
-        UserDTO unfollowed = userService.unfollowUser(idUser, idUnfollowed);
+    @DeleteMapping("/dejar-seguir/{idUnfollowed}")
+    public ResponseEntity<UserDTO> unfollowUser(@PathVariable Long idUnfollowed) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        UserDTO unfollowed = userService.unfollowUser(user.getId(), idUnfollowed);
 
         return ResponseEntity.ok(unfollowed);
     }

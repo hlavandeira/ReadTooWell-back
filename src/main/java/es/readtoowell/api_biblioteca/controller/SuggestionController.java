@@ -1,12 +1,15 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
+import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.SuggestionService;
+import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,10 +17,17 @@ import org.springframework.web.bind.annotation.*;
 public class SuggestionController {
     @Autowired
     private SuggestionService suggestionService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/enviar-sugerencia")
     public ResponseEntity<SuggestionDTO> sendSuggestion(@Valid @RequestBody SuggestionDTO suggestion) {
-        SuggestionDTO dto = suggestionService.sendSuggestion(suggestion);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        SuggestionDTO dto = suggestionService.sendSuggestion(suggestion, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }

@@ -40,14 +40,11 @@ public class AuthorRequestService {
     @Autowired
     private RequestBookRepository requestBookRepository;
 
-    @PreAuthorize("#idUser == authentication.principal.id")
-    public AuthorRequestDTO sendAuthorRequest(Long idUser, AuthorRequestDTO dto) {
-        User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+    public AuthorRequestDTO sendAuthorRequest(User user, AuthorRequestDTO dto) {
 
         if (requestRepository.existsByUsuarioIdAndEstadoIn(user.getId(),
                 List.of(RequestStatus.PENDIENTE.getValue(), RequestStatus.ACEPTADA.getValue()))) {
-            throw new IllegalStateException("Ya tienes una solicitud en proceso o aceptada.");
+            throw new IllegalStateException("El usuario ya tiene una solicitud en proceso o aceptada.");
         }
 
         AuthorRequest request = new AuthorRequest();

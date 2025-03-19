@@ -74,7 +74,6 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO updateUser(Long idUser, UserDTO user) {
         User usuario = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
@@ -111,7 +110,6 @@ public class UserService {
                 .orElse(Collections.emptySet());
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
@@ -127,7 +125,6 @@ public class UserService {
         return userMapper.toDTO(followedUser);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));

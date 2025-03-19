@@ -32,7 +32,7 @@ public class SuggestionService {
     @Autowired
     private UserRepository userRepository;
 
-    public SuggestionDTO sendSuggestion(SuggestionDTO suggestionDTO) {
+    public SuggestionDTO sendSuggestion(SuggestionDTO suggestionDTO, User user) {
         Suggestion suggestion = new Suggestion();
 
         suggestion.setTitulo(suggestionDTO.getTitulo());
@@ -41,13 +41,6 @@ public class SuggestionService {
         suggestion.setEstado(SuggestionStatus.PENDIENTE.getValue());
         suggestion.setActivo(true);
         suggestion.setFechaEnviada(Date.valueOf(LocalDate.now()));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " +
-                        userDetails.getId() + " no encontrado"));
-
         suggestion.setUsuario(user);
 
         suggestion = suggestionRepository.save(suggestion);

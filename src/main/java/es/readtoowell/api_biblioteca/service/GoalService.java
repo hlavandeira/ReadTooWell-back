@@ -36,7 +36,6 @@ public class GoalService {
     @Autowired
     private GoalDurationRepository durationRepository;
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public Set<GoalDTO> obtenerObjetivosEnCurso(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
 
@@ -46,7 +45,6 @@ public class GoalService {
                 .collect(Collectors.toSet());
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public Set<GoalDTO> obtenerObjetivosTerminados(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
 
@@ -61,7 +59,6 @@ public class GoalService {
         return goal.getCantidadActual() >= goal.getCantidad() || LocalDate.now().isAfter(fechaFin);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public GoalDTO crearObjetivo(Long idUser, GoalDTO goal) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -97,12 +94,11 @@ public class GoalService {
         return goalMapper.toDTO(objetivo);
     }
 
-    @PreAuthorize("#idUser == authentication.principal.id")
     public GoalDTO eliminarObjetivo(Long idUser, Long idGoal) {
         Goal goal = goalRepository.findById(idGoal)
                 .orElseThrow(() -> new EntityNotFoundException("Objetivo con ID " + idGoal + " no encontrado."));
 
-        if (!goal.getUsuario().getId().equals(idUser)) { // Comprobar si el usuario es propietario de la lista
+        if (!goal.getUsuario().getId().equals(idUser)) {
             throw new AccessDeniedException("No tienes permiso para borrar este objetivo");
         }
 
