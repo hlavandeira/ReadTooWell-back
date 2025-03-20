@@ -29,8 +29,6 @@ public class UserLibraryBookService {
     @Autowired
     private UserLibraryBookMapper libraryMapper;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private BookRepository bookRepository;
 
     public Page<UserLibraryBookDTO> getLibraryFromUser(User user, int page, int size) {

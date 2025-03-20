@@ -1,7 +1,10 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookDetailsDTO;
 import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
+import es.readtoowell.api_biblioteca.model.User;
+import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import es.readtoowell.api_biblioteca.service.BookService;
@@ -21,47 +25,48 @@ import java.util.Set;
 public class BookController {
     @Autowired
     private BookService bookService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<Page<BookDTO>> getBooks(@RequestParam(value = "page", defaultValue = "0") int page,
-                                               @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                  @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Page<BookDTO> bookPage = bookService.getAllBooks(page, size);
 
         return ResponseEntity.ok(bookPage);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBook(@PathVariable(value = "id") Long id) {
-        BookDTO libro = bookService.getBook(id);
+    @GetMapping("/{idBook}")
+    public ResponseEntity<BookDTO> getBook(@PathVariable Long idBook) {
+        BookDTO libro = bookService.getBook(idBook);
 
         return ResponseEntity.ok(libro);
     }
 
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO book,
-                                           @RequestParam Set<Long> genreIds) {
+                                              @RequestParam Set<Long> genreIds) {
         BookDTO newBook = bookService.createBook(book, genreIds);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id,
-                                         @Valid @RequestBody BookDTO book,
-                                         @RequestParam Set<Long> genreIds) {
-        try {
-            BookDTO libro = bookService.updateBook(id, book, genreIds);
-            return ResponseEntity.ok(libro);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{idBook}")
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Long idBook,
+                                              @Valid @RequestBody BookDTO book,
+                                              @RequestParam Set<Long> genreIds) {
+        BookDTO libro = bookService.updateBook(idBook, book, genreIds);
+
+        return ResponseEntity.ok(libro);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BookDTO> deleteBook(@PathVariable Long id) {
-        BookDTO libro = bookService.getBook(id);
+    @DeleteMapping("/{idBook}")
+    public ResponseEntity<BookDTO> deleteBook(@PathVariable Long idBook) {
+        BookDTO libro = bookService.getBook(idBook);
 
         BookDTO dto = bookService.deleteBook(libro);
+
         return ResponseEntity.ok(dto);
     }
 
@@ -79,5 +84,18 @@ public class BookController {
                 maxAño, page, size);
 
         return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/{idBook}/detalles")
+    public ResponseEntity<BookDetailsDTO> getBookDetails(@PathVariable Long idBook) {
+
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookDetailsDTO details = bookService.getBookDetails(idBook, user);
+
+        return ResponseEntity.ok(details);
     }
 }

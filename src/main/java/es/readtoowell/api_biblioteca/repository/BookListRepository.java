@@ -16,4 +16,8 @@ public interface BookListRepository extends JpaRepository<BookList, Long> {
 
     @Query("SELECT l FROM BookList l LEFT JOIN FETCH l.libros LEFT JOIN FETCH l.generos WHERE l.id = :id")
     Optional<BookList> findByIdWithRelations(@Param("id") Long id);
+
+    @Query("SELECT bl FROM BookList bl JOIN bl.libros b " +
+            "WHERE bl.usuario.id = :userId AND b.id = :bookId")
+    Set<BookList> findAllByUserIdAndBookId(@Param("userId") Long userId, @Param("bookId") Long bookId);
 }

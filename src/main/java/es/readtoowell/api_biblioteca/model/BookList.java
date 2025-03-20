@@ -30,11 +30,8 @@ public class BookList {
             joinColumns = @JoinColumn(name = "id_lista"),
             inverseJoinColumns = @JoinColumn(name = "id_genero"))
     private Set<Genre> generos = new HashSet<>();
-    @ManyToMany
-    @JoinTable(name = "libro_lista",
-            joinColumns = @JoinColumn(name = "id_lista"),
-            inverseJoinColumns = @JoinColumn(name = "id_libro"))
-    private Set<Book> libros = new HashSet<>();
+    @OneToMany(mappedBy = "lista", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BookListItem> libros = new HashSet<>();
 
     // Métodos Getters y Setters
     public Long getId() {
@@ -72,10 +69,10 @@ public class BookList {
         this.generos = generos;
     }
 
-    public Set<Book> getLibros() {
+    public Set<BookListItem> getLibros() {
         return libros;
     }
-    public void setLibros(Set<Book> libros) {
+    public void setLibros(Set<BookListItem> libros) {
         this.libros = libros;
     }
 }

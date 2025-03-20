@@ -2,6 +2,7 @@ package es.readtoowell.api_biblioteca.mapper;
 
 import es.readtoowell.api_biblioteca.model.BookList;
 import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookListItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 @Component
 public class BookListMapper {
     @Autowired
-    private BookMapper bookMapper;
+    private BookListItemMapper listItemMapper;
     @Autowired
     private GenreMapper genreMapper;
     @Autowired
@@ -23,7 +24,7 @@ public class BookListMapper {
         dto.setDescripcion(list.getDescripcion());
         dto.setUsuario(userMapper.toDTO(list.getUsuario()));
         dto.setLibros(list.getLibros().stream()
-                .map(bookMapper::toDTO)
+                .map(listItemMapper::toDTO)
                 .collect(Collectors.toSet()));
         dto.setGeneros(list.getGeneros().stream()
                 .map(genreMapper::toDTO)
@@ -38,7 +39,7 @@ public class BookListMapper {
         list.setDescripcion(dto.getDescripcion());
         list.setUsuario(userMapper.toEntity(dto.getUsuario()));
         list.setLibros(dto.getLibros().stream()
-                .map(bookMapper::toEntity)
+                .map(listItemMapper::toEntity)
                 .collect(Collectors.toSet()));
         list.setGeneros(dto.getGeneros().stream()
                 .map(genreMapper::toEntity)

@@ -1,13 +1,9 @@
 package es.readtoowell.api_biblioteca.service;
 
 import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
-import es.readtoowell.api_biblioteca.mapper.SuggestionMapper;
+import es.readtoowell.api_biblioteca.mapper.*;
 import es.readtoowell.api_biblioteca.model.*;
-import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
-import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
-import es.readtoowell.api_biblioteca.mapper.BookMapper;
-import es.readtoowell.api_biblioteca.mapper.GenreMapper;
-import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
+import es.readtoowell.api_biblioteca.model.DTO.*;
 import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
 import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -39,15 +37,23 @@ public class BookService {
     private BookMapper bookMapper;
     @Autowired
     private GenreMapper genreMapper;
+    @Autowired
+    private UserLibraryBookRepository libraryRepository;
+    @Autowired
+    private BookListRepository listRepository;
+    @Autowired
+    private BookListMapper listMapper;
+    @Autowired
+    private BookListItemRepository listItemRepository;
 
     public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "añoPublicacion"));
         return bookRepository.findAll(pageable).map(bookMapper::toDTO);
     }
 
-    public BookDTO getBook(Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + id + " no existe."));;
+    public BookDTO getBook(Long idBook) {
+        Book book = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));;
         return bookMapper.toDTO(book);
     }
 
@@ -67,9 +73,9 @@ public class BookService {
         return bookMapper.toDTO(book);
     }
 
-    public BookDTO updateBook(Long id, BookDTO book, Set<Long> genreIds) {
-        Book libro = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + id + " no existe."));
+    public BookDTO updateBook(Long idBook, BookDTO book, Set<Long> genreIds) {
+        Book libro = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
 
         Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
 
@@ -78,21 +84,21 @@ public class BookService {
                 .collect(Collectors.toSet());
 
         book.setGeneros(genreDTOs);
-        fillBookData(id, libro, book);
+        fillBookData(idBook, libro, book);
 
         libro = bookRepository.save(libro);
 
         return bookMapper.toDTO(libro);
     }
 
-    private void fillBookData(Long id, Book book, BookDTO bookDTO) {
+    private void fillBookData(Long idBook, Book book, BookDTO bookDTO) {
         if (bookDTO.getIsbn() != null && !bookDTO.getIsbn().isEmpty()) {
-            if (id == null) { // Entra al crear un libro
+            if (idBook == null) { // Entra al crear un libro
                 if (bookRepository.findByIsbn(bookDTO.getIsbn()).isPresent()) {
                     throw new IllegalArgumentException("El ISBN ya está en uso.");
                 }
             } else { // Entra al editar un libro
-                if (bookRepository.findByIsbnAndIdNot(bookDTO.getIsbn(), id).isPresent()) {
+                if (bookRepository.findByIsbnAndIdNot(bookDTO.getIsbn(), idBook).isPresent()) {
                     throw new IllegalArgumentException("El ISBN ya está en uso por otro libro.");
                 }
             }
@@ -147,5 +153,62 @@ public class BookService {
         Page<Book> librosFiltrados = bookRepository.filterBooks(searchString, minPags, maxPags, minAño,
                 maxAño, PageRequest.of(page, size));
         return librosFiltrados.map(bookMapper::toDTO);
+    }
+
+    public BookDetailsDTO getBookDetails(Long idBook, User user) {
+        Book libro = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
+
+        BookDetailsDTO details = new BookDetailsDTO();
+
+        details.setLibro(bookMapper.toDTO(libro));
+
+        Optional<UserLibraryBook> libroGuardado = libraryRepository.findByUsuarioAndLibro(user, libro);
+        if (libroGuardado.isPresent()) {
+            details.setGuardado(true);
+            UserLibraryBook lib = libroGuardado.get();
+            details.setEstadoLectura(lib.getEstadoLectura());
+            details.setCalificacion(lib.getCalificacion());
+            details.setReseña(lib.getReseña());
+            details.setFechaInicio(lib.getFechaInicio());
+            details.setFechaFin(lib.getFechaFin());
+        } else {
+            details.setEstadoLectura(0);
+            details.setCalificacion(0);
+        }
+
+        if (libro.getIdColeccion() != null) {
+            Collection collection = collectionRepository.findById(libro.getIdColeccion())
+                    .orElseThrow(() -> new EntityNotFoundException("La colección con ID " +
+                            libro.getIdColeccion() + " no existe."));
+            details.setNombreColeccion(collection.getNombre()); // Nombre, el número se guarda en el libro
+        }
+
+        double calificacionMedia = libraryRepository.findAverageRatingByBookId(libro.getId());
+        details.setCalificacionMedia(BigDecimal.valueOf(calificacionMedia)
+                .setScale(2, RoundingMode.HALF_UP).doubleValue());
+
+        Set<UserLibraryBook> reseñas = libraryRepository.findAllWithReviewByBookIdExcludingUser(libro.getId(),
+                                                                                                user.getId());
+        Set<ReviewDTO> otrasReseñas = reseñas.stream().map(r -> {
+            ReviewDTO review = new ReviewDTO();
+            review.setNombreUsuario(r.getUsuario().getNombreUsuario());
+            review.setNombrePerfil(r.getUsuario().getNombrePerfil());
+            review.setCalificacion(r.getCalificacion());
+            review.setReseña(r.getReseña());
+            return review;
+        }).collect(Collectors.toSet());
+        details.setReseñasOtrosUsuarios(otrasReseñas);
+
+        Set<BookList> listas = listItemRepository.findAllListsByUserIdAndBookId(user.getId(), libro.getId());
+        Set<SimpleBookListDTO> listasDTO = listas.stream().map(lista -> {
+                SimpleBookListDTO simpleList = new SimpleBookListDTO();
+                simpleList.setId(lista.getId());
+                simpleList.setNombre(lista.getNombre());
+                return simpleList;
+        }).collect(Collectors.toSet());
+        details.setListas(listasDTO);
+
+        return details;
     }
 }

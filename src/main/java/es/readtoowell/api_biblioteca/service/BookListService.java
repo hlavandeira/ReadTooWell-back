@@ -1,11 +1,8 @@
 package es.readtoowell.api_biblioteca.service;
 
 import es.readtoowell.api_biblioteca.mapper.BookListMapper;
-import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.BookList;
+import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
-import es.readtoowell.api_biblioteca.model.Genre;
-import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.repository.BookListRepository;
 import es.readtoowell.api_biblioteca.repository.BookRepository;
 import es.readtoowell.api_biblioteca.repository.GenreRepository;
@@ -19,6 +16,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -103,7 +102,13 @@ public class BookListService {
                 .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idList + " no encontrado."));
 
         if (!list.getLibros().contains(book)) {
-            list.getLibros().add(book);
+            BookListItem addedBook = new BookListItem();
+            addedBook.setLista(list);
+            addedBook.setLibro(book);
+            addedBook.setFechaAñadido(Date.valueOf(LocalDate.now()));
+            addedBook.setId(new BookListItemId(list.getId(), book.getId()));
+
+            list.getLibros().add(addedBook);
             list = listRepository.save(list);
         }
 

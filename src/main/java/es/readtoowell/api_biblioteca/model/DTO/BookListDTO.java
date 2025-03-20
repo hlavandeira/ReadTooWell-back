@@ -12,7 +12,7 @@ public class BookListDTO {
     private String nombre;
     private String descripcion;
     private UserDTO usuario;
-    private Set<BookDTO> libros;
+    private Set<BookListItemDTO> libros;
     private Set<GenreDTO> generos;
 
     public Long getId() {
@@ -36,10 +36,10 @@ public class BookListDTO {
         this.descripcion = descripcion;
     }
 
-    public Set<BookDTO> getLibros() {
+    public Set<BookListItemDTO> getLibros() {
         return libros;
     }
-    public void setLibros(Set<BookDTO> libros) {
+    public void setLibros(Set<BookListItemDTO> libros) {
         this.libros = libros;
     }
 
