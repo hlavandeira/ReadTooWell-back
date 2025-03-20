@@ -55,8 +55,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/solicitud-autor/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/solicitud-autor/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/sugerencias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/*/autor").hasRole("ADMIN")
                         // USER y AUTHOR
                         .requestMatchers(HttpMethod.PUT, "/usuarios").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/seguir/*")
                                 .hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/dejar-seguir/*")

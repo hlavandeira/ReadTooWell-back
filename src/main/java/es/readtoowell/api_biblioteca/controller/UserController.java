@@ -1,7 +1,10 @@
 package es.readtoowell.api_biblioteca.controller;
 
+import es.readtoowell.api_biblioteca.model.Book;
 import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
+import es.readtoowell.api_biblioteca.model.Genre;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.GoalService;
 import es.readtoowell.api_biblioteca.service.UserService;
@@ -119,5 +122,51 @@ public class UserController {
         UserDTO user = userService.promoteToAuthor(idUser);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/generos-favoritos")
+    public ResponseEntity<UserFavoritesDTO> updateFavoriteGenres(@RequestParam Set<Long> genreIds) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Set<Genre> generos = userService.addFavoriteGenres(user, genreIds);
+
+        UserFavoritesDTO favs = new UserFavoritesDTO();
+        favs.setUser(user);
+        favs.setGenerosFavoritos(generos);
+        favs.setLibrosFavoritos(user.getLibrosFavoritos());
+
+        return ResponseEntity.ok(favs);
+    }
+
+    @PutMapping("/libros-favoritos")
+    public ResponseEntity<UserFavoritesDTO> updateFavoriteBooks(@RequestParam Set<Long> bookIds) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Set<Book> libros = userService.addFavoriteBooks(user, bookIds);
+
+        UserFavoritesDTO favs = new UserFavoritesDTO();
+        favs.setUser(user);
+        favs.setLibrosFavoritos(libros);
+        favs.setGenerosFavoritos(user.getGenerosFavoritos());
+
+        return ResponseEntity.ok(favs);
+    }
+
+    @GetMapping("/favoritos")
+    public ResponseEntity<UserFavoritesDTO> getFavorites() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        UserFavoritesDTO favs = userService.getFavorites(user);
+
+        return ResponseEntity.ok(favs);
     }
 }

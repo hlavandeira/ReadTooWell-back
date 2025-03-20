@@ -44,17 +44,25 @@ public class User {
     @ManyToMany(mappedBy = "seguidos")
     @JsonIgnore
     private Set<User> seguidores = new HashSet<>();
-
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Goal> objetivos = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "genero_favorito",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_genero"))
+    @JsonIgnore
+    private Set<Genre> generosFavoritos = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "libro_favorito",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_libro"))
+    @JsonIgnore
+    private Set<Book> librosFavoritos = new HashSet<>();
 
     @Transient
     public Role getRoleEnum() {
         return Role.fromValue(this.rol);
-    }
-    public void setRoleEnum(Role role) {
-        this.rol = role.getValue();
     }
 
     // Métodos Getters
@@ -88,6 +96,9 @@ public class User {
     public Set<User> getSeguidores() {
         return seguidores;
     }
+    public Set<Goal> getObjetivos() { return objetivos; }
+    public Set<Genre> getGenerosFavoritos() { return generosFavoritos; }
+    public Set<Book> getLibrosFavoritos() { return librosFavoritos; }
 
     // Métodos Setters
     public void setId(Long id) {
@@ -114,5 +125,6 @@ public class User {
     public void setBiografia(String biografia) {
         this.biografia = biografia;
     }
-
+    public void setGenerosFavoritos(Set<Genre> generosFavoritos) { this.generosFavoritos = generosFavoritos; }
+    public void setLibrosFavoritos(Set<Book> librosFavoritos) { this.librosFavoritos = librosFavoritos; }
 }

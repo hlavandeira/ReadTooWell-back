@@ -1,14 +1,20 @@
 package es.readtoowell.api_biblioteca.service;
 
 import es.readtoowell.api_biblioteca.model.AuthorRequest;
+import es.readtoowell.api_biblioteca.model.Book;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
+import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
+import es.readtoowell.api_biblioteca.model.Genre;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
 import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.AuthorRequestRepository;
+import es.readtoowell.api_biblioteca.repository.BookRepository;
+import es.readtoowell.api_biblioteca.repository.GenreRepository;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,10 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static es.readtoowell.api_biblioteca.model.enums.RequestStatus.PENDIENTE;
@@ -35,6 +38,10 @@ public class UserService {
     private UserMapper userMapper;
     @Autowired
     private AuthorRequestRepository requestRepository;
+    @Autowired
+    private GenreRepository genreRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     public Page<UserDTO> getAllUsers(int page, int size) {
         Page<User> users = userRepository.findAll(PageRequest.of(page, size, Sort.by("nombreUsuario")));
@@ -164,5 +171,49 @@ public class UserService {
         user = userRepository.save(user);
 
         return userMapper.toDTO(user);
+    }
+
+    public Set<Genre> addFavoriteGenres(User user, Set<Long> genreIds) {
+        if (genreIds.size() > 10) {
+            throw new ValidationException("Sólo se pueden elegir 10 géneros favoritos como máximo.");
+        }
+
+        Set<Genre> newGenres = new HashSet<>(genreRepository.findAllById(genreIds));
+
+        if (newGenres.size() != genreIds.size()) {
+            throw new EntityNotFoundException("Uno o más géneros no existen.");
+        }
+
+        user.setGenerosFavoritos(newGenres);
+        user = userRepository.save(user);
+
+        return user.getGenerosFavoritos();
+    }
+
+    public Set<Book> addFavoriteBooks(User user, Set<Long> bookIds) {
+        if (bookIds.size() > 4) {
+            throw new ValidationException("Sólo se pueden elegir 4 libros favoritos como máximo.");
+        }
+
+        Set<Book> newBooks = new HashSet<>(bookRepository.findAllById(bookIds));
+
+        if (newBooks.size() != bookIds.size()) {
+            throw new EntityNotFoundException("Uno o más libros no existen.");
+        }
+
+        user.setLibrosFavoritos(newBooks);
+        user = userRepository.save(user);
+
+        return user.getLibrosFavoritos();
+    }
+
+    public UserFavoritesDTO getFavorites(User user) {
+        UserFavoritesDTO favoritos = new UserFavoritesDTO();
+
+        favoritos.setUser(user);
+        favoritos.setGenerosFavoritos(user.getGenerosFavoritos());
+        favoritos.setLibrosFavoritos(user.getLibrosFavoritos());
+
+        return favoritos;
     }
 }
