@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.controller;
 
+import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDetailsDTO;
 import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
@@ -97,5 +98,12 @@ public class BookController {
         BookDetailsDTO details = bookService.getBookDetails(idBook, user);
 
         return ResponseEntity.ok(details);
+    }
+
+    @GetMapping("/{idAuthor}/autor")
+    public ResponseEntity<AuthorDTO> getBooksByAuthor(@PathVariable Long idAuthor) {
+        AuthorDTO author = bookService.getBooksByAuthor(idAuthor);
+
+        return ResponseEntity.ok(author);
     }
 }

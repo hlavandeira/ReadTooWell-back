@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
@@ -16,9 +17,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Optional<Book> findByIsbn(String isbn);
 
-    /**
-     * Busca otros libros que tengan el ISBN indicado
-     */
+    // Busca otros libros que tengan el ISBN indicado
     Optional<Book> findByIsbnAndIdNot(String isbn, Long id);
 
     @Query("""
@@ -39,4 +38,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("maxAño") Integer maxAño,
             Pageable pageable
     );
+
+    @Query(value = """
+    SELECT * FROM libro l 
+    WHERE l.id_libro IN (SELECT la.id_libro FROM libro_autor la WHERE la.id_autor = :idAutor)
+    """, nativeQuery = true) // Query nativa porque libro_autor no existe como entidad
+    Set<Book> findBooksByAuthorId(@Param("idAutor") Long idAutor);
 }

@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ public class SuggestionDTO {
     private String autor;
     @NotNull(message = "El título no puede ser nulo")
     private int añoPublicacion;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaEnviada;
     private int estado;
     private boolean activo;

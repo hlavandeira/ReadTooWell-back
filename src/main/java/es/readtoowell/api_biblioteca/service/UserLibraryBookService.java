@@ -1,13 +1,16 @@
 package es.readtoowell.api_biblioteca.service;
 
+import es.readtoowell.api_biblioteca.mapper.GenreMapper;
+import es.readtoowell.api_biblioteca.mapper.GoalMapper;
 import es.readtoowell.api_biblioteca.mapper.UserLibraryBookMapper;
-import es.readtoowell.api_biblioteca.model.Book;
+import es.readtoowell.api_biblioteca.model.*;
+import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
+import es.readtoowell.api_biblioteca.model.DTO.SimpleBookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
-import es.readtoowell.api_biblioteca.model.User;
-import es.readtoowell.api_biblioteca.model.UserLibraryBook;
-import es.readtoowell.api_biblioteca.model.UserLibraryBookId;
+import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
 import es.readtoowell.api_biblioteca.model.enums.ReadingStatus;
 import es.readtoowell.api_biblioteca.repository.BookRepository;
+import es.readtoowell.api_biblioteca.repository.GoalRepository;
 import es.readtoowell.api_biblioteca.repository.UserLibraryBookRepository;
 import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +24,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserLibraryBookService {
@@ -30,6 +36,12 @@ public class UserLibraryBookService {
     private UserLibraryBookMapper libraryMapper;
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private GoalRepository goalRepository;
+    @Autowired
+    private GoalMapper goalMapper;
+    @Autowired
+    private GenreMapper genreMapper;
 
     public Page<UserLibraryBookDTO> getLibraryFromUser(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -183,5 +195,45 @@ public class UserLibraryBookService {
         libro = libraryRepository.save(libro);
 
         return libraryMapper.toDTO(libro);
+    }
+
+    public YearRecapDTO getYearRecap(User user) {
+        List<Goal> goals = goalRepository.findAnnualGoalsForCurrentYear(user.getId());
+
+        System.out.println("Objetivos: " + goals.size());
+        for (Goal g : goals) {
+            System.out.println("\tObjetivo " + g.getId() + " tiene " + g.getCantidad());
+        }
+
+        YearRecapDTO recap = new YearRecapDTO();
+        List<GoalDTO> goalsDTO = goals.stream().map(goalMapper::toDTO).collect(Collectors.toList());
+        recap.setObjetivoAnual(goalsDTO);
+
+        long numBooks = libraryRepository.countBooksReadInCurrentYear(user.getId());
+        long numPages = libraryRepository.sumPagesReadInCurrentYear(user.getId());
+
+        recap.setTotalLibros(numBooks);
+        recap.setTotalPaginas(numPages);
+
+        List<Genre> topGenres = libraryRepository.findTopGenresForCurrentYear(user.getId());
+        List<Book> topBooks = libraryRepository.findTopRatedBooksByUserForCurrentYear(user.getId(), 4);
+
+        recap.setGenerosMasLeidos(topGenres.stream().map(genreMapper::toDTO).collect(Collectors.toList()));
+        recap.setLibrosMejorValorados(topBooks.stream().map(b -> {
+            SimpleBookDTO book = new SimpleBookDTO();
+
+            book.setId(b.getId());
+            book.setTitulo(b.getTitulo());
+            book.setAutor(b.getAutor());
+            book.setPortada(b.getPortada());
+
+            Optional<UserLibraryBook> libBook = libraryRepository.findByUsuarioAndLibro(user, b);
+
+            book.setCalificacion(libBook.get().getCalificacion());
+
+            return book;
+        }).collect(Collectors.toList()));
+
+        return recap;
     }
 }

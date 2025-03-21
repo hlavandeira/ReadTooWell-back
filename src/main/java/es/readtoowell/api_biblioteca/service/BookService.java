@@ -4,6 +4,7 @@ import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.mapper.*;
 import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.*;
+import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
 import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,11 +41,9 @@ public class BookService {
     @Autowired
     private UserLibraryBookRepository libraryRepository;
     @Autowired
-    private BookListRepository listRepository;
-    @Autowired
-    private BookListMapper listMapper;
-    @Autowired
     private BookListItemRepository listItemRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "añoPublicacion"));
@@ -210,5 +209,23 @@ public class BookService {
         details.setListas(listasDTO);
 
         return details;
+    }
+
+    public AuthorDTO getBooksByAuthor(Long idAuthor) {
+        User author = userRepository.findById(idAuthor)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idAuthor + " no existe."));
+        if (author.getRoleEnum() != Role.AUTHOR) {
+            throw new IllegalStateException("El usuario con ID " + idAuthor + " no es un autor.");
+        }
+
+        Set<Book> libros = bookRepository.findBooksByAuthorId(idAuthor);
+
+        Set<BookDTO> librosDTO = libros.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+
+        AuthorDTO dto = new AuthorDTO();
+        dto.setAutor(author);
+        dto.setLibros(librosDTO);
+
+        return dto;
     }
 }

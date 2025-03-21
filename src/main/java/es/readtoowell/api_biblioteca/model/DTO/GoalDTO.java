@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,9 @@ public class GoalDTO {
     @Positive(message = "La cantidad debe ser mayor que 0")
     private int cantidad;
     private int cantidadActual;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaInicio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaFin;
     private User usuario;
     @NotNull(message = "El tipo de objetivo no puede ser nulo")

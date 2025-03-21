@@ -1,6 +1,7 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
+import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.UserLibraryBookService;
 import es.readtoowell.api_biblioteca.service.UserService;
@@ -125,5 +126,17 @@ public class UserLibraryBookController {
         UserLibraryBookDTO updatedBook = libraryService.updateProgress(idBook, user, progreso, tipoProgreso);
 
         return ResponseEntity.ok(updatedBook);
+    }
+
+    @GetMapping("/resumen-anual")
+    public ResponseEntity<YearRecapDTO> getYearRecap() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        YearRecapDTO recap = libraryService.getYearRecap(user);
+
+        return ResponseEntity.ok(recap);
     }
 }

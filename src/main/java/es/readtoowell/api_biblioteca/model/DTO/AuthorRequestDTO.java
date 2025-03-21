@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.RequestBook;
 import es.readtoowell.api_biblioteca.model.User;
 
@@ -11,6 +12,7 @@ public class AuthorRequestDTO {
     private User usuario;
     private String nombre;
     private String biografia;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaEnviada;
     private boolean activo;
     private int estado;

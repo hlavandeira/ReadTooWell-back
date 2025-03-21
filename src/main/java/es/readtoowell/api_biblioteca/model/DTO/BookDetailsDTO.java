@@ -1,5 +1,7 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -8,7 +10,9 @@ public class BookDetailsDTO {
     private int estadoLectura;
     private double calificacion;
     private String reseña;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaInicio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date fechaFin;
     private double calificacionMedia;
     private String nombreColeccion;

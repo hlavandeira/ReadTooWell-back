@@ -1,11 +1,13 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.Book;
+import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.Genre;
 import es.readtoowell.api_biblioteca.model.User;
+import es.readtoowell.api_biblioteca.service.BookService;
 import es.readtoowell.api_biblioteca.service.GoalService;
 import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.persistence.EntityNotFoundException;

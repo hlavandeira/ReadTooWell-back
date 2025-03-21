@@ -73,6 +73,7 @@ public class SecurityConfig {
                         // TODOS
                         .requestMatchers("/usuarios/**").authenticated()
                         .requestMatchers("/libros/**").authenticated()
+                        .requestMatchers("/libros/*/autor").authenticated()
 
 
                         .anyRequest().authenticated()
