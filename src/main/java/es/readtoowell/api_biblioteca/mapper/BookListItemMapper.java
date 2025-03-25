@@ -1,7 +1,6 @@
 package es.readtoowell.api_biblioteca.mapper;
 
 import es.readtoowell.api_biblioteca.model.BookListItem;
-import es.readtoowell.api_biblioteca.model.BookListItemId;
 import es.readtoowell.api_biblioteca.model.DTO.BookListItemDTO;
 import org.springframework.stereotype.Component;
 

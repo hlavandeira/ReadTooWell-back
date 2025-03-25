@@ -1,7 +1,5 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
-import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.Genre;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Set;

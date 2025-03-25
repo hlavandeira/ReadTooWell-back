@@ -5,12 +5,10 @@ import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.FormatDTO;
 import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

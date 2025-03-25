@@ -74,4 +74,19 @@ public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook
     LIMIT :limit
     """, nativeQuery = true)
     List<Book> findTopRatedBooksByUserForCurrentYear(@Param("idUsuario") Long idUsuario, @Param("limit") int limit);
+
+    @Query("""
+    SELECT ulb.libro FROM UserLibraryBook ulb
+    WHERE ulb.usuario.id = :idUsuario
+    AND EXTRACT(YEAR FROM ulb.fechaFin) = EXTRACT(YEAR FROM CURRENT_DATE)
+    """)
+    Set<Book> findBooksReadActualYear(@Param("idUsuario") Long idUsuario);
+
+    @Query("""
+    SELECT ulb.libro FROM UserLibraryBook ulb
+    WHERE ulb.usuario.id = :idUsuario
+    AND EXTRACT(YEAR FROM ulb.fechaFin) = EXTRACT(YEAR FROM CURRENT_DATE) 
+    AND EXTRACT(MONTH FROM ulb.fechaFin) = EXTRACT(MONTH FROM CURRENT_DATE)
+    """)
+    Set<Book> findBooksReadActualMonth(@Param("idUsuario") Long idUsuario);
 }

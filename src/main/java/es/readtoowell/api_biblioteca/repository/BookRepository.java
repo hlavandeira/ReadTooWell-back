@@ -39,6 +39,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             Pageable pageable
     );
 
+    Page<Book> findByGenerosId(Long idGenero, Pageable pageable);
+
     @Query(value = """
     SELECT * FROM libro l 
     WHERE l.id_libro IN (SELECT la.id_libro FROM libro_autor la WHERE la.id_autor = :idAutor)

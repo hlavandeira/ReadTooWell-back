@@ -5,7 +5,6 @@ import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.AuthorRequestService;
 import es.readtoowell.api_biblioteca.service.UserService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

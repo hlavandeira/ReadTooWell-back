@@ -1,11 +1,9 @@
 package es.readtoowell.api_biblioteca.service;
 
-import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.mapper.*;
 import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.*;
 import es.readtoowell.api_biblioteca.model.enums.Role;
-import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
 import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -151,6 +145,13 @@ public class BookService {
                                   Integer minAño, Integer maxAño, int page, int size) {
         Page<Book> librosFiltrados = bookRepository.filterBooks(searchString, minPags, maxPags, minAño,
                 maxAño, PageRequest.of(page, size));
+
+        return librosFiltrados.map(bookMapper::toDTO);
+    }
+
+    public Page<BookDTO> filterBooksByGenre(Long idGenre, int page, int size) {
+        Page<Book> librosFiltrados = bookRepository.findByGenerosId(idGenre, PageRequest.of(page, size));
+
         return librosFiltrados.map(bookMapper::toDTO);
     }
 

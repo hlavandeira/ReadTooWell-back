@@ -1,7 +1,6 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import es.readtoowell.api_biblioteca.model.RequestBook;
 import es.readtoowell.api_biblioteca.model.User;
 
 import java.util.Date;

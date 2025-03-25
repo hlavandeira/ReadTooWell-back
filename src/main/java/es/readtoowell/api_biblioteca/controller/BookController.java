@@ -3,12 +3,9 @@ package es.readtoowell.api_biblioteca.controller;
 import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDetailsDTO;
-import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -83,6 +80,15 @@ public class BookController {
     {
         Page<BookDTO> libros = bookService.filterBooks(searchString, minPags, maxPags, minAño,
                 maxAño, page, size);
+
+        return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/buscar-genero")
+    public ResponseEntity<Page<BookDTO>> searchBooksByGenre(@RequestParam Long idGenre,
+                                                            @RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "10") int size) {
+        Page<BookDTO> libros = bookService.filterBooksByGenre(idGenre, page, size);
 
         return ResponseEntity.ok(libros);
     }

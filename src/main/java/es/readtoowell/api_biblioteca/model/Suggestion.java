@@ -1,6 +1,5 @@
 package es.readtoowell.api_biblioteca.model;
 
-import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

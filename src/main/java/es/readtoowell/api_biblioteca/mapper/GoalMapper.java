@@ -16,8 +16,8 @@ public class GoalMapper {
         dto.setId(goal.getId());
         dto.setCantidad(goal.getCantidad());
         dto.setCantidadActual(goal.getCantidadActual());
-        dto.setDuracion(goal.getDuracion().getId());
-        dto.setTipo(goal.getTipo().getId());
+        dto.setDuracion(goal.getDuracion().getNombre());
+        dto.setTipo(goal.getTipo().getNombre());
         dto.setUsuario(goal.getUsuario());
         dto.setFechaFin(goal.getFechaFin());
         dto.setFechaInicio(goal.getFechaInicio());

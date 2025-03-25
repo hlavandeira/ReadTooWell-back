@@ -1,8 +1,5 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
-import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.Genre;
-
 import java.util.List;
 
 public class YearRecapDTO {

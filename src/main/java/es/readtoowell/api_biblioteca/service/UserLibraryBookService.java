@@ -12,10 +12,8 @@ import es.readtoowell.api_biblioteca.model.enums.ReadingStatus;
 import es.readtoowell.api_biblioteca.repository.BookRepository;
 import es.readtoowell.api_biblioteca.repository.GoalRepository;
 import es.readtoowell.api_biblioteca.repository.UserLibraryBookRepository;
-import es.readtoowell.api_biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
-import lombok.Locked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +40,8 @@ public class UserLibraryBookService {
     private GoalMapper goalMapper;
     @Autowired
     private GenreMapper genreMapper;
+    @Autowired
+    private GoalService goalService;
 
     public Page<UserLibraryBookDTO> getLibraryFromUser(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -151,6 +151,7 @@ public class UserLibraryBookService {
             libro.setFechaInicio(Date.valueOf(LocalDate.now())); // Si pasa a "Leyendo", actualizar fecha inicio
         } else if (status == ReadingStatus.LEIDO.getValue() && lastStatus == ReadingStatus.LEYENDO.getValue()) {
             libro.setFechaFin(Date.valueOf(LocalDate.now())); // Si pasa de "Leyendo" a "Leído", actualizar fecha fin
+            goalService.actualizarObjetivos(user.getId(), 0);
         } else if (status == ReadingStatus.PENDIENTE.getValue() && (lastStatus == ReadingStatus.PAUSADO.getValue()
                     || lastStatus == ReadingStatus.ABANDONADO.getValue())) {
             libro.setFechaInicio(null); // Si pasa de "Pausado" o "Abandonado" a "Pendiente", quitar fecha inicio
@@ -179,31 +180,38 @@ public class UserLibraryBookService {
             throw new IllegalStateException("No se puede actualizar el progreso de un libro que no esté en 'Leyendo'");
         }
 
+        int progresoTotal = progreso;
         if (tipoProgreso.equals("porcentaje") && progreso >= 100) {
-            libro.setProgreso(100);
+            progresoTotal = 100;
             libro.setEstadoLectura(ReadingStatus.LEIDO.getValue());
             libro.setFechaFin(Date.valueOf(LocalDate.now()));
+
         } else if (tipoProgreso.equals("paginas") && progreso >= book.getNumeroPaginas()) {
-            libro.setProgreso(book.getNumeroPaginas());
+            progresoTotal = book.getNumeroPaginas();
             libro.setEstadoLectura(ReadingStatus.LEIDO.getValue());
             libro.setFechaFin(Date.valueOf(LocalDate.now()));
-        } else {
-            libro.setProgreso(progreso);
         }
+
+        libro.setProgreso(progresoTotal);
         libro.setTipoProgreso(tipoProgreso);
 
         libro = libraryRepository.save(libro);
+
+        if (libro.getEstadoLectura() == ReadingStatus.LEIDO.getValue()) {
+            progresoTotal = 0; // Si se terminó el libro, ya sumará sus páginas directamente
+        }
+        if (tipoProgreso.equals("porcentaje")) {
+            int paginasLeidas = (int) Math.round((progresoTotal / 100.0) * book.getNumeroPaginas());
+            goalService.actualizarObjetivos(user.getId(), paginasLeidas);
+        } else if (tipoProgreso.equals("paginas")) {
+            goalService.actualizarObjetivos(user.getId(), progresoTotal);
+        }
 
         return libraryMapper.toDTO(libro);
     }
 
     public YearRecapDTO getYearRecap(User user) {
         List<Goal> goals = goalRepository.findAnnualGoalsForCurrentYear(user.getId());
-
-        System.out.println("Objetivos: " + goals.size());
-        for (Goal g : goals) {
-            System.out.println("\tObjetivo " + g.getId() + " tiene " + g.getCantidad());
-        }
 
         YearRecapDTO recap = new YearRecapDTO();
         List<GoalDTO> goalsDTO = goals.stream().map(goalMapper::toDTO).collect(Collectors.toList());

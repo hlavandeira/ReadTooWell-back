@@ -1,6 +1,5 @@
 package es.readtoowell.api_biblioteca.service;
 
-import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.mapper.SuggestionMapper;
 import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
 import es.readtoowell.api_biblioteca.model.Suggestion;
@@ -15,10 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -29,8 +25,6 @@ public class SuggestionService {
     private SuggestionRepository suggestionRepository;
     @Autowired
     private SuggestionMapper suggestionMapper;
-    @Autowired
-    private UserRepository userRepository;
 
     public SuggestionDTO sendSuggestion(SuggestionDTO suggestionDTO, User user) {
         Suggestion suggestion = new Suggestion();

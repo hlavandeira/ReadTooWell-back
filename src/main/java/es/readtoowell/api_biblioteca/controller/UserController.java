@@ -1,16 +1,11 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
-import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.Genre;
 import es.readtoowell.api_biblioteca.model.User;
-import es.readtoowell.api_biblioteca.service.BookService;
-import es.readtoowell.api_biblioteca.service.GoalService;
 import es.readtoowell.api_biblioteca.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 @RestController

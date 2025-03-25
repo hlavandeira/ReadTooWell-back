@@ -2,7 +2,6 @@ package es.readtoowell.api_biblioteca.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.BookList;
 import es.readtoowell.api_biblioteca.model.BookListItemId;
 
 import java.util.Date;

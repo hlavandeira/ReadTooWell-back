@@ -2,7 +2,6 @@ package es.readtoowell.api_biblioteca.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.User;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -22,9 +21,9 @@ public class GoalDTO {
     private Date fechaFin;
     private User usuario;
     @NotNull(message = "El tipo de objetivo no puede ser nulo")
-    private Long tipo;
+    private String tipo;
     @NotNull(message = "La duración del objetivo no puede ser nula")
-    private Long duracion;
+    private String duracion;
 
     // Atributos adicionales para los detalles
     private boolean completado;
@@ -74,17 +73,17 @@ public class GoalDTO {
         this.usuario = usuario;
     }
 
-    public Long getTipo() {
+    public String getTipo() {
         return tipo;
     }
-    public void setTipo(Long tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
-    public Long getDuracion() {
+    public String getDuracion() {
         return duracion;
     }
-    public void setDuracion(Long duracion) {
+    public void setDuracion(String duracion) {
         this.duracion = duracion;
     }
 

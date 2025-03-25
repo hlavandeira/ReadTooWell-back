@@ -1,10 +1,8 @@
 package es.readtoowell.api_biblioteca.service;
 
-import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
 import es.readtoowell.api_biblioteca.mapper.AuthorRequestMapper;
 import es.readtoowell.api_biblioteca.model.AuthorRequest;
 import es.readtoowell.api_biblioteca.model.DTO.AuthorRequestDTO;
-import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
 import es.readtoowell.api_biblioteca.model.RequestBook;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
@@ -18,9 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -35,8 +30,6 @@ public class AuthorRequestService {
     private AuthorRequestRepository requestRepository;
     @Autowired
     private AuthorRequestMapper requestMapper;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private RequestBookRepository requestBookRepository;
 

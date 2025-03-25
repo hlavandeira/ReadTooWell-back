@@ -1,7 +1,6 @@
 package es.readtoowell.api_biblioteca.controller;
 
 import es.readtoowell.api_biblioteca.model.DTO.FormatDTO;
-import es.readtoowell.api_biblioteca.model.Format;
 import es.readtoowell.api_biblioteca.model.User;
 import es.readtoowell.api_biblioteca.service.UserBookFormatService;
 import es.readtoowell.api_biblioteca.service.UserService;

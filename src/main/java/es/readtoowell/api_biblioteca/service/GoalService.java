@@ -1,25 +1,19 @@
 package es.readtoowell.api_biblioteca.service;
 
+import es.readtoowell.api_biblioteca.model.*;
 import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.mapper.GoalMapper;
-import es.readtoowell.api_biblioteca.model.Goal;
-import es.readtoowell.api_biblioteca.model.GoalDuration;
-import es.readtoowell.api_biblioteca.model.GoalType;
-import es.readtoowell.api_biblioteca.model.User;
-import es.readtoowell.api_biblioteca.repository.GoalDurationRepository;
-import es.readtoowell.api_biblioteca.repository.GoalRepository;
-import es.readtoowell.api_biblioteca.repository.GoalTypeRepository;
-import es.readtoowell.api_biblioteca.repository.UserRepository;
+import es.readtoowell.api_biblioteca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,6 +29,8 @@ public class GoalService {
     private GoalTypeRepository typeRepository;
     @Autowired
     private GoalDurationRepository durationRepository;
+    @Autowired
+    private UserLibraryBookRepository libraryRepository;
 
     public Set<GoalDTO> obtenerObjetivosEnCurso(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
@@ -49,7 +45,7 @@ public class GoalService {
         Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser);
 
         return objetivos.stream()
-                .filter(goal -> objetivoCompletado(goal))
+                .filter(this::objetivoCompletado)
                 .map(goalMapper::toDTO)
                 .collect(Collectors.toSet());
     }
@@ -62,10 +58,21 @@ public class GoalService {
     public GoalDTO crearObjetivo(Long idUser, GoalDTO goal) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-        GoalType type = typeRepository.findById(goal.getTipo())
+        GoalType type = typeRepository.findByNombre(goal.getTipo())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de objetivo inválido"));
-        GoalDuration duration = durationRepository.findById(goal.getDuracion())
+        GoalDuration duration = durationRepository.findByNombre(goal.getDuracion())
                 .orElseThrow(() -> new EntityNotFoundException("Duración de objetivo inválida"));
+
+        Set<Goal> objetivos = goalRepository.findByUsuarioId(idUser).stream()
+                .filter(g -> !objetivoCompletado(g))
+                .collect(Collectors.toSet());
+
+        if (objetivos.stream().anyMatch(g ->
+                g.getTipo().getNombre().equals(goal.getTipo()) &&
+                        g.getDuracion().getNombre().equals(goal.getDuracion()))) {
+
+            throw new IllegalArgumentException("Ya existe un objetivo en curso con ese tipo y duración.");
+        }
 
         LocalDate fechaInicio;
         LocalDate fechaFin;
@@ -91,6 +98,9 @@ public class GoalService {
         objetivo.setTipo(type);
 
         objetivo = goalRepository.save(objetivo);
+
+        actualizarObjetivos(idUser, 0);
+
         return goalMapper.toDTO(objetivo);
     }
 
@@ -105,5 +115,31 @@ public class GoalService {
         goalRepository.delete(goal);
 
         return goalMapper.toDTO(goal);
+    }
+
+    public void actualizarObjetivos(Long idUser, int paginas) {
+        Set<Goal> goals = goalRepository.findByUsuarioId(idUser).stream()
+                .filter(goal -> !objetivoCompletado(goal)).collect(Collectors.toSet());
+
+        Set<Book> booksReadYear = libraryRepository.findBooksReadActualYear(idUser);
+        Set<Book> booksReadMonth = libraryRepository.findBooksReadActualMonth(idUser);
+
+        for (Goal goal : goals) {
+            Set<Book> books = goal.getDuracion().getNombre().equals("Anual") ? booksReadYear : booksReadMonth;
+
+            if (goal.getTipo().getNombre().equals("Libros")) {
+                int librosTotal = books.size();
+                goal.setCantidadActual(librosTotal);
+
+            } else if (goal.getTipo().getNombre().equals("Páginas")) {
+                int paginasTotal = books.stream().mapToInt(Book::getNumeroPaginas).sum() + paginas;
+                goal.setCantidadActual(paginasTotal);
+
+            } else {
+                throw new IllegalArgumentException("Tipo de objetivo inválido.");
+            }
+
+            goalRepository.save(goal);
+        }
     }
 }

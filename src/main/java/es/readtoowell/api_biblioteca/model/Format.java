@@ -1,7 +1,6 @@
 package es.readtoowell.api_biblioteca.model;
 
 import jakarta.persistence.*;
-import jdk.jfr.Enabled;
 
 @Entity
 @Table(name = "formato")
