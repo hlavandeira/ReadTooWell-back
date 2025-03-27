@@ -37,6 +37,8 @@ public class UserLibraryBook {
     private double calificacion;
     @Column(name = "reseña", length = 2000)
     private String reseña;
+    @Column(name = "ultima_modificacion")
+    private Date ultimaModificacion;
 
     // Métodos Getters y Setters
     public UserLibraryBookId getId() {
@@ -114,5 +116,12 @@ public class UserLibraryBook {
     }
     public void setReseña(String reseña) {
         this.reseña = reseña;
+    }
+
+    public Date getUltimaModificacion() {
+        return ultimaModificacion;
+    }
+    public void setUltimaModificacion(Date ultimaModificacion) {
+        this.ultimaModificacion = ultimaModificacion;
     }
 }

@@ -197,9 +197,6 @@ public class UserLibraryBookService {
 
         libro = libraryRepository.save(libro);
 
-        if (libro.getEstadoLectura() == ReadingStatus.LEIDO.getValue()) {
-            progresoTotal = 0; // Si se terminó el libro, ya sumará sus páginas directamente
-        }
         if (tipoProgreso.equals("porcentaje")) {
             int paginasLeidas = (int) Math.round((progresoTotal / 100.0) * book.getNumeroPaginas());
             goalService.actualizarObjetivos(user.getId(), paginasLeidas);
