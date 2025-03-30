@@ -2,8 +2,8 @@ package es.readtoowell.api_biblioteca.mapper;
 
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
-import es.readtoowell.api_biblioteca.model.Book;
-import es.readtoowell.api_biblioteca.model.Genre;
+import es.readtoowell.api_biblioteca.model.entity.Book;
+import es.readtoowell.api_biblioteca.model.entity.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,51 +15,63 @@ public class BookMapper {
     @Autowired
     private GenreMapper genreMapper;
 
+    /**
+     * Convierte una instancia de {@code Book} en {@code BookDTO}.
+     *
+     * @param book La entidad {@code Book} a convertir.
+     * @return Una instancia de {@code BookDTO} con los datos del libro.
+     */
     public BookDTO toDTO(Book book) {
         BookDTO dto = new BookDTO();
 
         dto.setId(book.getId());
-        dto.setTitulo(book.getTitulo());
-        dto.setAutor(book.getAutor());
-        dto.setAñoPublicacion(book.getAñoPublicacion());
-        dto.setNumeroPaginas(book.getNumeroPaginas());
-        dto.setEditorial(book.getEditorial());
-        dto.setSinopsis(book.getSinopsis());
-        dto.setPortada(book.getPortada());
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setPublicationYear(book.getPublicationYear());
+        dto.setPageNumber(book.getPageNumber());
+        dto.setPublisher(book.getPublisher());
+        dto.setSynopsis(book.getSynopsis());
+        dto.setCover(book.getCover());
         dto.setIsbn(book.getIsbn());
-        dto.setActivo(book.isActivo());
-        dto.setNumColeccion(book.getNumColeccion());
-        dto.setIdColeccion(book.getIdColeccion());
+        dto.setActive(book.isActive());
+        dto.setNumCollection(book.getNumCollection());
+        dto.setCollectionId(book.getCollectionId());
 
-        Set<GenreDTO> genreDTOs = book.getGeneros()
+        Set<GenreDTO> genreDTOs = book.getGenres()
                 .stream()
                 .map(genreMapper::toDTO)
                 .collect(Collectors.toSet());
-        dto.setGeneros(genreDTOs);
+        dto.setGenres(genreDTOs);
 
         return dto;
     }
 
+    /**
+     * Convierte una instancia de {@code BookDTO} en {@code Book}.
+     *
+     * @param dto El {@code BookDTO} a convertir.
+     * @return Una instancia de {@code Book} con los datos del DTO.
+     */
     public Book toEntity(BookDTO dto) {
         Book book = new Book();
 
         book.setId(dto.getId());
-        book.setTitulo(dto.getTitulo());
-        book.setAutor(dto.getAutor());
-        book.setAñoPublicacion(dto.getAñoPublicacion());
-        book.setNumeroPaginas(dto.getNumeroPaginas());
-        book.setEditorial(dto.getEditorial());
-        book.setSinopsis(dto.getSinopsis());
-        book.setPortada(dto.getPortada());
+        book.setTitle(dto.getTitle());
+        book.setAuthor(dto.getAuthor());
+        book.setPublicationYear(dto.getPublicationYear());
+        book.setPageNumber(dto.getPageNumber());
+        book.setPublisher(dto.getPublisher());
+        book.setSynopsis(dto.getSynopsis());
+        book.setCover(dto.getCover());
         book.setIsbn(dto.getIsbn());
-        book.setActivo(dto.isActivo());
-        book.setNumColeccion(dto.getNumColeccion());
+        book.setActive(dto.isActive());
+        book.setNumCollection(dto.getNumCollection());
 
-        Set<Genre> genres = dto.getGeneros()
+        Set<Genre> genres = dto.getGenres()
                 .stream()
                 .map(genreMapper::toEntity)
                 .collect(Collectors.toSet());
-        book.setGeneros(genres);
+        book.setGenres(genres);
 
         return book;
     }

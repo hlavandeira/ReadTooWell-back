@@ -1,8 +1,7 @@
 package es.readtoowell.api_biblioteca.config;
 
-import es.readtoowell.api_biblioteca.config.security.CustomUserDetails;
-import es.readtoowell.api_biblioteca.model.User;
-import es.readtoowell.api_biblioteca.repository.UserRepository;
+import es.readtoowell.api_biblioteca.model.entity.User;
+import es.readtoowell.api_biblioteca.repository.user.UserRepository;
 import es.readtoowell.api_biblioteca.config.security.JwtFilter;
 import es.readtoowell.api_biblioteca.config.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +25,35 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.List;
 
+/**
+ * Configuración de seguridad para la aplicación.
+ * Define reglas de acceso, autenticación y autorización.
+ */
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
+    /**
+     * Constructor de SecurityConfig.
+     *
+     * @param jwtUtil        Utilidad para gestionar JWT.
+     * @param userRepository Repositorio de usuarios.
+     */
     @Autowired
     public SecurityConfig(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
     }
 
+    /**
+     * Configura la cadena de filtros de seguridad y las reglas de autorización.
+     *
+     * @param http Objeto de configuración de seguridad HTTP.
+     * @return La cadena de filtros de seguridad configurada.
+     * @throws Exception Si ocurre un error en la configuración.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -83,16 +99,33 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Proveedor de codificación de contraseñas.
+     *
+     * @return Instancia de BCryptPasswordEncoder.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Devuelve el AuthenticationManager que gestiona la autenticación de usuarios.
+     *
+     * @param authConfig Configuración de autenticación de Spring Security.
+     * @return Instancia de AuthenticationManager.
+     * @throws Exception Si ocurre un error al obtener el AuthenticationManager.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * Proveedor de autenticación basado en la base de datos.
+     *
+     * @return Proveedor de autenticación.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -101,21 +134,31 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Servicio de detalles de usuario basado en la base de datos.
+     *
+     * @return Implementación de UserDetailsService.
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return correo -> {
-            User user = userRepository.findByCorreo(correo)
+            User user = userRepository.findByEmail(correo)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
             return new CustomUserDetails(
-                    user.getId(), // ✅ Pasamos el ID del usuario
-                    user.getCorreo(),
-                    user.getContraseña(),
+                    user.getId(),
+                    user.getEmail(),
+                    user.getPassword(),
                     List.of(new SimpleGrantedAuthority("ROLE_" + user.getRoleEnum().name()))
             );
         };
     }
 
+    /**
+     * Bean del filtro JWT para ser utilizado en la configuración de seguridad.
+     *
+     * @return Instancia de JwtFilter.
+     */
     @Bean
     public JwtFilter jwtFilter() { // Creamos el Bean de JwtFilter
         return new JwtFilter(jwtUtil, userDetailsService());

@@ -1,27 +1,39 @@
 package es.readtoowell.api_biblioteca.mapper;
 
-import es.readtoowell.api_biblioteca.model.BookListItem;
+import es.readtoowell.api_biblioteca.model.entity.BookListItem;
 import es.readtoowell.api_biblioteca.model.DTO.BookListItemDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BookListItemMapper {
+    /**
+     * Convierte una instancia de {@code BookListItem} en {@code BookListItemDTO}.
+     *
+     * @param item La entidad {@code BookListItem} a convertir.
+     * @return Una instancia de {@code BookListItemDTO} con los datos del libro.
+     */
     public BookListItemDTO toDTO(BookListItem item) {
         BookListItemDTO dto = new BookListItemDTO();
 
         dto.setId(item.getId());
-        dto.setLibro(item.getLibro());
-        dto.setFechaAñadido(item.getFechaAñadido());
+        dto.setBook(item.getBook());
+        dto.setDateAdded(item.getDateAdded());
 
         return dto;
     }
 
+    /**
+     * Convierte una instancia de {@code BookListItemDTO} en {@code BookListItem}.
+     *
+     * @param dto El {@code BookListItemDTO} a convertir.
+     * @return Una instancia de {@code BookListItem} con los datos del DTO.
+     */
     public BookListItem toEntity(BookListItemDTO dto) {
         BookListItem item = new BookListItem();
 
         item.setId(dto.getId());
-        item.setLibro(dto.getLibro());
-        item.setFechaAñadido(dto.getFechaAñadido());
+        item.setBook(dto.getBook());
+        item.setDateAdded(dto.getDateAdded());
 
         return item;
     }

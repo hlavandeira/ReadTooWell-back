@@ -1,24 +1,51 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
-import es.readtoowell.api_biblioteca.model.User;
+import es.readtoowell.api_biblioteca.model.entity.User;
 
 import java.util.Set;
 
+/**
+ * DTO que representa a un autor y los libros escritos por este.
+ */
 public class AuthorDTO {
-    private User autor;
-    private Set<BookDTO> libros;
+    private User author;
+    private Set<BookDTO> books;
 
-    public User getAutor() {
-        return autor;
-    }
-    public void setAutor(User autor) {
-        this.autor = autor;
+    // Métodos Getters y Setters
+
+    /**
+     * Devuelve el autor.
+     *
+     * @return Autor
+     */
+    public User getAuthor() {
+        return author;
     }
 
-    public Set<BookDTO> getLibros() {
-        return libros;
+    /**
+     * Establece un valor para el autor.
+     *
+     * @param author Nuevo autor
+     */
+    public void setAuthor(User author) {
+        this.author = author;
     }
-    public void setLibros(Set<BookDTO> libros) {
-        this.libros = libros;
+
+    /**
+     * Devuelve los libros escritos por un usuario autor.
+     *
+     * @return Lista de libros escritos por el autor
+     */
+    public Set<BookDTO> getBooks() {
+        return books;
+    }
+
+    /**
+     * Establece valores para los libros escritos por el autor
+     *
+     * @param books Lista de nuevos libros escritos por el autor
+     */
+    public void setBooks(Set<BookDTO> books) {
+        this.books = books;
     }
 }

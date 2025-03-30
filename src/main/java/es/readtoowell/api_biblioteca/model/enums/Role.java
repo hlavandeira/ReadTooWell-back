@@ -1,5 +1,8 @@
 package es.readtoowell.api_biblioteca.model.enums;
 
+/**
+ * Enumeración que representa los posibles roles de los usuarios.
+ */
 public enum Role {
     USER(0), AUTHOR(1), ADMIN(2);
 

@@ -1,84 +1,187 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import es.readtoowell.api_biblioteca.model.UserLibraryBookId;
+import es.readtoowell.api_biblioteca.model.entity.id.UserLibraryBookId;
 
 import java.util.Date;
 
+/**
+ * DTO que representa los detalles de un libro de la bilbioteca de un usuario.
+ */
 public class UserLibraryBookDTO {
     private UserLibraryBookId id;
-    private BookDTO libro;
-    private int estadoLectura;
+    private BookDTO book;
+    private int readingStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
-    private Date fechaInicio;
+    private Date dateStart;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
-    private Date fechaFin;
-    private int progreso;
-    private String tipoProgreso;
-    private double calificacion;
-    private String reseña;
+    private Date dateFinish;
+    private int progress;
+    private String progressType;
+    private double rating;
+    private String review;
 
     // Métodos Getters y Setters
+
+    /**
+     * Devuelve el identificador del libro de bibliteca.
+     *
+     * @return ID del libro de biblioteca
+     */
     public UserLibraryBookId getId() {
         return id;
     }
+
+    /**
+     * Establece un valor para el identificador del libro de biblioteca.
+     *
+     * @param id Nuevo ID del libro de biblioteca
+     */
     public void setId(UserLibraryBookId id) {
         this.id = id;
     }
 
-    public BookDTO getLibro() {
-        return libro;
-    }
-    public void setLibro(BookDTO libro) {
-        this.libro = libro;
-    }
-
-    public int getEstadoLectura() {
-        return estadoLectura;
-    }
-    public void setEstadoLectura(int estadoLectura) {
-        this.estadoLectura = estadoLectura;
+    /**
+     * Devuelve el libro de la biblioteca.
+     *
+     * @return Libro de la biblioteca
+     */
+    public BookDTO getBook() {
+        return book;
     }
 
-    public Date getFechaInicio() {
-        return fechaInicio;
-    }
-    public void setFechaInicio(Date fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public Date getFechaFin() {
-        return fechaFin;
-    }
-    public void setFechaFin(Date fechaFin) {
-        this.fechaFin = fechaFin;
+    /**
+     * Establece un valor para el libro de la biblioteca.
+     *
+     * @param book Nuevo libro de la biblioteca
+     */
+    public void setBook(BookDTO book) {
+        this.book = book;
     }
 
-    public int getProgreso() {
-        return progreso;
-    }
-    public void setProgreso(int progreso) {
-        this.progreso = progreso;
-    }
-
-    public String getTipoProgreso() {
-        return tipoProgreso;
-    }
-    public void setTipoProgreso(String tipoProgreso) {
-        this.tipoProgreso = tipoProgreso;
+    /**
+     * Devuelve el estado de lectura del libro.
+     *
+     * @return Estado de lectura del libro
+     */
+    public int getReadingStatus() {
+        return readingStatus;
     }
 
-    public double getCalificacion() {
-        return calificacion;
-    }
-    public void setCalificacion(double calificacion) {
-        this.calificacion = calificacion;
+    /**
+     * Establece un valor para el estado de lectura del libro.
+     *
+     * @param readingStatus Nuevo estado de lectura
+     */
+    public void setReadingStatus(int readingStatus) {
+        this.readingStatus = readingStatus;
     }
 
-    public String getReseña() {
-        return reseña;
+    /**
+     * Devuelve la fecha de inicio de lectura del libro.
+     *
+     * @return Fecha de inicio del libro
+     */
+    public Date getDateStart() {
+        return dateStart;
     }
-    public void setReseña(String reseña) {
-        this.reseña = reseña;
+
+    /**
+     * Establece un valor para la fecha de inicio de lectura del libro.
+     *
+     * @param dateStart Nueva fecha de inicio
+     */
+    public void setDateStart(Date dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    /**
+     * Devuelve la fecha de fin de lectura del libro.
+     *
+     * @return Fecha de fin de lectura
+     */
+    public Date getDateFinish() {
+        return dateFinish;
+    }
+
+    /**
+     * Establece un valor para le fecha de fin de lectura del libro.
+     *
+     * @param dateFinish Nueva fecha de fin
+     */
+    public void setDateFinish(Date dateFinish) {
+        this.dateFinish = dateFinish;
+    }
+
+    /**
+     * Devuelve el progreso de lectura del libro.
+     *
+     * @return Progreso de lectura
+     */
+    public int getProgress() {
+        return progress;
+    }
+
+    /**
+     * Establece un valor para el progreso de lectura del libro.
+     *
+     * @param progress Nuevo progreso de lectura del libro
+     */
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    /**
+     * Devuelve el tipo de progreso de lectura del libro.
+     *
+     * @return Tipo de progreso de lectura
+     */
+    public String getProgressType() {
+        return progressType;
+    }
+
+    /**
+     * Establece un valor para el tipo de progreso de lectura del libro.
+     *
+     * @param progressType Nuevo tipo de progreso de lectura
+     */
+    public void setProgressType(String progressType) {
+        this.progressType = progressType;
+    }
+
+    /**
+     * Devuelve la calificación del usuario para el libro.
+     *
+     * @return Calificación del usuario para el libro
+     */
+    public double getRating() {
+        return rating;
+    }
+
+    /**
+     * Establece un valor para la calificación del usuario para el libro.
+     *
+     * @param rating Nueva calificación del usuario para el libro
+     */
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    /**
+     * Devuelve la reseña del usuario para el libro.
+     *
+     * @return Reseña del usuario para el libro
+     */
+    public String getReview() {
+        return review;
+    }
+
+    /**
+     * Establece un valor para la reseña del usuario para el libro.
+     *
+     * @param review Nueva reseña del usuario para el libro
+     */
+    public void setReview(String review) {
+        this.review = review;
     }
 }

@@ -1,7 +1,10 @@
 package es.readtoowell.api_biblioteca.model.enums;
 
+/**
+ * Enumeración que representa los posibles estados de las solicitudes de autor.
+ */
 public enum RequestStatus {
-    PENDIENTE(0), ACEPTADA(1), RECHAZADA(2);
+    PENDING(0), ACCEPETD(1), REJECTED(2);
 
     private final int value;
 

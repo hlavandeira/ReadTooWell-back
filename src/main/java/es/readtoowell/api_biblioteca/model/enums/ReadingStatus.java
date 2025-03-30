@@ -1,9 +1,11 @@
 package es.readtoowell.api_biblioteca.model.enums;
 
+/**
+ * Enumeración que representa los posibles estados de lectura de un libro.
+ */
 public enum ReadingStatus {
-
-    PENDIENTE(0), LEYENDO(1), LEIDO(2),
-    PAUSADO(3), ABANDONADO(4);
+    PENDING(0), READING(1), READ(2),
+    PAUSED(3), ABANDONED(4);
 
     private final int value;
 

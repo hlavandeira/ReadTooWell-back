@@ -1,7 +1,7 @@
 package es.readtoowell.api_biblioteca.mapper;
 
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
-import es.readtoowell.api_biblioteca.model.UserLibraryBook;
+import es.readtoowell.api_biblioteca.model.entity.UserLibraryBook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,34 +10,46 @@ public class UserLibraryBookMapper {
     @Autowired
     private BookMapper bookMapper;
 
+    /**
+     * Convierte una instancia de {@code UserLibraryBook} en {@code UserLibraryBookDTO}.
+     *
+     * @param lib La entidad {@code UserLibraryBook} a convertir.
+     * @return Una instancia de {@code UserLibraryBookDTO} con los datos del libro.
+     */
     public UserLibraryBookDTO toDTO(UserLibraryBook lib) {
         UserLibraryBookDTO dto = new UserLibraryBookDTO();
 
         dto.setId(lib.getId());
-        dto.setLibro(bookMapper.toDTO(lib.getLibro()));
-        dto.setFechaInicio(lib.getFechaInicio());
-        dto.setFechaFin(lib.getFechaFin());
-        dto.setCalificacion(lib.getCalificacion());
-        dto.setReseña(lib.getReseña());
-        dto.setEstadoLectura(lib.getEstadoLectura());
-        dto.setProgreso(lib.getProgreso());
-        dto.setTipoProgreso(lib.getTipoProgreso());
+        dto.setBook(bookMapper.toDTO(lib.getBook()));
+        dto.setDateStart(lib.getDateStart());
+        dto.setDateFinish(lib.getDateFinish());
+        dto.setRating(lib.getRating());
+        dto.setReview(lib.getReview());
+        dto.setReadingStatus(lib.getReadingStatus());
+        dto.setProgress(lib.getProgress());
+        dto.setProgressType(lib.getProgressType());
 
         return dto;
     }
 
+    /**
+     * Convierte una instancia de {@code UserLibraryBookDTO} en {@code UserLibraryBook}.
+     *
+     * @param dto El {@code UserLibraryBookDTO} a convertir.
+     * @return Una instancia de {@code UserLibraryBook} con los datos del DTO.
+     */
     public UserLibraryBook toEntity(UserLibraryBookDTO dto) {
         UserLibraryBook lib = new UserLibraryBook();
 
         lib.setId(dto.getId());
-        lib.setLibro(bookMapper.toEntity(dto.getLibro()));
-        lib.setFechaInicio(dto.getFechaInicio());
-        lib.setFechaFin(dto.getFechaFin());
-        lib.setCalificacion(dto.getCalificacion());
-        lib.setReseña(dto.getReseña());
-        lib.setEstadoLectura(dto.getEstadoLectura());
-        lib.setProgreso(dto.getProgreso());
-        lib.setTipoProgreso(dto.getTipoProgreso());
+        lib.setBook(bookMapper.toEntity(dto.getBook()));
+        lib.setDateStart(dto.getDateStart());
+        lib.setDateFinish(dto.getDateFinish());
+        lib.setRating(dto.getRating());
+        lib.setReview(dto.getReview());
+        lib.setReadingStatus(dto.getReadingStatus());
+        lib.setProgress(dto.getProgress());
+        lib.setProgressType(dto.getProgressType());
 
         return lib;
     }

@@ -1,7 +1,10 @@
 package es.readtoowell.api_biblioteca.model.enums;
 
+/**
+ * Enumeración que representa los posibles estados de las sugerencias de libros.
+ */
 public enum SuggestionStatus {
-    PENDIENTE(0), ACEPTADA(1), AÑADIDA(2), RECHAZADA(3);
+    PENDING(0), ACCEPTED(1), ADDED(2), REJECTED(3);
 
     private final int value;
 
