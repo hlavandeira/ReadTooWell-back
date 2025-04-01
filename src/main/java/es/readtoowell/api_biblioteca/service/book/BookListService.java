@@ -1,0 +1,188 @@
+package es.readtoowell.api_biblioteca.service.book;
+
+import es.readtoowell.api_biblioteca.mapper.BookListMapper;
+import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
+import es.readtoowell.api_biblioteca.model.entity.*;
+import es.readtoowell.api_biblioteca.model.entity.id.BookListItemId;
+import es.readtoowell.api_biblioteca.repository.book.BookListRepository;
+import es.readtoowell.api_biblioteca.repository.book.BookRepository;
+import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+public class BookListService {
+    @Autowired
+    private BookListRepository listRepository;
+    @Autowired
+    private BookListMapper listMapper;
+    @Autowired
+    private GenreRepository genreRepository;
+    @Autowired
+    private BookRepository bookRepository;
+
+    /**
+     * Devuelve las listas de un usuario.
+     *
+     * @param idUser ID del usuario
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con las listas resultantes como DTOs
+     */
+    public Page<BookListDTO> getListsByUser(Long idUser, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BookList> lists = listRepository.findByUserId(idUser, pageable);
+
+        return lists.map(listMapper::toDTO);
+    }
+
+    /**
+     * Crea una nueva lista para un usuario.
+     *
+     * @param user Usuario que crea la lista
+     * @param dto DTO con los datos de la lista a crear
+     * @param genreIds Lista con los IDs de los géneros asociados a la lista
+     * @return DTO con los detalles de la lista creada
+     */
+    public BookListDTO createList(User user, BookListDTO dto, Set<Long> genreIds) {
+        BookList lista = new BookList();
+
+        lista.setName(dto.getName());
+        lista.setDescription(dto.getDescription());
+        lista.setUser(user);
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+
+        lista.setGenres(genres);
+
+        lista = listRepository.save(lista);
+
+        return listMapper.toDTO(lista);
+    }
+
+    /**
+     * Actualiza los datos de una lista de un usuario.
+     *
+     * @param idUser ID del usuario propietario de la lista
+     * @param idList ID de la lista a actualizar
+     * @param dto DTO con los datos a actualizar en la lista
+     * @param genreIds Lista con los IDs de los géneros asociados a la lista
+     * @return DTO con los detalles de la lista actualizada
+     * @throws EntityNotFoundException La lista no existe
+     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     */
+    public BookListDTO updateList(Long idUser, Long idList, BookListDTO dto, Set<Long> genreIds) {
+        BookList lista = listRepository.findByIdWithRelations(idList)
+                .orElseThrow(() -> new EntityNotFoundException("La lista con ID " + idList + " no existe."));
+
+        if (!lista.getUser().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para editar esta lista.");
+        }
+
+        lista.setName(dto.getName());
+        lista.setDescription(dto.getDescription());
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        lista.setGenres(genres);
+
+        lista = listRepository.save(lista);
+
+        return listMapper.toDTO(lista);
+    }
+
+    /**
+     * Borra una lista de un usuario.
+     *
+     * @param idUser ID del usuario propietario de la lista
+     * @param idList ID de la lista a borrar
+     * @return DTO con los datos de la lista borrada
+     * @throws EntityNotFoundException La lista no existe
+     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     */
+    public BookListDTO deleteList(Long idUser, Long idList) {
+        BookList list = listRepository.findByIdWithRelations(idList)
+                .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
+
+        if (!list.getUser().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para borrar esta lista.");
+        }
+
+        listRepository.delete(list);
+
+        return listMapper.toDTO(list);
+    }
+
+    /**
+     * Añade un libro a una lista de un usuario.
+     *
+     * @param idUser ID del usuario propietario de la lista
+     * @param idList ID de la lista
+     * @param idBook ID del libro que se va a añadir
+     * @return DTO con los datos de la lista actualizada
+     * @throws EntityNotFoundException La lista o el libro no existen
+     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     */
+    public BookListDTO addBookToList(Long idUser, Long idList, Long idBook) {
+        BookList list = listRepository.findByIdWithRelations(idList)
+                .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
+
+        if (!list.getUser().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para acceder a esta lista");
+        }
+
+        Book book = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idList + " no encontrado."));
+
+        if (!list.getBooks().contains(book)) {
+            BookListItem addedBook = new BookListItem();
+            addedBook.setList(list);
+            addedBook.setBook(book);
+            addedBook.setDateAdded(Date.valueOf(LocalDate.now()));
+            addedBook.setId(new BookListItemId(list.getId(), book.getId()));
+
+            list.getBooks().add(addedBook);
+            list = listRepository.save(list);
+        }
+
+        return listMapper.toDTO(list);
+    }
+
+    /**
+     * Elimina un libro de una lista de un usuario.
+     *
+     * @param idUser ID del usuario propietario de la lista
+     * @param idList ID de la lista
+     * @param idBook ID del libro que se va a eliminar
+     * @return DTO con los datos de la lista actualizada
+     * @throws EntityNotFoundException La lista o el libro no existen
+     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     */
+    public BookListDTO deleteBookFromList(Long idUser, Long idList, Long idBook) {
+        BookList list = listRepository.findByIdWithRelations(idList)
+                .orElseThrow(() -> new EntityNotFoundException("Lista con ID " + idList + " no encontrada."));
+
+        if (!list.getUser().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para acceder a esta lista");
+        }
+
+        Book book = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idBook + " no encontrado."));
+
+        if (list.getBooks().contains(book)) {
+            list.getBooks().remove(book);
+            list = listRepository.save(list);
+        }
+
+        return listMapper.toDTO(list);
+    }
+}

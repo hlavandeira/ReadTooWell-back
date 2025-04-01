@@ -1,0 +1,321 @@
+package es.readtoowell.api_biblioteca.service.book;
+
+import es.readtoowell.api_biblioteca.mapper.*;
+import es.readtoowell.api_biblioteca.model.DTO.*;
+import es.readtoowell.api_biblioteca.model.entity.*;
+import es.readtoowell.api_biblioteca.model.enums.Role;
+import es.readtoowell.api_biblioteca.repository.book.BookListItemRepository;
+import es.readtoowell.api_biblioteca.repository.book.BookRepository;
+import es.readtoowell.api_biblioteca.repository.book.CollectionRepository;
+import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
+import es.readtoowell.api_biblioteca.repository.library.UserLibraryBookRepository;
+import es.readtoowell.api_biblioteca.repository.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+public class BookService {
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private GenreRepository genreRepository;
+    @Autowired
+    private CollectionRepository collectionRepository;
+    @Autowired
+    private BookMapper bookMapper;
+    @Autowired
+    private GenreMapper genreMapper;
+    @Autowired
+    private UserLibraryBookRepository libraryRepository;
+    @Autowired
+    private BookListItemRepository listItemRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * Devuelve todos los libros.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los libros resultantes como DTOs
+     */
+    public Page<BookDTO> getAllBooks(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publicationYear"));
+        return bookRepository.findAll(pageable).map(bookMapper::toDTO);
+    }
+
+    /**
+     * Devuelve un libro según su ID.
+     *
+     * @param idBook ID del libro a devolver
+     * @return DTO con los datos del libro
+     * @throws EntityNotFoundException El libro no existe
+     */
+    public BookDTO getBook(Long idBook) {
+        Book book = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));;
+        return bookMapper.toDTO(book);
+    }
+
+    /**
+     * Crea un nuevo libro.
+     *
+     * @param bookDTO DTO con los datos del libro a añadir
+     * @param genreIds Lista con los IDs de los géneros asociados al libro
+     * @return DTO con los datos del libro creado
+     */
+    public BookDTO createBook(BookDTO bookDTO, Set<Long> genreIds) {
+        Book book = new Book();
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        Set<GenreDTO> genreDTOs = genres.stream()
+                .map(genreMapper::toDTO)
+                .collect(Collectors.toSet());
+
+        bookDTO.setGenres(genreDTOs);
+        fillBookData(null, book, bookDTO);
+
+        book = bookRepository.save(book);
+
+        return bookMapper.toDTO(book);
+    }
+
+    /**
+     * Actualiza los datos de un libro.
+     *
+     * @param idBook ID del libro a actualizar
+     * @param book DTO con los datos a actualizar del libro
+     * @param genreIds Lista con los IDs de los géneros asociados al libro
+     * @return DTO con los datos del libro actualizado
+     * @throws EntityNotFoundException El libro no existe
+     */
+    public BookDTO updateBook(Long idBook, BookDTO book, Set<Long> genreIds) {
+        Book libro = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+
+        Set<GenreDTO> genreDTOs = genres.stream()
+                .map(genreMapper::toDTO)
+                .collect(Collectors.toSet());
+
+        book.setGenres(genreDTOs);
+        fillBookData(idBook, libro, book);
+
+        libro = bookRepository.save(libro);
+
+        return bookMapper.toDTO(libro);
+    }
+
+    /**
+     * Rellena los campos de una entidad {@code Book} con los datos de un {@code BookDTO}.
+     *
+     * @param idBook ID del libro
+     * @param book Libro como entidad
+     * @param bookDTO Libro como DTO
+     * @throws IllegalArgumentException Ya existe un libro con el ISBN indicado
+     * @throws EntityNotFoundException La colección o algún género no existe
+     */
+    private void fillBookData(Long idBook, Book book, BookDTO bookDTO) {
+        if (bookDTO.getIsbn() != null && !bookDTO.getIsbn().isEmpty()) {
+            if (idBook == null) { // Se está creando un libro
+                if (bookRepository.findByIsbn(bookDTO.getIsbn()).isPresent()) {
+                    throw new IllegalArgumentException("El ISBN ya está en uso.");
+                }
+            } else { // Se está editando un libro
+                if (bookRepository.findByIsbnAndIdNot(bookDTO.getIsbn(), idBook).isPresent()) {
+                    throw new IllegalArgumentException("El ISBN ya está en uso por otro libro.");
+                }
+            }
+            book.setIsbn(bookDTO.getIsbn());
+        }
+
+        book.setTitle(bookDTO.getTitle());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setPublicationYear(bookDTO.getPublicationYear());
+        book.setPageNumber(bookDTO.getPageNumber());
+        book.setPublisher(bookDTO.getPublisher());
+        book.setSynopsis(bookDTO.getSynopsis());
+        book.setCover(bookDTO.getCover());
+        book.setNumCollection(bookDTO.getNumCollection());
+
+        book.setActive(true);
+
+        // Se comprueba si pertenece a una colección
+        if (bookDTO.getCollectionId() != null) {
+            Collection collection = collectionRepository.findById(bookDTO.getCollectionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Colección no encontrada con ID: " +
+                            bookDTO.getCollectionId()));
+            book.setCollection(collection);
+        } else {
+            book.setCollection(null);
+        }
+
+        if (bookDTO.getGenres() != null && !bookDTO.getGenres().isEmpty()) {
+            Set<Long> genreIds = bookDTO.getGenres()
+                    .stream()
+                    .map(GenreDTO::getId)
+                    .collect(Collectors.toSet());
+
+            Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+
+            if (genres.size() != genreIds.size()) {
+                throw new EntityNotFoundException("Algunos géneros no existen");
+            }
+
+            book.setGenres(genres);
+        }
+    }
+
+    /**
+     * Elimina un libro. Se realiza un borrado lógico.
+     *
+     * @param book DTO con los datos del libro a borrar
+     * @return DTO con los datos del libro borrado
+     */
+    public BookDTO deleteBook(BookDTO book) {
+        Book libro = bookMapper.toEntity(book);
+        libro.delete();
+        libro = bookRepository.save(libro);
+        return bookMapper.toDTO(libro);
+    }
+
+    /**
+     * Busca libros por su título, autor o colección.
+     * Permite filtrar por número de páginas y por año de publicación.
+     *
+     * @param searchString Cadena que se compara con el título, autor o colección
+     * @param minPages Mínimo de páginas para filtrar
+     * @param maxPages Máximo de páginas para filtrar
+     * @param minYear Año de publicación mínimo para filtrar
+     * @param maxYear Año de publicación máximo para filtrar
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los libros resultantes como DTOs
+     */
+    public Page<BookDTO> filterBooks(String searchString, Integer minPages, Integer maxPages,
+                                  Integer minYear, Integer maxYear, int page, int size) {
+        Page<Book> librosFiltrados = bookRepository.filterBooks(searchString, minPages, maxPages, minYear,
+                maxYear, PageRequest.of(page, size));
+
+        return librosFiltrados.map(bookMapper::toDTO);
+    }
+
+    /**
+     * Busca los libros de un género específico.
+     *
+     * @param idGenre ID del género que se busca
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los libros resultantes como DTOs
+     */
+    public Page<BookDTO> filterBooksByGenre(Long idGenre, int page, int size) {
+        Page<Book> librosFiltrados = bookRepository.findByGenresId(idGenre, PageRequest.of(page, size));
+
+        return librosFiltrados.map(bookMapper::toDTO);
+    }
+
+    /**
+     * Devuelve los detalles completos de un libro para un usuario.
+     * Incluye la calificación, reseña y listas del usuario.
+     *
+     * @param idBook ID del libro
+     * @param user Usuario que consulta los detalles
+     * @return DTO con los detalles completos del libro
+     * @throws EntityNotFoundException El libro o la colección no existen
+     */
+    public BookDetailsDTO getBookDetails(Long idBook, User user) {
+        Book libro = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
+
+        BookDetailsDTO details = new BookDetailsDTO();
+
+        details.setBook(bookMapper.toDTO(libro));
+
+        Optional<UserLibraryBook> libroGuardado = libraryRepository.findByUserAndBook(user, libro);
+        if (libroGuardado.isPresent()) {
+            details.setSaved(true);
+            UserLibraryBook lib = libroGuardado.get();
+            details.setReadingStatus(lib.getReadingStatus());
+            details.setRating(lib.getRating());
+            details.setReview(lib.getReview());
+            details.setDateStart(lib.getDateStart());
+            details.setDateFinish(lib.getDateFinish());
+        } else {
+            details.setReadingStatus(0);
+            details.setRating(0);
+        }
+
+        if (libro.getCollectionId() != null) {
+            Collection collection = collectionRepository.findById(libro.getCollectionId())
+                    .orElseThrow(() -> new EntityNotFoundException("La colección con ID " +
+                            libro.getCollectionId() + " no existe."));
+            details.setCollectionName(collection.getName()); // Nombre, el número se guarda en el libro
+        }
+
+        double calificacionMedia = libraryRepository.findAverageRatingByBookId(libro.getId());
+        details.setAverageRating(BigDecimal.valueOf(calificacionMedia)
+                .setScale(2, RoundingMode.HALF_UP).doubleValue());
+
+        Set<UserLibraryBook> reviews = libraryRepository.findAllWithReviewByBookIdExcludingUser(libro.getId(),
+                                                                                                user.getId());
+        Set<ReviewDTO> otherReviews = reviews.stream().map(r -> {
+            ReviewDTO review = new ReviewDTO();
+            review.setUsername(r.getUser().getUsername());
+            review.setProfileName(r.getUser().getProfileName());
+            review.setRating(r.getRating());
+            review.setReview(r.getReview());
+            return review;
+        }).collect(Collectors.toSet());
+        details.setOtherUsersReviews(otherReviews);
+
+        Set<BookList> listas = listItemRepository.findAllListsByUserIdAndBookId(user.getId(), libro.getId());
+        Set<SimpleBookListDTO> listasDTO = listas.stream().map(lista -> {
+                SimpleBookListDTO simpleList = new SimpleBookListDTO();
+                simpleList.setId(lista.getId());
+                simpleList.setName(lista.getName());
+                return simpleList;
+        }).collect(Collectors.toSet());
+        details.setLists(listasDTO);
+
+        return details;
+    }
+
+    /**
+     * Devuelve los libros escritos por un autor que tiene cuenta de usuario.
+     *
+     * @param idAuthor ID de usuario del autor
+     * @return DTO con los datos del autor y sus libros escritos
+     * @throws EntityNotFoundException El usuario no existe
+     * @throws IllegalStateException El usuario no tiene el rol de autor
+     */
+    public AuthorDTO getBooksByAuthor(Long idAuthor) {
+        User author = userRepository.findById(idAuthor)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idAuthor + " no existe."));
+        if (author.getRoleEnum() != Role.AUTHOR) {
+            throw new IllegalStateException("El usuario con ID " + idAuthor + " no es un autor.");
+        }
+
+        Set<Book> libros = bookRepository.findBooksByAuthorId(idAuthor);
+
+        Set<BookDTO> librosDTO = libros.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+
+        AuthorDTO dto = new AuthorDTO();
+        dto.setAuthor(author);
+        dto.setBooks(librosDTO);
+
+        return dto;
+    }
+}
