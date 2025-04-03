@@ -2,7 +2,7 @@ package es.readtoowell.api_biblioteca.controller.auth;
 
 import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
 import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
-import es.readtoowell.api_biblioteca.model.DTO.RegisteredDTO;
+import es.readtoowell.api_biblioteca.model.DTO.AuthenticatedUserDTO;
 import es.readtoowell.api_biblioteca.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,13 @@ public class AuthenticationController {
      * @return Token de sesión para el usuario
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginDTO> login(@Valid @RequestBody LoginDTO login) {
-        String token = authService.login(login);
-        login.setToken(token);
+    public ResponseEntity<AuthenticatedUserDTO> login(@Valid @RequestBody LoginDTO login) {
+        AuthenticatedUserDTO user = authService.login(login);
 
-        if (token != null) {
-            return ResponseEntity.ok(login);
+        if (user.getToken() != null) {
+            return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(user);
         }
     }
 
@@ -44,8 +43,8 @@ public class AuthenticationController {
      * @return DTO con los datos del usuario registrado
      */
     @PostMapping("/register")
-    public ResponseEntity<RegisteredDTO> register(@Valid @RequestBody RegisterDTO register) {
-        RegisteredDTO user = authService.register(register);
+    public ResponseEntity<AuthenticatedUserDTO> register(@Valid @RequestBody RegisterDTO register) {
+        AuthenticatedUserDTO user = authService.register(register);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

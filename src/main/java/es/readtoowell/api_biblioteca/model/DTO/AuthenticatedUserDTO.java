@@ -1,27 +1,27 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
 /**
- * DTO que representa los detalles de un usuario registrado.
+ * DTO que representa los detalles de un usuario autenticado.
  */
-public class RegisteredDTO {
+public class AuthenticatedUserDTO {
     private UserDTO user;
     private String token;
 
     // Métodos Getters y Setters
 
     /**
-     * Devuelve el usuario registrado.
+     * Devuelve el usuario autenticado.
      *
-     * @return Usuario registrado
+     * @return Usuario autenticado
      */
     public UserDTO getUser() {
         return user;
     }
 
     /**
-     * Establece un valor para el usuario registrado.
+     * Establece un valor para el usuario autenticado.
      *
-     * @param user Nuevo usuario registrado
+     * @param user Nuevo usuario autenticado
      */
     public void setUser(UserDTO user) {
         this.user = user;
