@@ -3,10 +3,7 @@ package es.readtoowell.api_biblioteca.service.library;
 import es.readtoowell.api_biblioteca.mapper.GenreMapper;
 import es.readtoowell.api_biblioteca.mapper.GoalMapper;
 import es.readtoowell.api_biblioteca.mapper.UserLibraryBookMapper;
-import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
-import es.readtoowell.api_biblioteca.model.DTO.SimpleBookDTO;
-import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
-import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
+import es.readtoowell.api_biblioteca.model.DTO.*;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.entity.id.UserLibraryBookId;
 import es.readtoowell.api_biblioteca.model.enums.ReadingStatus;
@@ -143,7 +140,7 @@ public class UserLibraryBookService {
      * @return DTO con los datos del libro actualizado
      * @throws ValidationException La calificación es inválida
      */
-    public UserLibraryBookDTO rateBook(Long idBook, User user, double calificacion) {
+    public RatingDTO rateBook(Long idBook, User user, double calificacion) {
         if (calificacion < 0.5 || calificacion > 5 || calificacion % 0.5 != 0) { // Comprobar que la nota sea válida
             throw new ValidationException("La calificación debe estar entre 0.5 y 5, en incrementos de 0.5.");
         }
@@ -163,7 +160,11 @@ public class UserLibraryBookService {
 
         libro = libraryRepository.save(libro);
 
-        return libraryMapper.toDTO(libro);
+        RatingDTO ratedBook = new RatingDTO();
+        ratedBook.setLibraryBook(libraryMapper.toDTO(libro));
+        ratedBook.setAverageRating(libraryRepository.findAverageRatingByBookId(idBook));
+
+        return ratedBook;
     }
 
     /**

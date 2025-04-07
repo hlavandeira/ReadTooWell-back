@@ -14,7 +14,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 3600000; // 1 hora
+    private static final long EXPIRATION_TIME = 7200000; // 2 horas
 
     /**
      * Genera un token JWT basado en el correo electrónico del usuario.

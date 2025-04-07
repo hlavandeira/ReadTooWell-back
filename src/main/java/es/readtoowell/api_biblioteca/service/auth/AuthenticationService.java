@@ -90,4 +90,14 @@ public class AuthenticationService {
 
         return authUser;
     }
+
+    /**
+     * Valida el token para comprobar si la sesión es válida o inválida.
+     *
+     * @param token Token a validar
+     * @return 'true' si el token es válido, 'false' en caso contrario
+     */
+    public boolean validateToken(String token) {
+        return jwtUtil.validateToken(token);
+    }
 }

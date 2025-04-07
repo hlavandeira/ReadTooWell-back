@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -47,5 +44,23 @@ public class AuthenticationController {
         AuthenticatedUserDTO user = authService.register(register);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    /**
+     * Valida si el token de sesión es válido o inválido.
+     *
+     * @param authHeader Cabecera de autenticación, la cual contiene el token
+     * @return Token validado y el estado HTTP correspondiente
+     */
+    @GetMapping("/validar")
+    public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        boolean isValid = authService.validateToken(token);
+
+        if (isValid) {
+            return ResponseEntity.ok(token);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(token);
+        }
     }
 }
