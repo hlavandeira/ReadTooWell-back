@@ -53,10 +53,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             and (:maxYear is null or b.publicationYear <= :maxYear)""")
     Page<Book> filterBooks(
             @Param("searchString") String searchString,
-            @Param("minPags") Integer minPages,
-            @Param("maxPags") Integer maxPages,
-            @Param("minAño") Integer minYear,
-            @Param("maxAño") Integer maxYear,
+            @Param("minPages") Integer minPages,
+            @Param("maxPages") Integer maxPages,
+            @Param("minYear") Integer minYear,
+            @Param("maxYear") Integer maxYear,
             Pageable pageable
     );
 
