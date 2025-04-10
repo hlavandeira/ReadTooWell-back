@@ -179,4 +179,32 @@ public class BookController {
 
         return ResponseEntity.ok(author);
     }
+
+    /**
+     * Devuelve los libros escritos por un autor.
+     *
+     * @param authorName Nombre del autor
+     * @return Lista con los libros escritos por el autor
+     */
+    @GetMapping("/libros-autor")
+    public ResponseEntity<Page<BookDTO>> getAllBooksByAuthor(@RequestParam String authorName,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        Page<BookDTO> books = bookService.getAllBooksByAuthor(authorName, page, size);
+
+        return ResponseEntity.ok(books);
+    }
+
+    /**
+     * Devuelve el resto de libros de la colección a la que pertenece un libro.
+     *
+     * @param idBook ID del libro de la colección
+     * @return Lista de libros de la colección, exceptuando el libro indicado
+     */
+    @GetMapping("/coleccion/{idBook}")
+    public ResponseEntity<Set<BookDTO>> getOtherBooksFromCollection(@PathVariable Long idBook) {
+        Set<BookDTO> books = bookService.getOtherBooksFromCollection(idBook);
+
+        return ResponseEntity.ok(books);
+    }
 }

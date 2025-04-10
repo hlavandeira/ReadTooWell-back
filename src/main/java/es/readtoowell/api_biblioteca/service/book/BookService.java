@@ -318,4 +318,32 @@ public class BookService {
 
         return dto;
     }
+
+    /**
+     * Devuelve todos los libros escritos por un autor, dado su nombre.
+     *
+     * @param authorName Nombre del autor
+     * @return Lista con los libros escritos por el autor
+     */
+    public Page<BookDTO> getAllBooksByAuthor(String authorName, int page, int size) {
+        Page<Book> books = bookRepository.findBooksByAuthor(authorName, PageRequest.of(page, size));
+
+        return books.map(bookMapper::toDTO);
+    }
+
+    /**
+     * Devuelve el resto de libros que pertenecen a una colección, sin incluir el libro indicado.
+     *
+     * @param idBook ID del libro
+     * @return Lista con el resto de libros de la colección
+     * @throws EntityNotFoundException El libro no existe
+     */
+    public Set<BookDTO> getOtherBooksFromCollection(Long idBook) {
+        Book libro = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
+
+        Set<Book> librosColeccion = bookRepository.findOtherBooksInSameCollection(idBook);
+
+        return librosColeccion.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+    }
 }

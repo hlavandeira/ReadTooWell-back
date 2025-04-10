@@ -80,4 +80,28 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     WHERE l.id_libro IN (SELECT la.id_libro FROM libro_autor la WHERE la.id_autor = :authorId)
     """, nativeQuery = true) // Query nativa porque libro_autor no existe como entidad
     Set<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
+
+    /**
+     * Devuelve el resto de libros de una colección a la que pertenece el libro indicado.
+     *
+     * @param bookId ID del libro
+     * @return Lista con el resto de libros de la colección
+     */
+    @Query("""
+    SELECT b FROM Book b
+    WHERE b.collection.id = (
+        SELECT b2.collection.id FROM Book b2
+        WHERE b2.id = :bookId AND b2.collection IS NOT NULL
+    )
+    AND b.id <> :bookId
+    """)
+    Set<Book> findOtherBooksInSameCollection(@Param("bookId") Long bookId);
+
+    /**
+     * Devuelve todos los libros escritos por un autor.
+     *
+     * @param author Nombre del autor
+     * @return Página con los libros escritos por el autor
+     */
+    Page<Book> findBooksByAuthor(String author, Pageable pageable);
 }
