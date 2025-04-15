@@ -28,7 +28,7 @@ public class BookList {
     private User user;
     @Column(name = "nombre")
     private String name;
-    @Column(name = "descipcion")
+    @Column(name = "descripcion", length = 2000)
     private String description;
     @ManyToMany
     @JoinTable(name = "genero_lista",

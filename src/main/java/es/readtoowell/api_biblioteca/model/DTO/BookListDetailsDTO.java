@@ -1,23 +1,22 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.data.domain.Page;
 
 import java.util.Set;
 
 /**
- * DTO que representa los detalles de una lista de libros.
+ * DTO que representa los detalles de una lista con paginación para los libros.
  */
-public class BookListDTO {
+public class BookListDetailsDTO {
     private Long id;
-    private UserDTO user;
     @NotBlank(message = "El nombre de la lista no puede ser nulo")
     private String name;
     @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres")
     private String description;
     private Set<GenreDTO> genres;
-    private Set<BookListItemDTO> books;
+    private Page<BookListItemDTO> books;
 
     // Métodos Getters y Setters
 
@@ -37,24 +36,6 @@ public class BookListDTO {
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * Devuelve el usuario propietario de la lista.
-     *
-     * @return Usuario propietario de la lista
-     */
-    public UserDTO getUser() {
-        return user;
-    }
-
-    /**
-     * Establece un valor para el usuario propietario de la lista.
-     *
-     * @param user Nuevo usuario propietario de la lista
-     */
-    public void setUser(UserDTO user) {
-        this.user = user;
     }
 
     /**
@@ -96,37 +77,36 @@ public class BookListDTO {
     /**
      * Devuelve los géneros asociados a la lista.
      *
-     * @return Listado con los géneros asociados a la lista
+     * @return Listado con los géneros asociados
      */
     public Set<GenreDTO> getGenres() {
         return genres;
     }
 
     /**
-     * Establece los géneros asociados a la lista.
+     * Establece los géneros asociados a una lista.
      *
-     * @param genres Nuevos géneros asociados
+     * @param genres Nuevos géneros asociados a la lista
      */
     public void setGenres(Set<GenreDTO> genres) {
         this.genres = genres;
     }
 
     /**
-     * Devuelve los libros pertenecientes a la lista.
+     * Devuelve los libros pertenecientes a una lista.
      *
-     * @return Listado de los libros de la lista
+     * @return Listado con los libros de la lista
      */
-    public Set<BookListItemDTO> getBooks() {
+    public Page<BookListItemDTO> getBooks() {
         return books;
     }
 
     /**
-     * Establece los libros de la lista.
+     * Establece los libros pertenecientes a una lista.
      *
-     * @param books Nuevos libros de la lista
+     * @param books Nuevos libros pertenecientes a la lista
      */
-    public void setBooks(Set<BookListItemDTO> books) {
+    public void setBooks(Page<BookListItemDTO> books) {
         this.books = books;
     }
-
 }

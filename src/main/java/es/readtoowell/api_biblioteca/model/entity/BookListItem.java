@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Entidad que representa los libros pertenecientes a una lista.
@@ -104,5 +105,18 @@ public class BookListItem {
      */
     public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookListItem that = (BookListItem) o;
+        return id.equals(that.id) && list.equals(that.list) && book.equals(that.book);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, list, book);
     }
 }

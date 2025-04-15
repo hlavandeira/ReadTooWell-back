@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class BookDTO {
     @Positive(message="El número de páginas no puede ser un número negativo")
     private int pageNumber;
     private String publisher;
-    @Column(name = "sinopsis", length = 2000)
+    @Size(max = 2000, message = "La sinopsis no puede superar los 2000 caracteres")
     private String synopsis;
     private String cover;
     @Pattern(regexp="^(\\d{10}|\\d{13})$") // El ISBN debe tener 10 o 13 números.

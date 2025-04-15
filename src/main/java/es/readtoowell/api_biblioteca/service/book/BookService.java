@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -345,5 +346,16 @@ public class BookService {
         Set<Book> librosColeccion = bookRepository.findOtherBooksInSameCollection(idBook);
 
         return librosColeccion.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+    }
+
+    /**
+     * Devuelve todos los géneros existentes.
+     *
+     * @return Lista con todos los géneros
+     */
+    public Set<GenreDTO> getGenres() {
+        List<Genre> genres = genreRepository.findAll();
+
+        return genres.stream().map(genreMapper::toDTO).collect(Collectors.toSet());
     }
 }

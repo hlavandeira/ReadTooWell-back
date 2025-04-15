@@ -3,6 +3,7 @@ package es.readtoowell.api_biblioteca.controller.book;
 import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.BookDetailsDTO;
+import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.user.UserService;
 import jakarta.validation.Valid;
@@ -206,5 +207,17 @@ public class BookController {
         Set<BookDTO> books = bookService.getOtherBooksFromCollection(idBook);
 
         return ResponseEntity.ok(books);
+    }
+
+    /**
+     * Devuelve todos los géneros existentes.
+     *
+     * @return Lista con todos los géneros
+     */
+    @GetMapping("/generos")
+    public ResponseEntity<Set<GenreDTO>> getGenres() {
+        Set<GenreDTO> genres = bookService.getGenres();
+
+        return ResponseEntity.ok(genres);
     }
 }

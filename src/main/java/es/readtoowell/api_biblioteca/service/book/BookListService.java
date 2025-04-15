@@ -1,9 +1,16 @@
 package es.readtoowell.api_biblioteca.service.book;
 
+import es.readtoowell.api_biblioteca.mapper.BookListItemMapper;
 import es.readtoowell.api_biblioteca.mapper.BookListMapper;
+import es.readtoowell.api_biblioteca.mapper.BookMapper;
+import es.readtoowell.api_biblioteca.mapper.GenreMapper;
 import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookListDetailsDTO;
+import es.readtoowell.api_biblioteca.model.DTO.BookListItemDTO;
+import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.entity.id.BookListItemId;
+import es.readtoowell.api_biblioteca.repository.book.BookListItemRepository;
 import es.readtoowell.api_biblioteca.repository.book.BookListRepository;
 import es.readtoowell.api_biblioteca.repository.book.BookRepository;
 import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
@@ -12,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +27,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookListService {
@@ -29,7 +38,15 @@ public class BookListService {
     @Autowired
     private GenreRepository genreRepository;
     @Autowired
+    private GenreMapper genreMapper;
+    @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private BookMapper bookMapper;
+    @Autowired
+    private BookListItemRepository bookItemRepository;
+    @Autowired
+    private BookListItemMapper bookItemMapper;
 
     /**
      * Devuelve las listas de un usuario.
@@ -44,6 +61,37 @@ public class BookListService {
         Page<BookList> lists = listRepository.findByUserId(idUser, pageable);
 
         return lists.map(listMapper::toDTO);
+    }
+
+    /**
+     * Devuelve los libros paginados de una lista, junto con los detalles de esta.
+     *
+     * @param idUser ID del usuario
+     * @param idList ID de la lista
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return DTO con los datos de la lista y los libros paginados
+     */
+    public BookListDetailsDTO getListDetails(Long idUser, Long idList, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateAdded"));
+        Page<BookListItem> booksInList = bookItemRepository.findByListId(idList, pageable);
+
+        BookList list = listRepository.findByIdWithRelations(idList)
+                .orElseThrow(() -> new EntityNotFoundException("La lista con ID " + idList + " no existe."));
+
+        if (!list.getUser().getId().equals(idUser)) {
+            throw new AccessDeniedException("No tienes permiso para consultar esta lista.");
+        }
+
+        BookListDetailsDTO listDetails = new BookListDetailsDTO();
+        listDetails.setBooks(booksInList.map(bookItemMapper::toDTO));
+        listDetails.setId(idList);
+        listDetails.setName(list.getName());
+        listDetails.setDescription(list.getDescription());
+        Set<GenreDTO> genres = list.getGenres().stream().map(genreMapper::toDTO).collect(Collectors.toSet());
+        listDetails.setGenres(genres);
+
+        return listDetails;
     }
 
     /**
@@ -178,11 +226,27 @@ public class BookListService {
         Book book = bookRepository.findById(idBook)
                 .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idBook + " no encontrado."));
 
-        if (list.getBooks().contains(book)) {
-            list.getBooks().remove(book);
+        BookListItem item = new BookListItem();
+        item.setId(new BookListItemId(list.getId(), book.getId()));
+        item.setList(list);
+        item.setBook(book);
+        item.setDateAdded(Date.valueOf(LocalDate.now()));
+
+        if (list.getBooks().contains(item)) {
+            list.getBooks().remove(item);
             list = listRepository.save(list);
         }
 
         return listMapper.toDTO(list);
+    }
+
+    public Page<BookListDTO> getListsWithoutBook(Long idBook, Long idUser, int page, int size) {
+        Book book = bookRepository.findById(idBook)
+                .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idBook + " no encontrado."));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BookList> lists = bookItemRepository.findAllListsByUserIdAndBookIdNotIn(idUser, idBook, pageable);
+
+        return lists.map(listMapper::toDTO);
     }
 }
