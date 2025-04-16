@@ -267,11 +267,14 @@ public class UserLibraryBookService {
             throw new IllegalStateException("No se puede actualizar el progreso de un libro que no esté en 'Leyendo'");
         }
 
+        int anteriorProgreso = libro.getProgress();
+        String anteriorTipoProgreso = libro.getProgressType();
+
         int progresoTotal = progreso;
         if (tipoProgreso.equals("porcentaje") && progreso >= 100) {
             progresoTotal = 100;
             libro.setReadingStatus(ReadingStatus.READ.getValue());
-            libro.setDateStart(Date.valueOf(LocalDate.now()));
+            libro.setDateFinish(Date.valueOf(LocalDate.now()));
 
         } else if (tipoProgreso.equals("paginas") && progreso >= book.getPageNumber()) {
             progresoTotal = book.getPageNumber();
@@ -285,12 +288,17 @@ public class UserLibraryBookService {
         libro = libraryRepository.save(libro);
 
         // Actualizar los objetivos en curso con las páginas correspondientes
-        if (tipoProgreso.equals("porcentaje")) {
-            int paginasLeidas = (int) Math.round((progresoTotal / 100.0) * book.getPageNumber());
-            goalService.updateGoals(user.getId(), paginasLeidas);
-        } else if (tipoProgreso.equals("paginas")) {
-            goalService.updateGoals(user.getId(), progresoTotal);
+        if (tipoProgreso.equals(anteriorTipoProgreso)) { // Si es el mismo tipo de progreso, restar
+            progresoTotal -= anteriorProgreso;
+        } else if (tipoProgreso.equals("porcentaje")) { // Si antes eran páginas y ahora porcentaje:
+            int paginasAhora = (int) Math.floor((progresoTotal / 100.0) * book.getPageNumber());
+            progresoTotal = paginasAhora - anteriorProgreso;
+        } else { // Si antes era porcentaje y ahora son páginas:
+            int paginasAntes = (int) Math.floor((anteriorProgreso / 100.0) * book.getPageNumber());
+            progresoTotal -= paginasAntes;
         }
+
+        goalService.updateGoals(user.getId(), progresoTotal);
 
         return libraryMapper.toDTO(libro);
     }
