@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -72,7 +73,15 @@ public class UserLibraryBookService {
             throw new ValidationException("El estado de lectura indicado es inválido.");
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable;
+        if (status == ReadingStatus.READ.getValue()) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateFinish"));
+        } else if (status == ReadingStatus.PENDING.getValue()) {
+            pageable = PageRequest.of(page, size);
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "dateStart"));
+        }
+
         Page<UserLibraryBook> libros = libraryRepository.findByUserAndReadingStatus(user, status, pageable);
 
         return libros.map(libraryMapper::toDTO);
@@ -157,6 +166,10 @@ public class UserLibraryBookService {
 
         libro.setRating(calificacion);
         libro.setReadingStatus(ReadingStatus.READ.getValue());
+        libro.setDateStart(Date.valueOf(LocalDate.now()));
+        libro.setDateFinish(Date.valueOf(LocalDate.now()));
+
+        goalService.updateGoals(user.getId(), 0);
 
         libro = libraryRepository.save(libro);
 
@@ -224,8 +237,8 @@ public class UserLibraryBookService {
 
         if (status == ReadingStatus.READING.getValue()) {
             libro.setDateStart(Date.valueOf(LocalDate.now())); // Si pasa a "Leyendo", actualizar fecha inicio
-        } else if (status == ReadingStatus.READ.getValue() && lastStatus == ReadingStatus.READING.getValue()) {
-            libro.setDateFinish(Date.valueOf(LocalDate.now())); // Si pasa de "Leyendo" a "Leído", actualizar fecha fin
+        } else if (status == ReadingStatus.READ.getValue()) {
+            libro.setDateFinish(Date.valueOf(LocalDate.now())); // Si pasa a "Leído", actualizar fecha fin
             goalService.updateGoals(user.getId(), 0);
         } else if (status == ReadingStatus.PENDING.getValue() && (lastStatus == ReadingStatus.PAUSED.getValue()
                     || lastStatus == ReadingStatus.ABANDONED.getValue())) {
@@ -317,10 +330,18 @@ public class UserLibraryBookService {
                 .stream().map(goalMapper::toDTO).collect(Collectors.toList());
         recap.setAnnualGoals(goalsDTO);
 
-        // Total de libros y de páginas leídas
+        // Total de libros leídos
         long numBooks = libraryRepository.findBooksReadActualYear(user.getId()).size();
-        long numPages = libraryRepository.sumPagesReadInCurrentYear(user.getId());
         recap.setTotalBooksRead(numBooks);
+
+        // Total de páginas leídas
+        long numPages;
+        if (checkIfPageGoalExists(goalsDTO)) {
+            numPages = goalsDTO.stream().filter(goal -> goal.getType().equals("Páginas"))
+                    .toList().get(0).getCurrentAmount();
+        } else {
+            numPages = libraryRepository.sumPagesReadInCurrentYear(user.getId());
+        }
         recap.setTotalPagesRead(numPages);
 
         // Géneros más leídos (5) y libros mejor valorados (4)
@@ -344,5 +365,20 @@ public class UserLibraryBookService {
         }).collect(Collectors.toList()));
 
         return recap;
+    }
+
+    /**
+     * Comprueba si alguno de los objetivos de una lista es de tipo "Páginas".
+     *
+     * @param goals Lista de objetivos a comprobar
+     * @return 'true' si hay algún objetivo de tipo "Páginas", 'false' en caso contrario
+     */
+    private boolean checkIfPageGoalExists(List<GoalDTO> goals) {
+        for (GoalDTO goal : goals) {
+            if (goal.getType().equals("Páginas")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
