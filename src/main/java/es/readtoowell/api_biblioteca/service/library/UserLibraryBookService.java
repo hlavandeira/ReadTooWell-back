@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -325,9 +327,18 @@ public class UserLibraryBookService {
     public YearRecapDTO getYearRecap(User user) {
         YearRecapDTO recap = new YearRecapDTO();
 
-        // Objetivos en curso, en caso de que el usuario los tenga
-        List<GoalDTO> goalsDTO = goalRepository.findAnnualGoalsForCurrentYear(user.getId())
-                .stream().map(goalMapper::toDTO).collect(Collectors.toList());
+        // Objetivos completados en el año actual
+        List<GoalDTO> goalsDTO = new ArrayList<>(goalService.getFinishedGoalsActualYear(user.getId()));
+        // Se añaden también los objetivos anuales del año anterior
+        List<GoalDTO> lastYearAnnualGoalsDtos = goalRepository.findAnnualGoalsByYear(user.getId(),
+                        LocalDate.now().getYear() -1)
+                .stream()
+                .filter(goal -> goal.getCurrentAmount() >= goal.getAmount()) // Solo los que están completados
+                .map(goalMapper::toDTO)
+                .toList();
+        if (!lastYearAnnualGoalsDtos.isEmpty()) {
+            goalsDTO.addAll(lastYearAnnualGoalsDtos);
+        }
         recap.setAnnualGoals(goalsDTO);
 
         // Total de libros leídos
@@ -335,13 +346,7 @@ public class UserLibraryBookService {
         recap.setTotalBooksRead(numBooks);
 
         // Total de páginas leídas
-        long numPages;
-        if (checkIfPageGoalExists(goalsDTO)) {
-            numPages = goalsDTO.stream().filter(goal -> goal.getType().equals("Páginas"))
-                    .toList().get(0).getCurrentAmount();
-        } else {
-            numPages = libraryRepository.sumPagesReadInCurrentYear(user.getId());
-        }
+        long numPages = libraryRepository.sumPagesReadInCurrentYear(user.getId());
         recap.setTotalPagesRead(numPages);
 
         // Géneros más leídos (5) y libros mejor valorados (4)
@@ -365,20 +370,5 @@ public class UserLibraryBookService {
         }).collect(Collectors.toList()));
 
         return recap;
-    }
-
-    /**
-     * Comprueba si alguno de los objetivos de una lista es de tipo "Páginas".
-     *
-     * @param goals Lista de objetivos a comprobar
-     * @return 'true' si hay algún objetivo de tipo "Páginas", 'false' en caso contrario
-     */
-    private boolean checkIfPageGoalExists(List<GoalDTO> goals) {
-        for (GoalDTO goal : goals) {
-            if (goal.getType().equals("Páginas")) {
-                return true;
-            }
-        }
-        return false;
     }
 }

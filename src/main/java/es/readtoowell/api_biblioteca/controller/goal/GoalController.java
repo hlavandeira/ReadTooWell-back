@@ -52,7 +52,24 @@ public class GoalController {
             throw new AccessDeniedException("Usuario no autenticado.");
         }
 
-        Set<GoalDTO> objetivos = goalService.getCompletedGoals(user.getId());
+        Set<GoalDTO> objetivos = goalService.getFinishedGoals(user.getId());
+
+        return ResponseEntity.ok(objetivos);
+    }
+
+    /**
+     * Devuelve los objetivos finalizados y completados por un usuario en el año actual.
+     *
+     * @return Lista con los objetivos completados en el año actual
+     */
+    @GetMapping("/terminados/año-actual")
+    public ResponseEntity<Set<GoalDTO>> getFinishedGoalsActualYear() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Set<GoalDTO> objetivos = goalService.getFinishedGoalsActualYear(user.getId());
 
         return ResponseEntity.ok(objetivos);
     }

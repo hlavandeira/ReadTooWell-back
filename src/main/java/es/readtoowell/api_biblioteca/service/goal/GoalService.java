@@ -58,12 +58,33 @@ public class GoalService {
      * @param idUser ID del usuario
      * @return Lista con los objetivos como DTOs
      */
-    public Set<GoalDTO> getCompletedGoals(Long idUser) {
+    public Set<GoalDTO> getFinishedGoals(Long idUser) {
         Set<Goal> objetivos = goalRepository.findByUserId(idUser);
 
         return objetivos.stream()
                 .filter(this::isGoalCompleted)
                 .map(goalMapper::toDTO)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Devuelve los objetivos completados en el año actual por un usuario.
+     *
+     * @param idUser ID del usuario
+     * @return Objetivos completados en el año actual por el usuario
+     */
+    public Set<GoalDTO> getFinishedGoalsActualYear(Long idUser) {
+        Set<GoalDTO> objetivos = getFinishedGoals(idUser);
+
+        return objetivos.stream()
+                .filter(goal -> {
+                    if (goal.getDateFinish() == null) return false;
+                    LocalDate finishDate = goal.getDateFinish().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    return finishDate.getYear() == LocalDate.now().getYear() &&
+                            goal.getCurrentAmount() >= goal.getAmount(); // Sólo se devuelven los completados
+                })
                 .collect(Collectors.toSet());
     }
 
