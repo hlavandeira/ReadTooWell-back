@@ -1,6 +1,6 @@
 package es.readtoowell.api_biblioteca.controller.library;
 
-import es.readtoowell.api_biblioteca.model.DTO.RatingDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.RatingDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;

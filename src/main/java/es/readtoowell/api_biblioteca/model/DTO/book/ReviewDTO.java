@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.book;
 
 /**
  * DTO que representa los detalles de una reseña de un libro.

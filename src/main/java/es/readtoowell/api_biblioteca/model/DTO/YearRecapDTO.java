@@ -1,5 +1,8 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import es.readtoowell.api_biblioteca.model.DTO.book.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.SimpleBookDTO;
+
 import java.util.List;
 
 /**

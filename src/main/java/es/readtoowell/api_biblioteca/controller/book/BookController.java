@@ -1,9 +1,9 @@
 package es.readtoowell.api_biblioteca.controller.book;
 
-import es.readtoowell.api_biblioteca.model.DTO.AuthorDTO;
-import es.readtoowell.api_biblioteca.model.DTO.BookDTO;
-import es.readtoowell.api_biblioteca.model.DTO.BookDetailsDTO;
-import es.readtoowell.api_biblioteca.model.DTO.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.AuthorDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookDetailsDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.GenreDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.user.UserService;
 import jakarta.validation.Valid;

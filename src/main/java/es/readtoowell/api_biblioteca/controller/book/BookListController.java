@@ -1,7 +1,7 @@
 package es.readtoowell.api_biblioteca.controller.book;
 
-import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
-import es.readtoowell.api_biblioteca.model.DTO.BookListDetailsDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookListDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookListDetailsDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.book.BookListService;
 import es.readtoowell.api_biblioteca.service.user.UserService;

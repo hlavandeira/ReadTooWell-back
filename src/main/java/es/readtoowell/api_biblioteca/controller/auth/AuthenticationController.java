@@ -1,8 +1,8 @@
 package es.readtoowell.api_biblioteca.controller.auth;
 
-import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
-import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
-import es.readtoowell.api_biblioteca.model.DTO.AuthenticatedUserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.LoginDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.RegisterDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.AuthenticatedUserDTO;
 import es.readtoowell.api_biblioteca.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

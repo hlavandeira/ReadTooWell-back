@@ -1,7 +1,8 @@
 package es.readtoowell.api_biblioteca.controller.user;
 
-import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
-import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.UpdateProfileDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.user.UserService;
 import jakarta.validation.Valid;
@@ -93,6 +94,23 @@ public class UserController {
         }
 
         UserDTO usuario = userService.updateUser(user.getId(), userDTO);
+        return ResponseEntity.ok(usuario);
+    }
+
+    /**
+     * Actualiza los datos del perfil de un usuario.
+     *
+     * @param updateDTO Datos del perfil a actualizar
+     * @return DTO con el usuario actualizado
+     */
+    @PutMapping("/perfil")
+    public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody UpdateProfileDTO updateDTO) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        UserDTO usuario = userService.updateUserProfile(user.getId(), updateDTO);
         return ResponseEntity.ok(usuario);
     }
 
@@ -206,7 +224,7 @@ public class UserController {
 
         userService.addFavoriteGenres(user, genreIds);
 
-        UserFavoritesDTO favorites = userService.getFavorites(user);
+        UserFavoritesDTO favorites = userService.getFavorites(user.getId());
 
         return ResponseEntity.ok(favorites);
     }
@@ -227,7 +245,7 @@ public class UserController {
 
         userService.addFavoriteBooks(user, bookIds);
 
-        UserFavoritesDTO favorites = userService.getFavorites(user);
+        UserFavoritesDTO favorites = userService.getFavorites(user.getId());
 
         return ResponseEntity.ok(favorites);
     }
@@ -235,17 +253,13 @@ public class UserController {
     /**
      * Devuelve los libros y géneros favoritos de un usuario.
      *
+     * @param idUser ID del usuario del que se devuelven los favoritos
      * @return DTO con los datos de los libros y géneros favoritos del usuario
      * @throws AccessDeniedException Usuario no autenticado
      */
-    @GetMapping("/favoritos")
-    public ResponseEntity<UserFavoritesDTO> getFavorites() {
-        User user = userService.getAuthenticatedUser();
-        if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
-        }
-
-        UserFavoritesDTO favs = userService.getFavorites(user);
+    @GetMapping("/{idUser}/favoritos")
+    public ResponseEntity<UserFavoritesDTO> getFavorites(@PathVariable Long idUser) {
+        UserFavoritesDTO favs = userService.getFavorites(idUser);
 
         return ResponseEntity.ok(favs);
     }

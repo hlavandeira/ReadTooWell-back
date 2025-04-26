@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.book;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

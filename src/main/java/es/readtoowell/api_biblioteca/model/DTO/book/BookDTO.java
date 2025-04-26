@@ -1,6 +1,5 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.book;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;

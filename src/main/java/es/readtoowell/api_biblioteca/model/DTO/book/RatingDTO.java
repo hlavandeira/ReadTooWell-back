@@ -1,4 +1,6 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.book;
+
+import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
 
 /**
  * DTO que representa los datos de calificación de un libro

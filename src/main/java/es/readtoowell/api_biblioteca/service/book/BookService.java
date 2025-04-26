@@ -1,7 +1,8 @@
 package es.readtoowell.api_biblioteca.service.book;
 
 import es.readtoowell.api_biblioteca.mapper.*;
-import es.readtoowell.api_biblioteca.model.DTO.*;
+import es.readtoowell.api_biblioteca.model.DTO.book.*;
+import es.readtoowell.api_biblioteca.model.DTO.user.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.book.BookListItemRepository;

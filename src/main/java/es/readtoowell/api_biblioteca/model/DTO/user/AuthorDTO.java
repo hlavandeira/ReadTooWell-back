@@ -1,5 +1,6 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.user;
 
+import es.readtoowell.api_biblioteca.model.DTO.book.BookDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 
 import java.util.Set;

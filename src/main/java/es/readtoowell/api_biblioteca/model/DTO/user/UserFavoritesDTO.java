@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.user;
 
 import es.readtoowell.api_biblioteca.model.entity.Book;
 import es.readtoowell.api_biblioteca.model.entity.Genre;

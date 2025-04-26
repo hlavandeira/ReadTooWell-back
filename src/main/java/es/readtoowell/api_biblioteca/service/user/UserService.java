@@ -1,10 +1,11 @@
 package es.readtoowell.api_biblioteca.service.user;
 
+import es.readtoowell.api_biblioteca.model.DTO.user.UpdateProfileDTO;
 import es.readtoowell.api_biblioteca.model.entity.AuthorRequest;
 import es.readtoowell.api_biblioteca.model.entity.Book;
-import es.readtoowell.api_biblioteca.model.DTO.UserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
-import es.readtoowell.api_biblioteca.model.DTO.UserFavoritesDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.entity.Genre;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
@@ -126,6 +127,26 @@ public class UserService {
         usuario.setEmail(user.getEmail());
         usuario.setBiography(user.getBiography());
         usuario.setRole(user.getRole());
+        usuario.setProfilePic(user.getProfilePic());
+
+        usuario = userRepository.save(usuario);
+
+        return userMapper.toDTO(usuario);
+    }
+
+    /**
+     * Actualiza los datos que puede editar el usuario en su perfil.
+     *
+     * @param idUser ID del usuario que edita su perfil
+     * @param user Datos introducidos por el usuario
+     * @return Datos actualizados del usuario
+     */
+    public UserDTO updateUserProfile(Long idUser, UpdateProfileDTO user) {
+        User usuario = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+
+        usuario.setProfileName(user.getProfileName());
+        usuario.setBiography(user.getBiography());
         usuario.setProfilePic(user.getProfilePic());
 
         usuario = userRepository.save(usuario);
@@ -312,10 +333,13 @@ public class UserService {
     /**
      * Devuelve los libros y géneros favoritos de un usuario.
      *
-     * @param user Usuario del que se devuelven sus favoritos
+     * @param idUser ID del usuario del que se devuelven sus favoritos
      * @return DTO con los datos de los libros y géneros favoritos del usuario
      */
-    public UserFavoritesDTO getFavorites(User user) {
+    public UserFavoritesDTO getFavorites(Long idUser) {
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
+
         UserFavoritesDTO favoritos = new UserFavoritesDTO();
 
         favoritos.setUser(user);

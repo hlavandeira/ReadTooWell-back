@@ -1,9 +1,9 @@
 package es.readtoowell.api_biblioteca.service.auth;
 
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
-import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
-import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
-import es.readtoowell.api_biblioteca.model.DTO.AuthenticatedUserDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.LoginDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.RegisterDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.AuthenticatedUserDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.user.UserRepository;

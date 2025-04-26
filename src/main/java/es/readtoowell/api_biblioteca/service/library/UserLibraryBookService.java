@@ -4,6 +4,8 @@ import es.readtoowell.api_biblioteca.mapper.GenreMapper;
 import es.readtoowell.api_biblioteca.mapper.GoalMapper;
 import es.readtoowell.api_biblioteca.mapper.UserLibraryBookMapper;
 import es.readtoowell.api_biblioteca.model.DTO.*;
+import es.readtoowell.api_biblioteca.model.DTO.book.RatingDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.SimpleBookDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.entity.id.UserLibraryBookId;
 import es.readtoowell.api_biblioteca.model.enums.ReadingStatus;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -241,6 +242,9 @@ public class UserLibraryBookService {
             libro.setDateStart(Date.valueOf(LocalDate.now())); // Si pasa a "Leyendo", actualizar fecha inicio
         } else if (status == ReadingStatus.READ.getValue()) {
             libro.setDateFinish(Date.valueOf(LocalDate.now())); // Si pasa a "Leído", actualizar fecha fin
+            if (libro.getDateStart() == null) {
+                libro.setDateStart(Date.valueOf(LocalDate.now()));
+            }
             goalService.updateGoals(user.getId(), 0);
         } else if (status == ReadingStatus.PENDING.getValue() && (lastStatus == ReadingStatus.PAUSED.getValue()
                     || lastStatus == ReadingStatus.ABANDONED.getValue())) {
