@@ -30,6 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     where (:searchString is null or
         lower(u.username) like lower(concat('%', :searchString, '%'))
         or lower(u.profileName) like lower(concat('%', :searchString, '%')))
+        and u.role <> 2
     """)
     Page<User> searchUsers(@Param("searchString") String searchString, Pageable pageable);
 }

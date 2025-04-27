@@ -48,7 +48,7 @@ public class UserService {
      * @return Página con los usuarios como DTOs
      */
     public Page<UserDTO> getAllUsers(int page, int size) {
-        Page<User> users = userRepository.findAll(PageRequest.of(page, size, Sort.by("nombreUsuario")));
+        Page<User> users = userRepository.findAll(PageRequest.of(page, size, Sort.by("username")));
         return users.map(userMapper::toDTO);
     }
 
@@ -189,12 +189,17 @@ public class UserService {
      * @param idFollowedUser ID del usuario al que sigue
      * @return DTO con los datos del usuario seguido
      * @throws EntityNotFoundException Alguno de los usuarios no existe
+     * @throws IllegalStateException Alguno de los usuarios es un administrador
      */
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
         User followedUser = userRepository.findById(idFollowedUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idFollowedUser + " no existe."));
+
+        if (user.getRole() == Role.ADMIN.getValue() || followedUser.getRole() == Role.ADMIN.getValue()) {
+            throw new IllegalStateException("No se puede seguir a un usuario administrador.");
+        }
 
         user.getFollowedUsers().add(followedUser);
         followedUser.getFollowers().add(user);
@@ -212,6 +217,7 @@ public class UserService {
      * @param idUnfollowedUser ID del usuario al que deja de seguir
      * @return DTO con los datos del usuario que se ha dejado de seguir
      * @throws EntityNotFoundException Alguno de los usuarios no existe
+     * @throws IllegalStateException Alguno de los usuarios es un administrador
      */
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser)
@@ -219,6 +225,10 @@ public class UserService {
         User unfollowedUser = userRepository.findById(idUnfollowedUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " +
                         idUnfollowedUser + " no existe."));
+
+        if (user.getRole() == Role.ADMIN.getValue() || unfollowedUser.getRole() == Role.ADMIN.getValue()) {
+            throw new IllegalStateException("No se puede dejar de seguir a un usuario administrador.");
+        }
 
         user.getFollowedUsers().remove(unfollowedUser);
         unfollowedUser.getFollowers().remove(user);
