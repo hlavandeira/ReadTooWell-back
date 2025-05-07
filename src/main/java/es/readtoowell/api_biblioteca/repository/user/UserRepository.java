@@ -33,4 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         and u.role <> 2
     """)
     Page<User> searchUsers(@Param("searchString") String searchString, Pageable pageable);
+
+    @Query("select u from User u where u.role = 1")
+    Page<User> findAuthors(Pageable pageable);
 }

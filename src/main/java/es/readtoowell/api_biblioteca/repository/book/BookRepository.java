@@ -14,6 +14,22 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     /**
+     * Busca todos los libros activos del sistema.
+     *
+     * @param pageable Información de paginación
+     * @return Página con los libros activos
+     */
+    Page<Book> findAllByActiveTrue(Pageable pageable);
+
+    /**
+     * Busca todos los libros borrados del sistema.
+     *
+     * @param pageable Información de paginación
+     * @return Página con los libros activos
+     */
+    Page<Book> findAllByActiveFalse(Pageable pageable);
+
+    /**
      * Busca un libro mediante su ISBN y lo devuelve.
      *
      * @param isbn ISBN del libro
@@ -50,7 +66,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             and (:minPages is null or b.pageNumber >= :minPages)
             and (:maxPages is null or b.pageNumber <= :maxPages)
             and (:minYear is null or b.publicationYear >= :minYear)
-            and (:maxYear is null or b.publicationYear <= :maxYear)""")
+            and (:maxYear is null or b.publicationYear <= :maxYear)
+            and b.active is true""")
     Page<Book> filterBooks(
             @Param("searchString") String searchString,
             @Param("minPages") Integer minPages,

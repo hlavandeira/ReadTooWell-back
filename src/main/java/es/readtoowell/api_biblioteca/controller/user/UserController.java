@@ -275,4 +275,13 @@ public class UserController {
 
         return ResponseEntity.ok(userService.verifyAdmin(user));
     }
+
+    @GetMapping("/autores")
+    public ResponseEntity<Page<UserDTO>> getAuthors(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                    @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Page<UserDTO> authors = userService.getAuthors(page, size);
+
+        return ResponseEntity.ok(authors);
+    }
 }

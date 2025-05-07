@@ -126,4 +126,19 @@ public class AuthorRequestController {
 
         return ResponseEntity.ok(request);
     }
+
+    /**
+     * Comprueba si existen solicitudes pendientes de un usuario concreto.
+     *
+     * @return 'true' si tiene alguna solicitud pendiente, 'false' en caso contrario
+     */
+    @GetMapping("/comprobar-pendiente")
+    public ResponseEntity<Boolean> checkIfPendingRequest() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        return ResponseEntity.ok(requestService.checkIfPendingRequest(user));
+    }
 }

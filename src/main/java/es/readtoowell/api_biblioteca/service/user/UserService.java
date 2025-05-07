@@ -370,4 +370,9 @@ public class UserService {
     public Boolean verifyAdmin(User user) {
         return user.getRole() == Role.ADMIN.getValue();
     }
+
+    public Page<UserDTO> getAuthors(int page, int size) {
+        Page<User> users = userRepository.findAuthors(PageRequest.of(page, size));
+        return users.map(userMapper::toDTO);
+    }
 }

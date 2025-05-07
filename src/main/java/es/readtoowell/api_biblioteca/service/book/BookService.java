@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,6 +48,7 @@ public class BookService {
 
     /**
      * Devuelve todos los libros.
+     * Si el usuario autenticado no es administrador, solo devuelve los activos.
      *
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
@@ -54,7 +56,9 @@ public class BookService {
      */
     public Page<BookDTO> getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publicationYear"));
-        return bookRepository.findAll(pageable).map(bookMapper::toDTO);
+        Page<Book> books = bookRepository.findAllByActiveTrue(pageable);
+
+        return books.map(bookMapper::toDTO);
     }
 
     /**
@@ -189,6 +193,19 @@ public class BookService {
     public BookDTO deleteBook(BookDTO book) {
         Book libro = bookMapper.toEntity(book);
         libro.delete();
+        libro = bookRepository.save(libro);
+        return bookMapper.toDTO(libro);
+    }
+
+    /**
+     * Reactiva un libro que ha sido eliminado/desactivado.
+     *
+     * @param book DTO con los datos del libro a reactivar
+     * @return DTO con los datos del libro reactivado
+     */
+    public BookDTO reactivateBook(BookDTO book) {
+        Book libro = bookMapper.toEntity(book);
+        libro.reactivate();
         libro = bookRepository.save(libro);
         return bookMapper.toDTO(libro);
     }
@@ -358,5 +375,25 @@ public class BookService {
         List<Genre> genres = genreRepository.findAll();
 
         return genres.stream().map(genreMapper::toDTO).toList();
+    }
+
+    /**
+     * Devuelve los libros eliminados del sistema.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @param user Usario autenticado
+     * @return Página con los libros resultantes como DTOs
+     * @throws AccessDeniedException El usuario no tiene el rol de administrador
+     */
+    public Page<BookDTO> getDeletedBooks(int page, int size, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publicationYear"));
+        Page<Book> books = bookRepository.findAllByActiveFalse(pageable);
+
+        return books.map(bookMapper::toDTO);
     }
 }

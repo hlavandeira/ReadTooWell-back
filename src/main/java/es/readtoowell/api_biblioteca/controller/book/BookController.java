@@ -103,6 +103,21 @@ public class BookController {
     }
 
     /**
+     * Reactiva un libro.
+     *
+     * @param idBook ID del libro
+     * @return DTO con los datos del libro reactivado
+     */
+    @PutMapping("/reactivar/{idBook}")
+    public ResponseEntity<BookDTO> reactivateBook(@PathVariable Long idBook) {
+        BookDTO libro = bookService.getBook(idBook);
+
+        BookDTO dto = bookService.reactivateBook(libro);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
      * Busca libros por su título, autor o colección, y permite filtrar por número de páginas y año de publicación.
      *
      * @param searchString Cadena que se compara con el título, autor o colección
@@ -219,5 +234,26 @@ public class BookController {
         List<GenreDTO> genres = bookService.getGenres();
 
         return ResponseEntity.ok(genres);
+    }
+
+    /**
+     * Devuelve todos los libros desactivados del sistema.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los libros desactivados
+     * @throws AccessDeniedException Usuario no autenticado
+     */
+    @GetMapping("/desactivados")
+    public ResponseEntity<Page<BookDTO>> getDeletedBooks(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<BookDTO> books = bookService.getDeletedBooks(page, size, user);
+
+        return ResponseEntity.ok(books);
     }
 }

@@ -174,4 +174,14 @@ public class AuthorRequestService {
 
         return requestMapper.toDTO(request);
     }
+
+    /**
+     * Comprueba si existen solicitudes pendientes de un usuario concreto.
+     *
+     * @param user Usuario del que se comprueban las solicitudes
+     * @return 'true' si tiene alguna solicitud pendiente, 'false' en caso contrario
+     */
+    public boolean checkIfPendingRequest(User user) {
+        return requestRepository.existsByUserIdAndStatusIn(user.getId(), List.of(RequestStatus.PENDING.getValue()));
+    }
 }

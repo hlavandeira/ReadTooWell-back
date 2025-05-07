@@ -55,6 +55,13 @@ public class Book {
         this.active = false;
     }
 
+    /**
+     * Reactiva un libro que ha sido desactivado
+     */
+    public void reactivate() {
+        this.active = true;
+    }
+
     // Métodos Getters y Setters
 
     /**
