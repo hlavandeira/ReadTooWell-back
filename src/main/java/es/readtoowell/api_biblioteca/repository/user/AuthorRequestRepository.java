@@ -51,7 +51,7 @@ public interface AuthorRequestRepository extends JpaRepository<AuthorRequest, Lo
     @Query("""
     SELECT a FROM AuthorRequest a
     WHERE a.user.id = :userId AND a.status IN :statusList
-    AND a.active = true ORDER BY a.dateSent DESC
+    ORDER BY a.dateSent DESC
     """)
     Optional<AuthorRequest> findLatestRequestByUserAndStatus(
             @Param("userId") Long userId, @Param("statusList") List<Integer> statusList);

@@ -268,7 +268,7 @@ public class UserService {
 
         AuthorRequest request = requestRepository.findLatestRequestByUserAndStatus(
                 idUser, List.of(RequestStatus.PENDING.getValue()))
-                .orElseThrow(() -> new EntityNotFoundException("El usuario no tienen ninguna solicitud pendiente."));
+                .orElseThrow(() -> new EntityNotFoundException("El usuario no tiene ninguna solicitud pendiente."));
 
         user.setProfileName(request.getName());
         user.setBiography(request.getBiography());
@@ -357,5 +357,15 @@ public class UserService {
         favoritos.setFavoriteBooks(user.getFavoriteBooks());
 
         return favoritos;
+    }
+
+    /**
+     * Verifica si un usuario tiene el rol de administrador.
+     *
+     * @param user Usuario a verificar
+     * @return 'true' si tiene rol administrador, 'false' en caso contrario
+     */
+    public Boolean verifyAdmin(User user) {
+        return user.getRole() == Role.ADMIN.getValue();
     }
 }

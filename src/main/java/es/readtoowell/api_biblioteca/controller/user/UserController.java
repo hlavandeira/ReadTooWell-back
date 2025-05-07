@@ -263,4 +263,16 @@ public class UserController {
 
         return ResponseEntity.ok(favs);
     }
+
+    /**
+     * Verifica si el usuario autenticado tiene el rol de administrador.
+     *
+     * @return 'true' si tiene el rol de administrador, 'false' en caso contrario
+     */
+    @GetMapping("/verificar-admin")
+    public ResponseEntity<Boolean> verifyAdmin() {
+        User user = userService.getAuthenticatedUser();
+
+        return ResponseEntity.ok(userService.verifyAdmin(user));
+    }
 }

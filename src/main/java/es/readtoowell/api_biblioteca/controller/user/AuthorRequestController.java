@@ -45,11 +45,17 @@ public class AuthorRequestController {
      * @param idRequest ID de la solicitud a actualizar
      * @param newStatus Nuevo estado de la solicitud
      * @return DTO con los datos de la solicitud actualizada
+     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idRequest}")
     public ResponseEntity<AuthorRequestDTO> updateStatusRequest(@PathVariable Long idRequest,
                                                                 @RequestParam int newStatus) {
-        AuthorRequestDTO dto = requestService.updateStatusRequest(idRequest, newStatus);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        AuthorRequestDTO dto = requestService.updateStatusRequest(idRequest, newStatus, user);
 
         return ResponseEntity.ok(dto);
     }
@@ -60,13 +66,19 @@ public class AuthorRequestController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con las solicitudes como DTOs
+     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping
     public ResponseEntity<Page<AuthorRequestDTO>> getAllRequests(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        Page<AuthorRequestDTO> requests = requestService.getAllRequests(page, size);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<AuthorRequestDTO> requests = requestService.getAllRequests(page, size, user);
 
         return ResponseEntity.ok(requests);
     }
@@ -78,6 +90,7 @@ public class AuthorRequestController {
      * @param size Tamaño de la página
      * @param status Estado por el que se quieren filtrar
      * @return Página con las solicitudes filtradas como DTOs
+     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/estado")
     public ResponseEntity<Page<AuthorRequestDTO>> getRequestsWithStatus(
@@ -85,7 +98,12 @@ public class AuthorRequestController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "status", defaultValue = "0") int status) {
 
-        Page<AuthorRequestDTO> requests = requestService.getRequestsWithStatus(page, size, status);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<AuthorRequestDTO> requests = requestService.getRequestsWithStatus(page, size, status, user);
 
         return ResponseEntity.ok(requests);
     }
@@ -95,10 +113,16 @@ public class AuthorRequestController {
      *
      * @param idRequest ID de la solicitud
      * @return DTO con los datos de la solicitud
+     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/{idRequest}")
     public ResponseEntity<AuthorRequestDTO> getRequest(@PathVariable Long idRequest) {
-        AuthorRequestDTO request = requestService.getRequest(idRequest);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        AuthorRequestDTO request = requestService.getRequest(idRequest, user);
 
         return ResponseEntity.ok(request);
     }

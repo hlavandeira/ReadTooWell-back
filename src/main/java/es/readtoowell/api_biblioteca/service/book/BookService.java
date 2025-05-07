@@ -67,7 +67,7 @@ public class BookService {
      */
     public BookDTO getBook(Long idBook) {
         Book book = bookRepository.findById(idBook)
-                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));;
+                .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
         return bookMapper.toDTO(book);
     }
 

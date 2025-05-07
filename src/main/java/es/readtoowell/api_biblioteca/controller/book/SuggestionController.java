@@ -49,7 +49,12 @@ public class SuggestionController {
     @PutMapping("/{idSuggestion}")
     public ResponseEntity<SuggestionDTO> updateStatusSuggestion(@PathVariable Long idSuggestion,
                                                                 @RequestParam int newStatus) {
-        SuggestionDTO dto = suggestionService.updateStatusSuggestion(idSuggestion, newStatus);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        SuggestionDTO dto = suggestionService.updateStatusSuggestion(idSuggestion, newStatus, user);
 
         return ResponseEntity.ok(dto);
     }
@@ -66,7 +71,12 @@ public class SuggestionController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        Page<SuggestionDTO> suggestions = suggestionService.getAllSuggestions(page, size);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<SuggestionDTO> suggestions = suggestionService.getAllSuggestions(page, size, user);
 
         return ResponseEntity.ok(suggestions);
     }
@@ -85,7 +95,12 @@ public class SuggestionController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "status", defaultValue = "0") int status) {
 
-        Page<SuggestionDTO> suggestions = suggestionService.getSuggestionsWithStatus(page, size, status);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<SuggestionDTO> suggestions = suggestionService.getSuggestionsWithStatus(page, size, status, user);
 
         return ResponseEntity.ok(suggestions);
     }
@@ -98,7 +113,12 @@ public class SuggestionController {
      */
     @GetMapping("/{idSuggestion}")
     public ResponseEntity<SuggestionDTO> getSuggestion(@PathVariable Long idSuggestion) {
-        SuggestionDTO suggestion = suggestionService.getSuggestion(idSuggestion);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        SuggestionDTO suggestion = suggestionService.getSuggestion(idSuggestion, user);
 
         return ResponseEntity.ok(suggestion);
     }
