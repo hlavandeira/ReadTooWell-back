@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/listas")
@@ -77,7 +77,7 @@ public class BookListController {
      */
     @PostMapping
     public ResponseEntity<BookListDTO> createList(@Valid @RequestBody BookListDTO list,
-                                                  @RequestParam Set<Long> genreIds) {
+                                                  @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
@@ -100,7 +100,7 @@ public class BookListController {
     @PutMapping("/{idList}")
     public ResponseEntity<BookListDTO> updateList(@PathVariable Long idList,
                                                   @Valid @RequestBody BookListDTO list,
-                                                  @RequestParam Set<Long> genreIds) {
+                                                  @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");

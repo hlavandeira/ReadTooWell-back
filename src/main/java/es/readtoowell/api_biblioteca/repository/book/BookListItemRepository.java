@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Set;
+import java.util.List;
 
 public interface BookListItemRepository extends JpaRepository<BookListItem, BookListItemId> {
     /**
@@ -20,7 +20,7 @@ public interface BookListItemRepository extends JpaRepository<BookListItem, Book
      * @return Listado de las listas del usuario que contienen el libro
      */
     @Query("SELECT bli.list FROM BookListItem bli WHERE bli.list.user.id = :userId AND bli.book.id = :bookId")
-    Set<BookList> findAllListsByUserIdAndBookId(@Param("userId") Long userId, @Param("bookId") Long bookId);
+    List<BookList> findAllListsByUserIdAndBookId(@Param("userId") Long userId, @Param("bookId") Long bookId);
 
     /**
      * Devuelve los libros que pertenecen a una lista específica.

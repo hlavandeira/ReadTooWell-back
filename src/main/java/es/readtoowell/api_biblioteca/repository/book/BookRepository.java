@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
@@ -79,7 +79,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     SELECT * FROM libro l 
     WHERE l.id_libro IN (SELECT la.id_libro FROM libro_autor la WHERE la.id_autor = :authorId)
     """, nativeQuery = true) // Query nativa porque libro_autor no existe como entidad
-    Set<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
+    List<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
 
     /**
      * Devuelve el resto de libros de una colección a la que pertenece el libro indicado.
@@ -95,7 +95,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     )
     AND b.id <> :bookId
     """)
-    Set<Book> findOtherBooksInSameCollection(@Param("bookId") Long bookId);
+    List<Book> findOtherBooksInSameCollection(@Param("bookId") Long bookId);
 
     /**
      * Devuelve todos los libros escritos por un autor.

@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +87,7 @@ public class BookListService {
         listDetails.setId(idList);
         listDetails.setName(list.getName());
         listDetails.setDescription(list.getDescription());
-        Set<GenreDTO> genres = list.getGenres().stream().map(genreMapper::toDTO).collect(Collectors.toSet());
+        List<GenreDTO> genres = list.getGenres().stream().map(genreMapper::toDTO).collect(Collectors.toList());
         listDetails.setGenres(genres);
 
         return listDetails;
@@ -101,14 +101,14 @@ public class BookListService {
      * @param genreIds Lista con los IDs de los géneros asociados a la lista
      * @return DTO con los detalles de la lista creada
      */
-    public BookListDTO createList(User user, BookListDTO dto, Set<Long> genreIds) {
+    public BookListDTO createList(User user, BookListDTO dto, List<Long> genreIds) {
         BookList lista = new BookList();
 
         lista.setName(dto.getName());
         lista.setDescription(dto.getDescription());
         lista.setUser(user);
 
-        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
 
         lista.setGenres(genres);
 
@@ -128,7 +128,7 @@ public class BookListService {
      * @throws EntityNotFoundException La lista no existe
      * @throws AccessDeniedException Otro usuario intenta acceder a la lista
      */
-    public BookListDTO updateList(Long idUser, Long idList, BookListDTO dto, Set<Long> genreIds) {
+    public BookListDTO updateList(Long idUser, Long idList, BookListDTO dto, List<Long> genreIds) {
         BookList lista = listRepository.findByIdWithRelations(idList)
                 .orElseThrow(() -> new EntityNotFoundException("La lista con ID " + idList + " no existe."));
 
@@ -139,7 +139,7 @@ public class BookListService {
         lista.setName(dto.getName());
         lista.setDescription(dto.getDescription());
 
-        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
         lista.setGenres(genres);
 
         lista = listRepository.save(lista);

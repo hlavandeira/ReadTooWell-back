@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidad que representa los libros de la biblioteca de un usuario.
@@ -32,7 +32,7 @@ public class UserLibraryBook {
     @JoinColumn(name = "id_libro", referencedColumnName = "id_libro", nullable = false)
     private Book book;
     @OneToMany(mappedBy = "libraryBook", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserBookFormat> formats = new HashSet<>();
+    private List<UserBookFormat> formats = new ArrayList<>();
     @Column(name = "estado_lectura")
     private int readingStatus;
     @Column(name = "fecha_inicio")
@@ -109,7 +109,7 @@ public class UserLibraryBook {
      *
      * @return Lista con los formatos del libro del usuario
      */
-    public Set<UserBookFormat> getFormats() {
+    public List<UserBookFormat> getFormats() {
         return formats;
     }
 
@@ -118,7 +118,7 @@ public class UserLibraryBook {
      *
      * @param formats Lista con los nuevos formatos del libro
      */
-    public void setFormats(Set<UserBookFormat> formats) {
+    public void setFormats(List<UserBookFormat> formats) {
         this.formats = formats;
     }
 

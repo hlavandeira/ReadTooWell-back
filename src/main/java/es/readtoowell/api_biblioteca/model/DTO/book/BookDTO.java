@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles de un libro.
@@ -29,7 +29,7 @@ public class BookDTO {
     private boolean active;
     private Long collectionId;
     private Integer numCollection;
-    private Set<GenreDTO> genres;
+    private List<GenreDTO> genres;
 
     // Métodos Getters y Setters
 
@@ -254,7 +254,7 @@ public class BookDTO {
      *
      * @return Lista con los géneros asociados al libro
      */
-    public Set<GenreDTO> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 
@@ -263,7 +263,7 @@ public class BookDTO {
      *
      * @param genres Nueva lista de géneros asociados
      */
-    public void setGenres(Set<GenreDTO> genres) {
+    public void setGenres(List<GenreDTO> genres) {
         this.genres = genres;
     }
 }

@@ -4,15 +4,15 @@ import es.readtoowell.api_biblioteca.model.entity.Book;
 import es.readtoowell.api_biblioteca.model.entity.Genre;
 import es.readtoowell.api_biblioteca.model.entity.User;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los libros y géneros favoritos de un usuario.
  */
 public class UserFavoritesDTO {
     private User user;
-    private Set<Book> favoriteBooks;
-    private Set<Genre> favoriteGenres;
+    private List<Book> favoriteBooks;
+    private List<Genre> favoriteGenres;
 
     // Métodos Getters y Setters
 
@@ -39,7 +39,7 @@ public class UserFavoritesDTO {
      *
      * @return Listado con los libros favoritos del usuario
      */
-    public Set<Book> getFavoriteBooks() {
+    public List<Book> getFavoriteBooks() {
         return favoriteBooks;
     }
 
@@ -48,7 +48,7 @@ public class UserFavoritesDTO {
      *
      * @param favoriteBooks Listado con los nuevos libros favoritos
      */
-    public void setFavoriteBooks(Set<Book> favoriteBooks) {
+    public void setFavoriteBooks(List<Book> favoriteBooks) {
         this.favoriteBooks = favoriteBooks;
     }
 
@@ -57,7 +57,7 @@ public class UserFavoritesDTO {
      *
      * @return Listado con los géneros favoritos del usuario
      */
-    public Set<Genre> getFavoriteGenres() {
+    public List<Genre> getFavoriteGenres() {
         return favoriteGenres;
     }
 
@@ -66,7 +66,7 @@ public class UserFavoritesDTO {
      *
      * @param favoriteGenres Listado con los nuevos géneros favoritos
      */
-    public void setFavoriteGenres(Set<Genre> favoriteGenres) {
+    public void setFavoriteGenres(List<Genre> favoriteGenres) {
         this.favoriteGenres = favoriteGenres;
     }
 }

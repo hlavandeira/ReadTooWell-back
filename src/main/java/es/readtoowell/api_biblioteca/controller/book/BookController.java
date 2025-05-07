@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import es.readtoowell.api_biblioteca.service.book.BookService;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/libros")
@@ -64,7 +64,7 @@ public class BookController {
      */
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO book,
-                                              @RequestParam Set<Long> genreIds) {
+                                              @RequestParam List<Long> genreIds) {
         BookDTO newBook = bookService.createBook(book, genreIds);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
@@ -81,7 +81,7 @@ public class BookController {
     @PutMapping("/{idBook}")
     public ResponseEntity<BookDTO> updateBook(@PathVariable Long idBook,
                                               @Valid @RequestBody BookDTO book,
-                                              @RequestParam Set<Long> genreIds) {
+                                              @RequestParam List<Long> genreIds) {
         BookDTO libro = bookService.updateBook(idBook, book, genreIds);
 
         return ResponseEntity.ok(libro);
@@ -203,8 +203,8 @@ public class BookController {
      * @return Lista de libros de la colección, exceptuando el libro indicado
      */
     @GetMapping("/coleccion/{idBook}")
-    public ResponseEntity<Set<BookDTO>> getOtherBooksFromCollection(@PathVariable Long idBook) {
-        Set<BookDTO> books = bookService.getOtherBooksFromCollection(idBook);
+    public ResponseEntity<List<BookDTO>> getOtherBooksFromCollection(@PathVariable Long idBook) {
+        List<BookDTO> books = bookService.getOtherBooksFromCollection(idBook);
 
         return ResponseEntity.ok(books);
     }
@@ -215,8 +215,8 @@ public class BookController {
      * @return Lista con todos los géneros
      */
     @GetMapping("/generos")
-    public ResponseEntity<Set<GenreDTO>> getGenres() {
-        Set<GenreDTO> genres = bookService.getGenres();
+    public ResponseEntity<List<GenreDTO>> getGenres() {
+        List<GenreDTO> genres = bookService.getGenres();
 
         return ResponseEntity.ok(genres);
     }

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,13 +60,13 @@ public class AuthorRequestService {
         final AuthorRequest savedRequest = requestRepository.save(request);
 
         // Libros asociados a la solicitud
-        Set<RequestBook> books = dto.getBooks().stream().map(req -> {
+        List<RequestBook> books = dto.getBooks().stream().map(req -> {
             RequestBook book = new RequestBook();
             book.setTitle(req.getTitle());
             book.setPublicationYear(req.getPublicationYear());
             book.setRequest(savedRequest);
             return book;
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toList());
 
         savedRequest.setBooks(books);
 

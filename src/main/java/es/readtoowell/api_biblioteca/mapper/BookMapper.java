@@ -7,7 +7,7 @@ import es.readtoowell.api_biblioteca.model.entity.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,10 +37,10 @@ public class BookMapper {
         dto.setNumCollection(book.getNumCollection());
         dto.setCollectionId(book.getCollectionId());
 
-        Set<GenreDTO> genreDTOs = book.getGenres()
+        List<GenreDTO> genreDTOs = book.getGenres()
                 .stream()
                 .map(genreMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         dto.setGenres(genreDTOs);
 
         return dto;
@@ -67,10 +67,10 @@ public class BookMapper {
         book.setActive(dto.isActive());
         book.setNumCollection(dto.getNumCollection());
 
-        Set<Genre> genres = dto.getGenres()
+        List<Genre> genres = dto.getGenres()
                 .stream()
                 .map(genreMapper::toEntity)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         book.setGenres(genres);
 
         return book;

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,15 +41,15 @@ public class GoalService {
      * @param idUser ID del usuario
      * @return Lista con los objetivos como DTOs
      */
-    public Set<GoalDTO> getGoalsInProgress(Long idUser) {
-        Set<Goal> objetivos = goalRepository.findByUserId(idUser);
+    public List<GoalDTO> getGoalsInProgress(Long idUser) {
+        List<Goal> objetivos = goalRepository.findByUserId(idUser);
 
         objetivos.forEach(g -> updateGoals(idUser, 0));
 
         return objetivos.stream()
                 .filter(goal -> !isGoalCompleted(goal))
                 .map(goalMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -58,13 +58,13 @@ public class GoalService {
      * @param idUser ID del usuario
      * @return Lista con los objetivos como DTOs
      */
-    public Set<GoalDTO> getFinishedGoals(Long idUser) {
-        Set<Goal> objetivos = goalRepository.findByUserId(idUser);
+    public List<GoalDTO> getFinishedGoals(Long idUser) {
+        List<Goal> objetivos = goalRepository.findByUserId(idUser);
 
         return objetivos.stream()
                 .filter(this::isGoalCompleted)
                 .map(goalMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -73,8 +73,8 @@ public class GoalService {
      * @param idUser ID del usuario
      * @return Objetivos completados en el año actual por el usuario
      */
-    public Set<GoalDTO> getFinishedGoalsActualYear(Long idUser) {
-        Set<GoalDTO> objetivos = getFinishedGoals(idUser);
+    public List<GoalDTO> getFinishedGoalsActualYear(Long idUser) {
+        List<GoalDTO> objetivos = getFinishedGoals(idUser);
 
         return objetivos.stream()
                 .filter(goal -> {
@@ -85,7 +85,7 @@ public class GoalService {
                     return finishDate.getYear() == LocalDate.now().getYear() &&
                             goal.getCurrentAmount() >= goal.getAmount(); // Sólo se devuelven los completados
                 })
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -116,9 +116,9 @@ public class GoalService {
         GoalDuration duration = durationRepository.findByName(goal.getDuration())
                 .orElseThrow(() -> new EntityNotFoundException("Duración de objetivo inválida"));
 
-        Set<Goal> objetivos = goalRepository.findByUserId(idUser).stream()
+        List<Goal> objetivos = goalRepository.findByUserId(idUser).stream()
                 .filter(g -> !isGoalCompleted(g))
-                .collect(Collectors.toSet());
+                .toList();
 
         if (objetivos.stream().anyMatch(g ->
                 g.getType().getName().equals(goal.getType()) &&
@@ -129,7 +129,7 @@ public class GoalService {
 
         LocalDate fechaInicio;
         LocalDate fechaFin;
-        Set<Book> booksReadYet;
+        List<Book> booksReadYet;
 
         if (duration.getId() == 1) {
             fechaInicio = LocalDate.of(LocalDate.now().getYear(), 1, 1);
@@ -197,14 +197,14 @@ public class GoalService {
      * @throws IllegalArgumentException Tipo de objetivo inválido
      */
     public void updateGoals(Long idUser, int paginasProgreso) {
-        Set<Goal> goals = goalRepository.findByUserId(idUser).stream()
-                .filter(goal -> !isGoalCompleted(goal)).collect(Collectors.toSet());
+        List<Goal> goals = goalRepository.findByUserId(idUser).stream()
+                .filter(goal -> !isGoalCompleted(goal)).toList();
 
-        Set<Book> booksReadYear = libraryRepository.findBooksReadActualYear(idUser);
-        Set<Book> booksReadMonth = libraryRepository.findBooksReadActualMonth(idUser);
+        List<Book> booksReadYear = libraryRepository.findBooksReadActualYear(idUser);
+        List<Book> booksReadMonth = libraryRepository.findBooksReadActualMonth(idUser);
 
         for (Goal goal : goals) {
-            Set<Book> booksRead = goal.getDuration().getName().equals("Anual")
+            List<Book> booksRead = goal.getDuration().getName().equals("Anual")
                     ? booksReadYear : booksReadMonth;
 
             if (goal.getType().getName().equals("Libros")) {

@@ -3,14 +3,14 @@ package es.readtoowell.api_biblioteca.model.DTO.user;
 import es.readtoowell.api_biblioteca.model.DTO.book.BookDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa a un autor y los libros escritos por este.
  */
 public class AuthorDTO {
     private User author;
-    private Set<BookDTO> books;
+    private List<BookDTO> books;
 
     // Métodos Getters y Setters
 
@@ -37,7 +37,7 @@ public class AuthorDTO {
      *
      * @return Lista de libros escritos por el autor
      */
-    public Set<BookDTO> getBooks() {
+    public List<BookDTO> getBooks() {
         return books;
     }
 
@@ -46,7 +46,7 @@ public class AuthorDTO {
      *
      * @param books Lista de nuevos libros escritos por el autor
      */
-    public void setBooks(Set<BookDTO> books) {
+    public void setBooks(List<BookDTO> books) {
         this.books = books;
     }
 }

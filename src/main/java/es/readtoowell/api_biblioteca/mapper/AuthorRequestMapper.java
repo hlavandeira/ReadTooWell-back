@@ -30,7 +30,7 @@ public class AuthorRequestMapper {
         dto.setStatus(req.getStatus());
         dto.setBooks(req.getBooks().stream()
                 .map(requestBookMapper::toDTO)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         return dto;
     }
@@ -53,7 +53,7 @@ public class AuthorRequestMapper {
         req.setStatus(dto.getStatus());
         req.setBooks(dto.getBooks().stream()
                 .map(requestBookMapper::toEntity)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         return req;
     }

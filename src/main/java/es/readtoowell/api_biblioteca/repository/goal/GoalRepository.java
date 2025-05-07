@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
@@ -17,7 +16,7 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
      * @param id ID del usuario
      * @return Lista con los objetivos del usuario
      */
-    Set<Goal> findByUserId(Long id);
+    List<Goal> findByUserId(Long id);
 
     /**
      * Busca los objetivos anuales del año indicado de un usuario.

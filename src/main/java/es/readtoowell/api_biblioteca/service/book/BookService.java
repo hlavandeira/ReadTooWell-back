@@ -21,10 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,13 +77,13 @@ public class BookService {
      * @param genreIds Lista con los IDs de los géneros asociados al libro
      * @return DTO con los datos del libro creado
      */
-    public BookDTO createBook(BookDTO bookDTO, Set<Long> genreIds) {
+    public BookDTO createBook(BookDTO bookDTO, List<Long> genreIds) {
         Book book = new Book();
 
-        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
-        Set<GenreDTO> genreDTOs = genres.stream()
+        List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
+        List<GenreDTO> genreDTOs = genres.stream()
                 .map(genreMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         bookDTO.setGenres(genreDTOs);
         fillBookData(null, book, bookDTO);
@@ -103,15 +102,15 @@ public class BookService {
      * @return DTO con los datos del libro actualizado
      * @throws EntityNotFoundException El libro no existe
      */
-    public BookDTO updateBook(Long idBook, BookDTO book, Set<Long> genreIds) {
+    public BookDTO updateBook(Long idBook, BookDTO book, List<Long> genreIds) {
         Book libro = bookRepository.findById(idBook)
                 .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
 
-        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+        List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
 
-        Set<GenreDTO> genreDTOs = genres.stream()
+        List<GenreDTO> genreDTOs = genres.stream()
                 .map(genreMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         book.setGenres(genreDTOs);
         fillBookData(idBook, libro, book);
@@ -166,12 +165,12 @@ public class BookService {
         }
 
         if (bookDTO.getGenres() != null && !bookDTO.getGenres().isEmpty()) {
-            Set<Long> genreIds = bookDTO.getGenres()
+            List<Long> genreIds = bookDTO.getGenres()
                     .stream()
                     .map(GenreDTO::getId)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
 
-            Set<Genre> genres = new HashSet<>(genreRepository.findAllById(genreIds));
+            List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
 
             if (genres.size() != genreIds.size()) {
                 throw new EntityNotFoundException("Algunos géneros no existen");
@@ -271,25 +270,25 @@ public class BookService {
         details.setAverageRating(BigDecimal.valueOf(calificacionMedia)
                 .setScale(2, RoundingMode.HALF_UP).doubleValue());
 
-        Set<UserLibraryBook> reviews = libraryRepository.findAllWithReviewByBookIdExcludingUser(libro.getId(),
+        List<UserLibraryBook> reviews = libraryRepository.findAllWithReviewByBookIdExcludingUser(libro.getId(),
                                                                                                 user.getId());
-        Set<ReviewDTO> otherReviews = reviews.stream().map(r -> {
+        List<ReviewDTO> otherReviews = reviews.stream().map(r -> {
             ReviewDTO review = new ReviewDTO();
             review.setUsername(r.getUser().getUsername());
             review.setProfileName(r.getUser().getProfileName());
             review.setRating(r.getRating());
             review.setReview(r.getReview());
             return review;
-        }).collect(Collectors.toSet());
+        }).toList();
         details.setOtherUsersReviews(otherReviews);
 
-        Set<BookList> listas = listItemRepository.findAllListsByUserIdAndBookId(user.getId(), libro.getId());
-        Set<SimpleBookListDTO> listasDTO = listas.stream().map(lista -> {
+        List<BookList> listas = listItemRepository.findAllListsByUserIdAndBookId(user.getId(), libro.getId());
+        List<SimpleBookListDTO> listasDTO = listas.stream().map(lista -> {
                 SimpleBookListDTO simpleList = new SimpleBookListDTO();
                 simpleList.setId(lista.getId());
                 simpleList.setName(lista.getName());
                 return simpleList;
-        }).collect(Collectors.toSet());
+        }).toList();
         details.setLists(listasDTO);
 
         return details;
@@ -310,9 +309,9 @@ public class BookService {
             throw new IllegalStateException("El usuario con ID " + idAuthor + " no es un autor.");
         }
 
-        Set<Book> libros = bookRepository.findBooksByAuthorId(idAuthor);
+        List<Book> libros = bookRepository.findBooksByAuthorId(idAuthor);
 
-        Set<BookDTO> librosDTO = libros.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+        List<BookDTO> librosDTO = libros.stream().map(bookMapper::toDTO).toList();
 
         AuthorDTO dto = new AuthorDTO();
         dto.setAuthor(author);
@@ -328,7 +327,8 @@ public class BookService {
      * @return Lista con los libros escritos por el autor
      */
     public Page<BookDTO> getAllBooksByAuthor(String authorName, int page, int size) {
-        Page<Book> books = bookRepository.findBooksByAuthor(authorName, PageRequest.of(page, size));
+        Page<Book> books = bookRepository.findBooksByAuthor(authorName,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "publicationYear")));
 
         return books.map(bookMapper::toDTO);
     }
@@ -340,13 +340,13 @@ public class BookService {
      * @return Lista con el resto de libros de la colección
      * @throws EntityNotFoundException El libro no existe
      */
-    public Set<BookDTO> getOtherBooksFromCollection(Long idBook) {
-        Book libro = bookRepository.findById(idBook)
+    public List<BookDTO> getOtherBooksFromCollection(Long idBook) {
+        bookRepository.findById(idBook)
                 .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
 
-        Set<Book> librosColeccion = bookRepository.findOtherBooksInSameCollection(idBook);
+        List<Book> librosColeccion = bookRepository.findOtherBooksInSameCollection(idBook);
 
-        return librosColeccion.stream().map(bookMapper::toDTO).collect(Collectors.toSet());
+        return librosColeccion.stream().map(bookMapper::toDTO).toList();
     }
 
     /**
@@ -354,9 +354,9 @@ public class BookService {
      *
      * @return Lista con todos los géneros
      */
-    public Set<GenreDTO> getGenres() {
+    public List<GenreDTO> getGenres() {
         List<Genre> genres = genreRepository.findAll();
 
-        return genres.stream().map(genreMapper::toDTO).collect(Collectors.toSet());
+        return genres.stream().map(genreMapper::toDTO).toList();
     }
 }

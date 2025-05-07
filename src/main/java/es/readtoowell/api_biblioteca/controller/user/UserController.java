@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -121,8 +121,8 @@ public class UserController {
      * @return Lista con los usuarios seguidos como DTOs
      */
     @GetMapping("/{id}/seguidos")
-    public ResponseEntity<Set<UserDTO>> getFollows(@PathVariable Long id) {
-        Set<UserDTO> seguidos = userService.getFollows(id);
+    public ResponseEntity<List<UserDTO>> getFollows(@PathVariable Long id) {
+        List<UserDTO> seguidos = userService.getFollows(id);
 
         return ResponseEntity.ok(seguidos);
     }
@@ -134,8 +134,8 @@ public class UserController {
      * @return Lista con los usuarios seguidores como DTOs
      */
     @GetMapping("/{id}/seguidores")
-    public ResponseEntity<Set<UserDTO>> getFollowers(@PathVariable Long id) {
-        Set<UserDTO> seguidores = userService.getFollowers(id);
+    public ResponseEntity<List<UserDTO>> getFollowers(@PathVariable Long id) {
+        List<UserDTO> seguidores = userService.getFollowers(id);
 
         return ResponseEntity.ok(seguidores);
     }
@@ -216,7 +216,7 @@ public class UserController {
      * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/generos-favoritos")
-    public ResponseEntity<UserFavoritesDTO> updateFavoriteGenres(@RequestParam Set<Long> genreIds) {
+    public ResponseEntity<UserFavoritesDTO> updateFavoriteGenres(@RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
@@ -237,7 +237,7 @@ public class UserController {
      * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/libros-favoritos")
-    public ResponseEntity<UserFavoritesDTO> updateFavoriteBooks(@RequestParam Set<Long> bookIds) {
+    public ResponseEntity<UserFavoritesDTO> updateFavoriteBooks(@RequestParam List<Long> bookIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");

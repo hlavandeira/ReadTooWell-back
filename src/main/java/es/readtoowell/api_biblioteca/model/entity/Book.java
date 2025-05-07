@@ -3,8 +3,8 @@ package es.readtoowell.api_biblioteca.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidad que representa los libros.
@@ -46,7 +46,7 @@ public class Book {
     @JoinTable(name = "libro_genero",
             joinColumns = @JoinColumn(name = "id_libro"),
             inverseJoinColumns = @JoinColumn(name = "id_genero"))
-    private Set<Genre> genres = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     /**
      * Simula el borrado de un libro, poniendo el atributo 'activo' a 'false'.
@@ -281,7 +281,7 @@ public class Book {
      *
      * @return Lista con los géneros asociados al libro
      */
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         return genres;
     }
 
@@ -290,7 +290,7 @@ public class Book {
      *
      * @param genres Nueva lista de géneros asociados
      */
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(List<Genre> genres) {
         this.genres = genres;
     }
 }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles de una lista con paginación para los libros.
@@ -15,7 +15,7 @@ public class BookListDetailsDTO {
     private String name;
     @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres")
     private String description;
-    private Set<GenreDTO> genres;
+    private List<GenreDTO> genres;
     private Page<BookListItemDTO> books;
 
     // Métodos Getters y Setters
@@ -79,7 +79,7 @@ public class BookListDetailsDTO {
      *
      * @return Listado con los géneros asociados
      */
-    public Set<GenreDTO> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 
@@ -88,7 +88,7 @@ public class BookListDetailsDTO {
      *
      * @param genres Nuevos géneros asociados a la lista
      */
-    public void setGenres(Set<GenreDTO> genres) {
+    public void setGenres(List<GenreDTO> genres) {
         this.genres = genres;
     }
 

@@ -24,7 +24,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -160,12 +162,12 @@ public class UserService {
      * @param id ID del usuario del que se consultan los seguidos
      * @return Lista con los usuarios seguidos como DTOs
      */
-    public Set<UserDTO> getFollows(Long id) {
+    public List<UserDTO> getFollows(Long id) {
         return userRepository.findById(id)
                 .map(user -> user.getFollowedUsers().stream()
                         .map(userMapper::toDTO)
-                        .collect(Collectors.toSet()))
-                .orElse(Collections.emptySet());
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     /**
@@ -174,12 +176,12 @@ public class UserService {
      * @param id ID del usuario del que se consultan los seguidores
      * @return Lista con los usuarios seguidores como DTOs
      */
-    public Set<UserDTO> getFollowers(Long id) {
+    public List<UserDTO> getFollowers(Long id) {
         return userRepository.findById(id)
                 .map(user -> user.getFollowers().stream()
                         .map(userMapper::toDTO)
-                        .collect(Collectors.toSet()))
-                .orElse(Collections.emptySet());
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     /**
@@ -288,12 +290,12 @@ public class UserService {
      * @throws ValidationException Hay más géneros de los que se pueden añadir
      * @throws EntityNotFoundException Alguno de los géneros no existe
      */
-    public void addFavoriteGenres(User user, Set<Long> genreIds) {
+    public void addFavoriteGenres(User user, List<Long> genreIds) {
         if (genreIds.size() > 10) {
             throw new ValidationException("Sólo se pueden elegir 10 géneros favoritos como máximo.");
         }
 
-        Set<Genre> newGenres = new HashSet<>(genreRepository.findAllById(genreIds));
+        List<Genre> newGenres = new ArrayList<>(genreRepository.findAllById(genreIds));
 
         if (newGenres.size() != genreIds.size()) {
             throw new EntityNotFoundException("Uno o más géneros no existen.");
@@ -318,12 +320,12 @@ public class UserService {
      * @throws ValidationException Hay más libros de los que se pueden añadir
      * @throws EntityNotFoundException Alguno de los libros no existe
      */
-    public void addFavoriteBooks(User user, Set<Long> bookIds) {
+    public void addFavoriteBooks(User user, List<Long> bookIds) {
         if (bookIds.size() > 4) {
             throw new ValidationException("Sólo se pueden elegir 4 libros favoritos como máximo.");
         }
 
-        Set<Book> newBooks = new HashSet<>(bookRepository.findAllById(bookIds));
+        List<Book> newBooks = new ArrayList<>(bookRepository.findAllById(bookIds));
 
         if (newBooks.size() != bookIds.size()) {
             throw new EntityNotFoundException("Uno o más libros no existen.");

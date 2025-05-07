@@ -3,7 +3,7 @@ package es.readtoowell.api_biblioteca.model.DTO.book;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles completos de un libro.
@@ -20,8 +20,8 @@ public class BookDetailsDTO {
     private Date dateFinish;
     private double averageRating;
     private String collectionName;
-    private Set<SimpleBookListDTO> lists;
-    private Set<ReviewDTO> otherUsersReviews;
+    private List<SimpleBookListDTO> lists;
+    private List<ReviewDTO> otherUsersReviews;
     private boolean saved;
 
     // Métodos Getters y Setters
@@ -175,7 +175,7 @@ public class BookDetailsDTO {
      *
      * @return Listas del usuario a las que pertenece el libro
      */
-    public Set<SimpleBookListDTO> getLists() {
+    public List<SimpleBookListDTO> getLists() {
         return lists;
     }
 
@@ -184,7 +184,7 @@ public class BookDetailsDTO {
      *
      * @param lists Lista con las nuevas listas del usuario
      */
-    public void setLists(Set<SimpleBookListDTO> lists) {
+    public void setLists(List<SimpleBookListDTO> lists) {
         this.lists = lists;
     }
 
@@ -193,7 +193,7 @@ public class BookDetailsDTO {
      *
      * @return Lista con las reseñas de otros usuarios
      */
-    public Set<ReviewDTO> getOtherUsersReviews() {
+    public List<ReviewDTO> getOtherUsersReviews() {
         return otherUsersReviews;
     }
 
@@ -202,7 +202,7 @@ public class BookDetailsDTO {
      *
      * @param otherUsersReviews Lista con las nuevas reseñas de otros usuarios
      */
-    public void setOtherUsersReviews(Set<ReviewDTO> otherUsersReviews) {
+    public void setOtherUsersReviews(List<ReviewDTO> otherUsersReviews) {
         this.otherUsersReviews = otherUsersReviews;
     }
 

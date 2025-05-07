@@ -4,7 +4,7 @@ import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles de una lista de libros.
@@ -16,8 +16,8 @@ public class BookListDTO {
     private String name;
     @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres")
     private String description;
-    private Set<GenreDTO> genres;
-    private Set<BookListItemDTO> books;
+    private List<GenreDTO> genres;
+    private List<BookListItemDTO> books;
 
     // Métodos Getters y Setters
 
@@ -98,7 +98,7 @@ public class BookListDTO {
      *
      * @return Listado con los géneros asociados a la lista
      */
-    public Set<GenreDTO> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 
@@ -107,7 +107,7 @@ public class BookListDTO {
      *
      * @param genres Nuevos géneros asociados
      */
-    public void setGenres(Set<GenreDTO> genres) {
+    public void setGenres(List<GenreDTO> genres) {
         this.genres = genres;
     }
 
@@ -116,7 +116,7 @@ public class BookListDTO {
      *
      * @return Listado de los libros de la lista
      */
-    public Set<BookListItemDTO> getBooks() {
+    public List<BookListItemDTO> getBooks() {
         return books;
     }
 
@@ -125,7 +125,7 @@ public class BookListDTO {
      *
      * @param books Nuevos libros de la lista
      */
-    public void setBooks(Set<BookListItemDTO> books) {
+    public void setBooks(List<BookListItemDTO> books) {
         this.books = books;
     }
 
