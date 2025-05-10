@@ -1,11 +1,11 @@
-package es.readtoowell.api_biblioteca.model.DTO;
+package es.readtoowell.api_biblioteca.model.DTO.book;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles de un libro.
@@ -21,7 +21,7 @@ public class BookDTO {
     @Positive(message="El número de páginas no puede ser un número negativo")
     private int pageNumber;
     private String publisher;
-    @Column(name = "sinopsis", length = 2000)
+    @Size(max = 2000, message = "La sinopsis no puede superar los 2000 caracteres")
     private String synopsis;
     private String cover;
     @Pattern(regexp="^(\\d{10}|\\d{13})$") // El ISBN debe tener 10 o 13 números.
@@ -29,7 +29,7 @@ public class BookDTO {
     private boolean active;
     private Long collectionId;
     private Integer numCollection;
-    private Set<GenreDTO> genres;
+    private List<GenreDTO> genres;
 
     // Métodos Getters y Setters
 
@@ -254,7 +254,7 @@ public class BookDTO {
      *
      * @return Lista con los géneros asociados al libro
      */
-    public Set<GenreDTO> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 
@@ -263,7 +263,7 @@ public class BookDTO {
      *
      * @param genres Nueva lista de géneros asociados
      */
-    public void setGenres(Set<GenreDTO> genres) {
+    public void setGenres(List<GenreDTO> genres) {
         this.genres = genres;
     }
 }

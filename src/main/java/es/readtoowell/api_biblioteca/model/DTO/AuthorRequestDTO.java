@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.entity.User;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * DTO que representa los detalles de una solicitud de autor.
@@ -18,7 +18,7 @@ public class AuthorRequestDTO {
     private Date dateSent;
     private boolean active;
     private int status;
-    private Set<RequestBookDTO> books;
+    private List<RequestBookDTO> books;
 
     // Métodos Getters y Setters
 
@@ -153,7 +153,7 @@ public class AuthorRequestDTO {
      *
      * @return Libros asociados a la solicitud
      */
-    public Set<RequestBookDTO> getBooks() {
+    public List<RequestBookDTO> getBooks() {
         return books;
     }
 
@@ -162,7 +162,7 @@ public class AuthorRequestDTO {
      *
      * @param books Libros asociados a la solicitud
      */
-    public void setBooks(Set<RequestBookDTO> books) {
+    public void setBooks(List<RequestBookDTO> books) {
         this.books = books;
     }
 }

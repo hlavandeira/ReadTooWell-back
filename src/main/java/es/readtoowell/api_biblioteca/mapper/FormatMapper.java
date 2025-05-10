@@ -1,6 +1,6 @@
 package es.readtoowell.api_biblioteca.mapper;
 
-import es.readtoowell.api_biblioteca.model.DTO.FormatDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.FormatDTO;
 import es.readtoowell.api_biblioteca.model.entity.Format;
 import org.springframework.stereotype.Component;
 

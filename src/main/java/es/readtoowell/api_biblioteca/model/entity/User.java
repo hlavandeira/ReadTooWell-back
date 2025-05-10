@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidad que representa los usuarios.
@@ -49,13 +49,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "id_seguido")
     )
     @JsonIgnore
-    private Set<User> followedUsers = new HashSet<>();
+    private List<User> followedUsers = new ArrayList<>();
     /**
      * Lista de usuarios que siguen al propio usuario.
      */
     @ManyToMany(mappedBy = "followedUsers")
     @JsonIgnore
-    private Set<User> followers = new HashSet<>();
+    private List<User> followers = new ArrayList<>();
     /**
      * Lista de géneros favoritos del usuario.
      */
@@ -64,7 +64,7 @@ public class User {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_genero"))
     @JsonIgnore
-    private Set<Genre> favoriteGenres = new HashSet<>();
+    private List<Genre> favoriteGenres = new ArrayList<>();
     /**
      * Lista de libros favoritos del usuario.
      */
@@ -73,7 +73,7 @@ public class User {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_libro"))
     @JsonIgnore
-    private Set<Book> favoriteBooks = new HashSet<>();
+    private List<Book> favoriteBooks = new ArrayList<>();
 
     /**
      * Devuelve el rol del usuario como Enum.
@@ -236,7 +236,7 @@ public class User {
      *
      * @return Listado con los usuarios a los que sigue el propio usuario
      */
-    public Set<User> getFollowedUsers() {
+    public List<User> getFollowedUsers() {
         return followedUsers;
     }
 
@@ -245,7 +245,7 @@ public class User {
      *
      * @return Listado con los usuarios seguidores del propio usuario
      */
-    public Set<User> getFollowers() {
+    public List<User> getFollowers() {
         return followers;
     }
 
@@ -254,26 +254,26 @@ public class User {
      *
      * @return Listado con los géneros favoritos del usuario
      */
-    public Set<Genre> getFavoriteGenres() { return favoriteGenres; }
+    public List<Genre> getFavoriteGenres() { return favoriteGenres; }
 
     /**
      * Establece los géneros favoritos del usuario.
      *
      * @param favoriteGenres Listado con los nuevos géneros favoritos
      */
-    public void setFavoriteGenres(Set<Genre> favoriteGenres) { this.favoriteGenres = favoriteGenres; }
+    public void setFavoriteGenres(List<Genre> favoriteGenres) { this.favoriteGenres = favoriteGenres; }
 
     /**
      * Devuelve los libros favoritos del usuario.
      *
      * @return Listado con los libros favoritos del usuario
      */
-    public Set<Book> getFavoriteBooks() { return favoriteBooks; }
+    public List<Book> getFavoriteBooks() { return favoriteBooks; }
 
     /**
      * Establece los libros favoritos del usuario.
      *
      * @param favoriteBooks Listado con los nuevos libros favoritos
      */
-    public void setFavoriteBooks(Set<Book> favoriteBooks) { this.favoriteBooks = favoriteBooks; }
+    public void setFavoriteBooks(List<Book> favoriteBooks) { this.favoriteBooks = favoriteBooks; }
 }

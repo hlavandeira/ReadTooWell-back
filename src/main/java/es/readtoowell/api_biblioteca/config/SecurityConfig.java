@@ -22,6 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -58,39 +61,48 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        // Usuarios no autenticados incluidos
+                        .requestMatchers("/auth/**").permitAll() // Inicio de sesión y registro
+                        .requestMatchers("/libros").permitAll() // Catálogo de libros
+
+                        // USER
+                        .requestMatchers(HttpMethod.GET, "/solicitud-autor/comprobar-pendiente").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/solicitud-autor").hasRole("USER")
+
                         // ADMIN
                         .requestMatchers(HttpMethod.POST, "/usuarios").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/usuarios/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/*/autor").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/libros").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/libros/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/libros/*").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.PUT, "/sugerencias/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/sugerencias/**").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.PUT, "/solicitud-autor/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/solicitud-autor/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/sugerencias/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/usuarios/*/autor").hasRole("ADMIN")
+
                         // USER y AUTHOR
                         .requestMatchers(HttpMethod.PUT, "/usuarios").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/usuarios/seguir/*")
-                                .hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/usuarios/dejar-seguir/*")
-                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/seguir/*").hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/dejar-seguir/*").hasAnyRole("USER", "AUTHOR")
+
                         .requestMatchers("/objetivos/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/listas/**").hasAnyRole("USER", "AUTHOR")
-                        .requestMatchers(HttpMethod.POST, "/sugerencias/*")
-                                .hasAnyRole("USER", "AUTHOR")
+                        .requestMatchers(HttpMethod.POST, "/sugerencias/*").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/biblioteca/**").hasAnyRole("USER", "AUTHOR")
-                        // USER
-                        .requestMatchers(HttpMethod.POST, "/solicitud-autor").hasRole("USER")
-                        // TODOS
+
+                        // Todos los usuarios autenticados
                         .requestMatchers("/usuarios/**").authenticated()
                         .requestMatchers("/libros/**").authenticated()
                         .requestMatchers("/libros/*/autor").authenticated()
 
-
+                        // Cualquier otra petición
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -162,5 +174,19 @@ public class SecurityConfig {
     @Bean
     public JwtFilter jwtFilter() { // Creamos el Bean de JwtFilter
         return new JwtFilter(jwtUtil, userDetailsService());
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

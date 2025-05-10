@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidad que representa las solicitudes de autor.
@@ -41,7 +41,7 @@ public class AuthorRequest {
      * Lista de libros añadidos a la solicitud de autor.
      */
     @OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
-    private Set<RequestBook> books = new HashSet<>();
+    private List<RequestBook> books = new ArrayList<>();
 
     // Métodos Getters y Setters
 
@@ -176,7 +176,7 @@ public class AuthorRequest {
      *
      * @return Libros asociados a la solicitud
      */
-    public Set<RequestBook> getBooks() {
+    public List<RequestBook> getBooks() {
         return books;
     }
 
@@ -185,7 +185,7 @@ public class AuthorRequest {
      *
      * @param books Libros asociados a la solicitud
      */
-    public void setBooks(Set<RequestBook> books) {
+    public void setBooks(List<RequestBook> books) {
         this.books = books;
     }
 }

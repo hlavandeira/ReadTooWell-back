@@ -9,10 +9,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
+    /**
+     * Busca todos los libros activos del sistema.
+     *
+     * @param pageable Información de paginación
+     * @return Página con los libros activos
+     */
+    Page<Book> findAllByActiveTrue(Pageable pageable);
+
+    /**
+     * Busca todos los libros borrados del sistema.
+     *
+     * @param pageable Información de paginación
+     * @return Página con los libros activos
+     */
+    Page<Book> findAllByActiveFalse(Pageable pageable);
+
     /**
      * Busca un libro mediante su ISBN y lo devuelve.
      *
@@ -50,13 +66,14 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             and (:minPages is null or b.pageNumber >= :minPages)
             and (:maxPages is null or b.pageNumber <= :maxPages)
             and (:minYear is null or b.publicationYear >= :minYear)
-            and (:maxYear is null or b.publicationYear <= :maxYear)""")
+            and (:maxYear is null or b.publicationYear <= :maxYear)
+            and b.active is true""")
     Page<Book> filterBooks(
             @Param("searchString") String searchString,
-            @Param("minPags") Integer minPages,
-            @Param("maxPags") Integer maxPages,
-            @Param("minAño") Integer minYear,
-            @Param("maxAño") Integer maxYear,
+            @Param("minPages") Integer minPages,
+            @Param("maxPages") Integer maxPages,
+            @Param("minYear") Integer minYear,
+            @Param("maxYear") Integer maxYear,
             Pageable pageable
     );
 
@@ -79,5 +96,29 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     SELECT * FROM libro l 
     WHERE l.id_libro IN (SELECT la.id_libro FROM libro_autor la WHERE la.id_autor = :authorId)
     """, nativeQuery = true) // Query nativa porque libro_autor no existe como entidad
-    Set<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
+    List<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
+
+    /**
+     * Devuelve el resto de libros de una colección a la que pertenece el libro indicado.
+     *
+     * @param bookId ID del libro
+     * @return Lista con el resto de libros de la colección
+     */
+    @Query("""
+    SELECT b FROM Book b
+    WHERE b.collection.id = (
+        SELECT b2.collection.id FROM Book b2
+        WHERE b2.id = :bookId AND b2.collection IS NOT NULL
+    )
+    AND b.id <> :bookId
+    """)
+    List<Book> findOtherBooksInSameCollection(@Param("bookId") Long bookId);
+
+    /**
+     * Devuelve todos los libros escritos por un autor.
+     *
+     * @param author Nombre del autor
+     * @return Página con los libros escritos por el autor
+     */
+    Page<Book> findBooksByAuthor(String author, Pageable pageable);
 }

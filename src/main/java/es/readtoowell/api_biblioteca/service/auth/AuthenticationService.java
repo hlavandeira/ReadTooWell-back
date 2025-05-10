@@ -1,9 +1,9 @@
 package es.readtoowell.api_biblioteca.service.auth;
 
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
-import es.readtoowell.api_biblioteca.model.DTO.LoginDTO;
-import es.readtoowell.api_biblioteca.model.DTO.RegisterDTO;
-import es.readtoowell.api_biblioteca.model.DTO.RegisteredDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.LoginDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.RegisterDTO;
+import es.readtoowell.api_biblioteca.model.DTO.user.AuthenticatedUserDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.user.UserRepository;
@@ -33,7 +33,7 @@ public class AuthenticationService {
      * @return DTO con los datos del usuario registrado
      * @throws ValidationException El correo está en uso o las contraseñas no coinciden
      */
-    public RegisteredDTO register(RegisterDTO registerDTO) {
+    public AuthenticatedUserDTO register(RegisterDTO registerDTO) {
         if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
             throw new ValidationException("El correo ya está en uso.");
         }
@@ -43,7 +43,7 @@ public class AuthenticationService {
 
         User user = new User();
         user.setUsername(registerDTO.getUsername());
-        user.setEmail(registerDTO.getEmail());
+        user.setEmail(registerDTO.getEmail().toLowerCase());
 
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
@@ -56,7 +56,7 @@ public class AuthenticationService {
 
         String token = jwtUtil.generateToken(user.getEmail());
 
-        RegisteredDTO dto = new RegisteredDTO();
+        AuthenticatedUserDTO dto = new AuthenticatedUserDTO();
         dto.setUser(userMapper.toDTO(user));
         dto.setToken(token);
 
@@ -67,11 +67,11 @@ public class AuthenticationService {
      * Inicio de sesión para un usuario.
      *
      * @param loginDTO Datos del inicio de sesión
-     * @return Token de sesión para el usuario
+     * @return DTO con los datos del usuario auenticado
      * @throws ValidationException El usuario no existe o la contraseña es incorrecta
      */
-    public String login(LoginDTO loginDTO) {
-        Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
+    public AuthenticatedUserDTO login(LoginDTO loginDTO) {
+        Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail().toLowerCase());
 
         if (userOpt.isEmpty()) {
             throw new ValidationException("No existe ningún usuario con el correo proporcionado");
@@ -82,6 +82,22 @@ public class AuthenticationService {
             throw new ValidationException("Los datos son incorrectos");
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        AuthenticatedUserDTO authUser = new AuthenticatedUserDTO();
+        authUser.setUser(userMapper.toDTO(user));
+        authUser.setToken(token);
+
+        return authUser;
+    }
+
+    /**
+     * Valida el token para comprobar si la sesión es válida o inválida.
+     *
+     * @param token Token a validar
+     * @return 'true' si el token es válido, 'false' en caso contrario
+     */
+    public boolean validateToken(String token) {
+        return jwtUtil.validateToken(token);
     }
 }

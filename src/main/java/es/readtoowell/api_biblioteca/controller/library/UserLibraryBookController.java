@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.controller.library;
 
+import es.readtoowell.api_biblioteca.model.DTO.book.RatingDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
@@ -115,14 +116,14 @@ public class UserLibraryBookController {
      * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idBook}/calificar")
-    public ResponseEntity<UserLibraryBookDTO> rateBook(@PathVariable Long idBook,
+    public ResponseEntity<RatingDTO> rateBook(@PathVariable Long idBook,
                                                        @RequestParam double calificacion) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
         }
 
-        UserLibraryBookDTO ratedBook = libraryService.rateBook(idBook, user, calificacion);
+        RatingDTO ratedBook = libraryService.rateBook(idBook, user, calificacion);
 
         return ResponseEntity.ok(ratedBook);
     }
@@ -137,7 +138,7 @@ public class UserLibraryBookController {
      */
     @PutMapping("/{idBook}/escribir-reseña")
     public ResponseEntity<UserLibraryBookDTO> reviewBook(@PathVariable Long idBook,
-                                                         @RequestParam String review) {
+                                                @RequestParam String review) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");

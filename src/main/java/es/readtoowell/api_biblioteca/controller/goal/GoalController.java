@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/objetivos")
@@ -28,13 +28,13 @@ public class GoalController {
      * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/en-curso")
-    public ResponseEntity<Set<GoalDTO>> getGoalsInProgress() {
+    public ResponseEntity<List<GoalDTO>> getGoalsInProgress() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
         }
 
-        Set<GoalDTO> objetivos = goalService.getGoalsInProgress(user.getId());
+        List<GoalDTO> objetivos = goalService.getGoalsInProgress(user.getId());
 
         return ResponseEntity.ok(objetivos);
     }
@@ -46,13 +46,30 @@ public class GoalController {
      * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/terminados")
-    public ResponseEntity<Set<GoalDTO>> getFinishedGoals() {
+    public ResponseEntity<List<GoalDTO>> getFinishedGoals() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
         }
 
-        Set<GoalDTO> objetivos = goalService.getCompletedGoals(user.getId());
+        List<GoalDTO> objetivos = goalService.getFinishedGoals(user.getId());
+
+        return ResponseEntity.ok(objetivos);
+    }
+
+    /**
+     * Devuelve los objetivos finalizados y completados por un usuario en el año actual.
+     *
+     * @return Lista con los objetivos completados en el año actual
+     */
+    @GetMapping("/terminados/año-actual")
+    public ResponseEntity<List<GoalDTO>> getFinishedGoalsActualYear() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        List<GoalDTO> objetivos = goalService.getFinishedGoalsActualYear(user.getId());
 
         return ResponseEntity.ok(objetivos);
     }

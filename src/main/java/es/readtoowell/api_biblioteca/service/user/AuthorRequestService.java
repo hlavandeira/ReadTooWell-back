@@ -6,6 +6,7 @@ import es.readtoowell.api_biblioteca.model.DTO.AuthorRequestDTO;
 import es.readtoowell.api_biblioteca.model.entity.RequestBook;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
+import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.user.AuthorRequestRepository;
 import es.readtoowell.api_biblioteca.repository.user.RequestBookRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,12 +16,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,8 @@ public class AuthorRequestService {
     private AuthorRequestMapper requestMapper;
     @Autowired
     private RequestBookRepository requestBookRepository;
+    @Autowired
+    private UserService userService;
 
     /**
      * Envía una solicitud de verificación de autor.
@@ -57,13 +60,13 @@ public class AuthorRequestService {
         final AuthorRequest savedRequest = requestRepository.save(request);
 
         // Libros asociados a la solicitud
-        Set<RequestBook> books = dto.getBooks().stream().map(req -> {
+        List<RequestBook> books = dto.getBooks().stream().map(req -> {
             RequestBook book = new RequestBook();
             book.setTitle(req.getTitle());
             book.setPublicationYear(req.getPublicationYear());
             book.setRequest(savedRequest);
             return book;
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toList());
 
         savedRequest.setBooks(books);
 
@@ -84,20 +87,26 @@ public class AuthorRequestService {
      * @return DTO con los datos de la solicitud actualizada
      * @throws ValidationException Estado de solicitud inválido
      * @throws EntityNotFoundException La solicitud no existe
+     * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
      */
-    public AuthorRequestDTO updateStatusRequest(Long idRequest, int newStatus) {
+    public AuthorRequestDTO updateStatusRequest(Long idRequest, int newStatus, User user) {
         if (newStatus < 0 || newStatus > 2) {
             throw new ValidationException("El nuevo estado de la solicitud es inválido.");
+        }
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
         }
 
         AuthorRequest request = requestRepository.findByIdWithBooks(idRequest)
                 .orElseThrow(() -> new EntityNotFoundException("La solicitud con ID " + idRequest + " no existe."));
 
-        request.setStatus(newStatus);
-
-        if (newStatus == RequestStatus.ACCEPETD.getValue() || newStatus == RequestStatus.REJECTED.getValue()) {
+        if (newStatus == RequestStatus.REJECTED.getValue()) {
             request.setActive(false);
+        } else if (newStatus == RequestStatus.ACCEPETD.getValue()) { // Si se acepta, actualizar los datos del usuario
+            userService.promoteToAuthor(request.getUser().getId());
         }
+
+        request.setStatus(newStatus);
 
         request = requestRepository.save(request);
 
@@ -111,9 +120,14 @@ public class AuthorRequestService {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con las solicitudes como DTOs
+     * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
      */
-    public Page<AuthorRequestDTO> getAllRequests(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+    public Page<AuthorRequestDTO> getAllRequests(int page, int size, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateSent"));
 
         return requestRepository.findAll(pageable).map(requestMapper::toDTO);
     }
@@ -127,13 +141,17 @@ public class AuthorRequestService {
      * @param status Estado por el que se quieren filtrar
      * @return Página con las solicitudes filtradas como DTOs
      * @throws ValidationException Estado de solicitud inválido
+     * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
      */
-    public Page<AuthorRequestDTO> getRequestsWithStatus(int page, int size, int status) {
+    public Page<AuthorRequestDTO> getRequestsWithStatus(int page, int size, int status, User user) {
         if (status < 0 || status > 2) {
             throw new ValidationException("El estado de la solicitud es inválido.");
         }
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateSent"));
 
         return requestRepository.findByStatus(status, pageable).map(requestMapper::toDTO);
     }
@@ -144,11 +162,26 @@ public class AuthorRequestService {
      * @param idRequest ID de la solicitud
      * @return DTO con los datos de la solicitud
      * @throws EntityNotFoundException La solicitud no existe
+     * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
      */
-    public AuthorRequestDTO getRequest(Long idRequest) {
+    public AuthorRequestDTO getRequest(Long idRequest, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         AuthorRequest request = requestRepository.findByIdWithBooks(idRequest)
                 .orElseThrow(() -> new EntityNotFoundException("La solicitud con ID " + idRequest + " no existe."));
 
         return requestMapper.toDTO(request);
+    }
+
+    /**
+     * Comprueba si existen solicitudes pendientes de un usuario concreto.
+     *
+     * @param user Usuario del que se comprueban las solicitudes
+     * @return 'true' si tiene alguna solicitud pendiente, 'false' en caso contrario
+     */
+    public boolean checkIfPendingRequest(User user) {
+        return requestRepository.existsByUserIdAndStatusIn(user.getId(), List.of(RequestStatus.PENDING.getValue()));
     }
 }

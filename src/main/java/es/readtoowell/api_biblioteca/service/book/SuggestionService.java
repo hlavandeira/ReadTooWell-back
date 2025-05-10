@@ -4,6 +4,7 @@ import es.readtoowell.api_biblioteca.mapper.SuggestionMapper;
 import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
 import es.readtoowell.api_biblioteca.model.entity.Suggestion;
 import es.readtoowell.api_biblioteca.model.entity.User;
+import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
 import es.readtoowell.api_biblioteca.repository.book.SuggestionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -57,9 +59,12 @@ public class SuggestionService {
      * @throws ValidationException El nuevo estado es inválido
      * @throws EntityNotFoundException La sugerencia no existe
      */
-    public SuggestionDTO updateStatusSuggestion(Long idSuggestion, int newStatus) {
+    public SuggestionDTO updateStatusSuggestion(Long idSuggestion, int newStatus, User user) {
         if (newStatus < 0 || newStatus > 3) {
             throw new ValidationException("El nuevo estado de la sugerencia es inválido.");
+        }
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
         }
 
         Suggestion suggestion = suggestionRepository.findById(idSuggestion)
@@ -79,8 +84,12 @@ public class SuggestionService {
      * @param size Tamaño de la página
      * @return Página con las sugerencias como DTOs
      */
-    public Page<SuggestionDTO> getAllSuggestions(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+    public Page<SuggestionDTO> getAllSuggestions(int page, int size, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateSent"));
 
         return suggestionRepository.findAll(pageable).map(suggestionMapper::toDTO);
     }
@@ -94,11 +103,15 @@ public class SuggestionService {
      * @return Página con las sugerencias filtradas como DTOs
      * @throws ValidationException El estado de sugerencia es inválido
      */
-    public Page<SuggestionDTO> getSuggestionsWithStatus(int page, int size, int status) {
+    public Page<SuggestionDTO> getSuggestionsWithStatus(int page, int size, int status, User user) {
         if (status < 0 || status > 3) {
             throw new ValidationException("El estado es inválido.");
         }
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaEnviada"));
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateSent"));
 
         return suggestionRepository.findByStatus(status, pageable).map(suggestionMapper::toDTO);
     }
@@ -110,7 +123,11 @@ public class SuggestionService {
      * @return DTO con los datos de la sugerencia
      * @throws EntityNotFoundException La sugerencia no existe
      */
-    public SuggestionDTO getSuggestion(Long idSuggestion) {
+    public SuggestionDTO getSuggestion(Long idSuggestion, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         Suggestion suggestion = suggestionRepository.findById(idSuggestion)
                 .orElseThrow(() -> new EntityNotFoundException("La sugerencia con ID " + idSuggestion + " no existe."));
 

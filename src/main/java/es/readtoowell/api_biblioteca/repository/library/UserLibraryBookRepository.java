@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook, UserLibraryBookId> {
     /**
@@ -67,7 +66,7 @@ public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook
     AND ulb.review IS NOT NULL AND ulb.review <> ''
     AND ulb.user.id <> :userId
     """)
-    Set<UserLibraryBook> findAllWithReviewByBookIdExcludingUser(@Param("bookId") Long bookId,
+    List<UserLibraryBook> findAllWithReviewByBookIdExcludingUser(@Param("bookId") Long bookId,
                                                                 @Param("userId") Long userId);
 
     /**
@@ -134,7 +133,7 @@ public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook
     WHERE ulb.user.id = :userId
     AND EXTRACT(YEAR FROM ulb.dateFinish) = EXTRACT(YEAR FROM CURRENT_DATE)
     """)
-    Set<Book> findBooksReadActualYear(@Param("userId") Long userId);
+    List<Book> findBooksReadActualYear(@Param("userId") Long userId);
 
     /**
      * Busca los libros leídos por el usuario en el mes actual.
@@ -148,5 +147,5 @@ public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook
     AND EXTRACT(YEAR FROM ulb.dateFinish) = EXTRACT(YEAR FROM CURRENT_DATE)
     AND EXTRACT(MONTH FROM ulb.dateFinish) = EXTRACT(MONTH FROM CURRENT_DATE)
     """)
-    Set<Book> findBooksReadActualMonth(@Param("userId") Long userId);
+    List<Book> findBooksReadActualMonth(@Param("userId") Long userId);
 }

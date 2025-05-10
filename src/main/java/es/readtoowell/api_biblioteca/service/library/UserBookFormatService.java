@@ -1,7 +1,7 @@
 package es.readtoowell.api_biblioteca.service.library;
 
 import es.readtoowell.api_biblioteca.mapper.FormatMapper;
-import es.readtoowell.api_biblioteca.model.DTO.FormatDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.FormatDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.entity.id.UserBookFormatId;
 import es.readtoowell.api_biblioteca.model.entity.id.UserLibraryBookId;

@@ -1,5 +1,8 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import es.readtoowell.api_biblioteca.model.DTO.book.GenreDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.SimpleBookDTO;
+
 import java.util.List;
 
 /**
@@ -15,18 +18,18 @@ public class YearRecapDTO {
     // Métodos Getters y Setters
 
     /**
-     * Devuelve los objetivos anuales en curso del usuario.
+     * Devuelve los objetivos completados en el año actual por el usuario.
      *
-     * @return Objetivos anuales en curso
+     * @return Objetivos completados en el año actual
      */
     public List<GoalDTO> getAnnualGoals() {
         return annualGoals;
     }
 
     /**
-     * Establece un valor para los objetivos anuales en curso del usuario.
+     * Establece un valor para los objetivos completados en el año actual por el usuario.
      *
-     * @param annualGoals Lista con los nuevos objetivos anuales en curso
+     * @param annualGoals Lista con los nuevos objetivos completados en el año actual
      */
     public void setAnnualGoals(List<GoalDTO> annualGoals) {
         this.annualGoals = annualGoals;

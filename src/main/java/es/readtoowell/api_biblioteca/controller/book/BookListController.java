@@ -1,6 +1,7 @@
 package es.readtoowell.api_biblioteca.controller.book;
 
-import es.readtoowell.api_biblioteca.model.DTO.BookListDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookListDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookListDetailsDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.book.BookListService;
 import es.readtoowell.api_biblioteca.service.user.UserService;
@@ -12,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/listas")
@@ -45,6 +46,28 @@ public class BookListController {
     }
 
     /**
+     * Devuelve los detalles de una lista, con paginación para los libros incluidos en esta.
+     *
+     * @param idList ID de la lista
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return DTO con los detalles de la lista incluyendo paginación de libros
+     */
+    @GetMapping("/{idList}")
+    public ResponseEntity<BookListDetailsDTO> getListDetails(
+                                                        @PathVariable Long idList,
+                                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookListDetailsDTO lista = listService.getListDetails(user.getId(), idList, page, size);
+        return ResponseEntity.ok(lista);
+    }
+
+    /**
      * Crea una nueva lista para un usuario.
      *
      * @param list DTO con los datos de la lista a crear
@@ -54,7 +77,7 @@ public class BookListController {
      */
     @PostMapping
     public ResponseEntity<BookListDTO> createList(@Valid @RequestBody BookListDTO list,
-                                                  @RequestParam Set<Long> genreIds) {
+                                                  @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
@@ -77,7 +100,7 @@ public class BookListController {
     @PutMapping("/{idList}")
     public ResponseEntity<BookListDTO> updateList(@PathVariable Long idList,
                                                   @Valid @RequestBody BookListDTO list,
-                                                  @RequestParam Set<Long> genreIds) {
+                                                  @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
             throw new AccessDeniedException("Usuario no autenticado.");
@@ -147,5 +170,20 @@ public class BookListController {
         BookListDTO updatedList = listService.deleteBookFromList(user.getId(), idList, idBook);
 
         return ResponseEntity.ok(updatedList);
+    }
+
+    @GetMapping("/{idBook}/otras-listas")
+    public ResponseEntity<Page<BookListDTO>> getListsWithoutBook(
+                                                        @PathVariable Long idBook,
+                                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "size", defaultValue = "100") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        Page<BookListDTO> lists = listService.getListsWithoutBook(idBook, user.getId(), page, size);
+
+        return ResponseEntity.ok(lists);
     }
 }
