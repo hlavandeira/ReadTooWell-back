@@ -32,7 +32,7 @@ public class Book {
     private String publisher;
     @Column(name = "sinopsis", length = 2000)
     private String synopsis;
-    @Column(name = "portada")
+    @Column(name = "portada", columnDefinition = "TEXT")
     private String cover;
     private String isbn;
     @Column(name = "activo")

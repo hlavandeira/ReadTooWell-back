@@ -5,13 +5,12 @@ import es.readtoowell.api_biblioteca.model.DTO.book.*;
 import es.readtoowell.api_biblioteca.model.DTO.user.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
 import es.readtoowell.api_biblioteca.model.enums.Role;
-import es.readtoowell.api_biblioteca.repository.book.BookListItemRepository;
-import es.readtoowell.api_biblioteca.repository.book.BookRepository;
-import es.readtoowell.api_biblioteca.repository.book.CollectionRepository;
-import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
+import es.readtoowell.api_biblioteca.model.enums.SuggestionStatus;
+import es.readtoowell.api_biblioteca.repository.book.*;
 import es.readtoowell.api_biblioteca.repository.library.UserLibraryBookRepository;
 import es.readtoowell.api_biblioteca.repository.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +44,12 @@ public class BookService {
     private BookListItemRepository listItemRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CollectionMapper collectionMapper;
+    @Autowired
+    private SuggestionRepository suggestionRepository;
+    @Autowired
+    private SuggestionService suggestionService;
 
     /**
      * Devuelve todos los libros.
@@ -81,7 +86,11 @@ public class BookService {
      * @param genreIds Lista con los IDs de los géneros asociados al libro
      * @return DTO con los datos del libro creado
      */
-    public BookDTO createBook(BookDTO bookDTO, List<Long> genreIds) {
+    public BookDTO createBook(BookDTO bookDTO, List<Long> genreIds, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         Book book = new Book();
 
         List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
@@ -91,6 +100,9 @@ public class BookService {
 
         bookDTO.setGenres(genreDTOs);
         fillBookData(null, book, bookDTO);
+
+        // Comprobar las solicitudes aceptadas (pendientes de añadir)
+        updateAcceptedSuggestions(bookDTO, user);
 
         book = bookRepository.save(book);
 
@@ -106,7 +118,11 @@ public class BookService {
      * @return DTO con los datos del libro actualizado
      * @throws EntityNotFoundException El libro no existe
      */
-    public BookDTO updateBook(Long idBook, BookDTO book, List<Long> genreIds) {
+    public BookDTO updateBook(Long idBook, BookDTO book, List<Long> genreIds, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         Book libro = bookRepository.findById(idBook)
                 .orElseThrow(() -> new EntityNotFoundException("El libro con ID " + idBook + " no existe."));
 
@@ -118,6 +134,9 @@ public class BookService {
 
         book.setGenres(genreDTOs);
         fillBookData(idBook, libro, book);
+
+        // Comprobar las solicitudes aceptadas (pendientes de añadir)
+        updateAcceptedSuggestions(book, user);
 
         libro = bookRepository.save(libro);
 
@@ -153,8 +172,14 @@ public class BookService {
         book.setPageNumber(bookDTO.getPageNumber());
         book.setPublisher(bookDTO.getPublisher());
         book.setSynopsis(bookDTO.getSynopsis());
-        book.setCover(bookDTO.getCover());
         book.setNumCollection(bookDTO.getNumCollection());
+
+        if (bookDTO.getCover() == null || bookDTO.getCover().isBlank()) {
+            book.setCover("https://res.cloudinary.com/dfrgrfw4c/image/upload/" +
+                    "v1743761214/readtoowell/covers/error_s7dry1.jpg");
+        } else {
+            book.setCover(bookDTO.getCover());
+        }
 
         book.setActive(true);
 
@@ -185,12 +210,33 @@ public class BookService {
     }
 
     /**
+     * Comprueba si alguna de las sugerencias aceptadas (es decir, pendientes de añadir),
+     * coincide con los datos del libro que se está añadiendo/actualizando.
+     *
+     * @param book  Datos del libro que se añade/actualiza
+     * @param user  Usuario autenticado
+     */
+    private void updateAcceptedSuggestions(BookDTO book, User user) {
+        List<Suggestion> suggestions = suggestionRepository.findByStatus(SuggestionStatus.ACCEPTED.getValue());
+        for (Suggestion sug : suggestions) {
+            if (sug.getTitle().equals(book.getTitle()) && sug.getAuthor().equals(book.getAuthor())
+                    && sug.getPublicationYear() == book.getPublicationYear()) {
+                suggestionService.updateStatusSuggestion(sug.getId(), SuggestionStatus.ADDED.getValue(), user);
+            }
+        }
+    }
+
+    /**
      * Elimina un libro. Se realiza un borrado lógico.
      *
      * @param book DTO con los datos del libro a borrar
      * @return DTO con los datos del libro borrado
      */
-    public BookDTO deleteBook(BookDTO book) {
+    public BookDTO deleteBook(BookDTO book, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         Book libro = bookMapper.toEntity(book);
         libro.delete();
         libro = bookRepository.save(libro);
@@ -203,7 +249,11 @@ public class BookService {
      * @param book DTO con los datos del libro a reactivar
      * @return DTO con los datos del libro reactivado
      */
-    public BookDTO reactivateBook(BookDTO book) {
+    public BookDTO reactivateBook(BookDTO book, User user) {
+        if (user.getRole() != Role.ADMIN.getValue()) {
+            throw new AccessDeniedException("Solo los admins pueden realizar esta acción.");
+        }
+
         Book libro = bookMapper.toEntity(book);
         libro.reactivate();
         libro = bookRepository.save(libro);
@@ -395,5 +445,35 @@ public class BookService {
         Page<Book> books = bookRepository.findAllByActiveFalse(pageable);
 
         return books.map(bookMapper::toDTO);
+    }
+
+    /**
+     * Devuelve todas las colecciones.
+     *
+     * @return Lista con las colecciones
+     */
+    public List<CollectionDTO> getCollections() {
+        List<Collection> collections = collectionRepository.findAll();
+
+        return collections.stream().map(collectionMapper::toDTO).toList();
+    }
+
+    /**
+     * Crea una nueva colección.
+     *
+     * @param collection DTO con los datos de la nueva colección
+     * @return Colección creada
+     * @throws ValidationException Ya existe una colección con el nombre indicado
+     */
+    public CollectionDTO createCollection(CollectionDTO collection) {
+        Optional<Collection> existingCollection = collectionRepository.findByName(collection.getName());
+
+        if (existingCollection.isPresent()) {
+            throw new ValidationException("Ya existe una colección con el mismo nombre.");
+        }
+
+        Collection newCollection = collectionRepository.save(collectionMapper.toEntity(collection));
+
+        return collectionMapper.toDTO(newCollection);
     }
 }

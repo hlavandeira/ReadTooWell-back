@@ -43,7 +43,7 @@ public class AuthenticationService {
 
         User user = new User();
         user.setUsername(registerDTO.getUsername());
-        user.setEmail(registerDTO.getEmail());
+        user.setEmail(registerDTO.getEmail().toLowerCase());
 
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
@@ -71,7 +71,7 @@ public class AuthenticationService {
      * @throws ValidationException El usuario no existe o la contraseña es incorrecta
      */
     public AuthenticatedUserDTO login(LoginDTO loginDTO) {
-        Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
+        Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail().toLowerCase());
 
         if (userOpt.isEmpty()) {
             throw new ValidationException("No existe ningún usuario con el correo proporcionado");

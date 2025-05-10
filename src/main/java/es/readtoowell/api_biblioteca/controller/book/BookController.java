@@ -1,5 +1,6 @@
 package es.readtoowell.api_biblioteca.controller.book;
 
+import es.readtoowell.api_biblioteca.model.DTO.book.CollectionDTO;
 import es.readtoowell.api_biblioteca.model.DTO.user.AuthorDTO;
 import es.readtoowell.api_biblioteca.model.DTO.book.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.book.BookDetailsDTO;
@@ -65,7 +66,12 @@ public class BookController {
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO book,
                                               @RequestParam List<Long> genreIds) {
-        BookDTO newBook = bookService.createBook(book, genreIds);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookDTO newBook = bookService.createBook(book, genreIds, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
     }
@@ -82,7 +88,12 @@ public class BookController {
     public ResponseEntity<BookDTO> updateBook(@PathVariable Long idBook,
                                               @Valid @RequestBody BookDTO book,
                                               @RequestParam List<Long> genreIds) {
-        BookDTO libro = bookService.updateBook(idBook, book, genreIds);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        BookDTO libro = bookService.updateBook(idBook, book, genreIds, user);
 
         return ResponseEntity.ok(libro);
     }
@@ -95,9 +106,13 @@ public class BookController {
      */
     @DeleteMapping("/{idBook}")
     public ResponseEntity<BookDTO> deleteBook(@PathVariable Long idBook) {
-        BookDTO libro = bookService.getBook(idBook);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
 
-        BookDTO dto = bookService.deleteBook(libro);
+        BookDTO libro = bookService.getBook(idBook);
+        BookDTO dto = bookService.deleteBook(libro, user);
 
         return ResponseEntity.ok(dto);
     }
@@ -110,9 +125,13 @@ public class BookController {
      */
     @PutMapping("/reactivar/{idBook}")
     public ResponseEntity<BookDTO> reactivateBook(@PathVariable Long idBook) {
-        BookDTO libro = bookService.getBook(idBook);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
 
-        BookDTO dto = bookService.reactivateBook(libro);
+        BookDTO libro = bookService.getBook(idBook);
+        BookDTO dto = bookService.reactivateBook(libro, user);
 
         return ResponseEntity.ok(dto);
     }
@@ -255,5 +274,31 @@ public class BookController {
         Page<BookDTO> books = bookService.getDeletedBooks(page, size, user);
 
         return ResponseEntity.ok(books);
+    }
+
+    /**
+     * Devuelve todas las colecciones.
+     *
+     * @return Lista con todas las colecciones
+     */
+    @GetMapping("/colecciones")
+    public ResponseEntity<List<CollectionDTO>> getCollections() {
+        List<CollectionDTO> collections = bookService.getCollections();
+
+        return ResponseEntity.ok(collections);
+    }
+
+    /**
+     * Crea una nueva colección.
+     *
+     * @param collection DTO con los datos de la nueva colección
+     * @return Colección creada
+     */
+    @PostMapping("/colecciones")
+    public ResponseEntity<CollectionDTO> createCollection(@Valid @RequestBody CollectionDTO collection) {
+
+        CollectionDTO newCollection = bookService.createCollection(collection);
+
+        return ResponseEntity.ok(newCollection);
     }
 }
