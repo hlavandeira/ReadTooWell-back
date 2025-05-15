@@ -104,13 +104,13 @@ public class BookListService {
     public BookListDTO createList(User user, BookListDTO dto, List<Long> genreIds) {
         BookList lista = new BookList();
 
-        lista.setName(dto.getName());
-        lista.setDescription(dto.getDescription());
+        lista.setName(dto.getName().trim());
+        lista.setDescription(dto.getDescription().trim());
         lista.setUser(user);
 
         List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
 
-        lista.setGenres(genres);
+        lista.setGenres(genres.stream().collect(Collectors.toSet()));
 
         lista = listRepository.save(lista);
 
@@ -136,11 +136,11 @@ public class BookListService {
             throw new AccessDeniedException("No tienes permiso para editar esta lista.");
         }
 
-        lista.setName(dto.getName());
-        lista.setDescription(dto.getDescription());
+        lista.setName(dto.getName().trim());
+        lista.setDescription(dto.getDescription().trim());
 
         List<Genre> genres = new ArrayList<>(genreRepository.findAllById(genreIds));
-        lista.setGenres(genres);
+        lista.setGenres(genres.stream().collect(Collectors.toSet()));
 
         lista = listRepository.save(lista);
 

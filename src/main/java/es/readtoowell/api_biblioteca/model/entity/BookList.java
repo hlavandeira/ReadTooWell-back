@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Entidad qeu representa las listas de libros.
@@ -34,7 +36,7 @@ public class BookList {
     @JoinTable(name = "genero_lista",
             joinColumns = @JoinColumn(name = "id_lista"),
             inverseJoinColumns = @JoinColumn(name = "id_genero"))
-    private List<Genre> genres = new ArrayList<>();
+    private Set<Genre> genres = new HashSet<>();
     /**
      * Listado de libros añadidos a la lista.
      */
@@ -120,7 +122,7 @@ public class BookList {
      *
      * @return Listado con los géneros asociados a la lista
      */
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
@@ -129,7 +131,7 @@ public class BookList {
      *
      * @param genres Nuevos géneros asociados
      */
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 

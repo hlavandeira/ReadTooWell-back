@@ -1,14 +1,13 @@
 package es.readtoowell.api_biblioteca.service.user;
 
+import es.readtoowell.api_biblioteca.model.DTO.AuthorRequestDTO;
 import es.readtoowell.api_biblioteca.model.DTO.user.UpdateProfileDTO;
-import es.readtoowell.api_biblioteca.model.entity.AuthorRequest;
 import es.readtoowell.api_biblioteca.model.entity.Book;
 import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
 import es.readtoowell.api_biblioteca.mapper.UserMapper;
 import es.readtoowell.api_biblioteca.model.DTO.user.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.entity.Genre;
 import es.readtoowell.api_biblioteca.model.entity.User;
-import es.readtoowell.api_biblioteca.model.enums.RequestStatus;
 import es.readtoowell.api_biblioteca.model.enums.Role;
 import es.readtoowell.api_biblioteca.repository.user.AuthorRequestRepository;
 import es.readtoowell.api_biblioteca.repository.book.BookRepository;
@@ -35,8 +34,6 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private AuthorRequestRepository requestRepository;
     @Autowired
     private GenreRepository genreRepository;
     @Autowired
@@ -123,11 +120,11 @@ public class UserService {
         User usuario = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
 
-        usuario.setUsername(user.getUsername());
-        usuario.setProfileName(user.getProfileName());
+        usuario.setUsername(user.getUsername().trim());
+        usuario.setProfileName(user.getProfileName().trim());
         usuario.setPassword(user.getPassword());
         usuario.setEmail(user.getEmail());
-        usuario.setBiography(user.getBiography());
+        usuario.setBiography(user.getBiography().trim());
         usuario.setRole(user.getRole());
         usuario.setProfilePic(user.getProfilePic());
 
@@ -147,8 +144,8 @@ public class UserService {
         User usuario = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
 
-        usuario.setProfileName(user.getProfileName());
-        usuario.setBiography(user.getBiography());
+        usuario.setProfileName(user.getProfileName().trim());
+        usuario.setBiography(user.getBiography().trim());
         usuario.setProfilePic(user.getProfilePic());
 
         usuario = userRepository.save(usuario);
@@ -258,19 +255,16 @@ public class UserService {
      * Se promociona a un usuario a autor.
      * Su rol pasa a ser AUTHOR.
      *
-     * @param idUser ID del usuario que se actualiza
+     * @param request Solicitud de verificación enviada por el usuario
      * @return DTO con los datos del usuario actualizado
      * @throws EntityNotFoundException El usuario no existe o no tiene ninguna solicitud pendiente
      */
-    public UserDTO promoteToAuthor(Long idUser) {
+    public UserDTO promoteToAuthor(AuthorRequestDTO request) {
+        Long idUser = request.getUser().getId();
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con ID " + idUser + " no existe."));
 
         user.setRole(Role.AUTHOR.getValue());
-
-        AuthorRequest request = requestRepository.findLatestRequestByUserAndStatus(
-                idUser, List.of(RequestStatus.PENDING.getValue()))
-                .orElseThrow(() -> new EntityNotFoundException("El usuario no tiene ninguna solicitud pendiente."));
 
         user.setProfileName(request.getName());
         user.setBiography(request.getBiography());
