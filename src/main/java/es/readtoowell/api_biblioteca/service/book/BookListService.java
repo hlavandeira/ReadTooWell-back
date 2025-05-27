@@ -239,6 +239,15 @@ public class BookListService {
         return listMapper.toDTO(list);
     }
 
+    /**
+     * Devuelve todas las listas de un usuario que no contienen un libro específico.
+     *
+     * @param idBook ID del libro a excluir
+     * @param idUser ID del usuario
+     * @param page Número de la página
+     * @param size Tamaño de la página
+     * @return Página con las listas resultantes de la búsqueda
+     */
     public Page<BookListDTO> getListsWithoutBook(Long idBook, Long idUser, int page, int size) {
         Book book = bookRepository.findById(idBook)
                 .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + idBook + " no encontrado."));
@@ -247,5 +256,20 @@ public class BookListService {
         Page<BookList> lists = bookItemRepository.findAllListsByUserIdAndBookIdNotIn(idUser, idBook, pageable);
 
         return lists.map(listMapper::toDTO);
+    }
+
+    /**
+     * Devuelve todas las listas de un usuario que tienen al menos un libro o un género asociado.
+     *
+     * @param idUser ID del usuario
+     * @return Listado con las listas resultantes
+     */
+    public List<BookListDTO> getAllListsExcludingEmpty(Long idUser) {
+        List<BookList> listas = listRepository.findAllByUserId(idUser);
+
+        List<BookList> listasFiltradas = listas.stream()
+                .filter(bookList -> bookList.getBooks().size() > 0 || bookList.getGenres().size() > 0).toList();
+
+        return listasFiltradas.stream().map(listMapper::toDTO).toList();
     }
 }
