@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/seguir/*").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/usuarios/dejar-seguir/*").hasAnyRole("USER", "AUTHOR")
-
+                        .requestMatchers("/recomendaciones/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/objetivos/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers("/listas/**").hasAnyRole("USER", "AUTHOR")
                         .requestMatchers(HttpMethod.POST, "/sugerencias/*").hasAnyRole("USER", "AUTHOR")

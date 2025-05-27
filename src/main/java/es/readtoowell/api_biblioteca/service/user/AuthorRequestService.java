@@ -50,8 +50,8 @@ public class AuthorRequestService {
         }
 
         AuthorRequest request = new AuthorRequest();
-        request.setName(dto.getName());
-        request.setBiography(dto.getBiography());
+        request.setName(dto.getName().trim());
+        request.setBiography(dto.getBiography().trim());
         request.setDateSent(Date.valueOf(LocalDate.now()));
         request.setActive(true);
         request.setStatus(RequestStatus.PENDING.getValue());
@@ -62,7 +62,7 @@ public class AuthorRequestService {
         // Libros asociados a la solicitud
         List<RequestBook> books = dto.getBooks().stream().map(req -> {
             RequestBook book = new RequestBook();
-            book.setTitle(req.getTitle());
+            book.setTitle(req.getTitle().trim());
             book.setPublicationYear(req.getPublicationYear());
             book.setRequest(savedRequest);
             return book;
@@ -103,7 +103,7 @@ public class AuthorRequestService {
         if (newStatus == RequestStatus.REJECTED.getValue()) {
             request.setActive(false);
         } else if (newStatus == RequestStatus.ACCEPETD.getValue()) { // Si se acepta, actualizar los datos del usuario
-            userService.promoteToAuthor(request.getUser().getId());
+                userService.promoteToAuthor(requestMapper.toDTO(request));
         }
 
         request.setStatus(newStatus);

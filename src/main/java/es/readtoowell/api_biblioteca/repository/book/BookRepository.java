@@ -121,4 +121,129 @@ public interface BookRepository extends JpaRepository<Book, Long> {
      * @return Página con los libros escritos por el autor
      */
     Page<Book> findBooksByAuthor(String author, Pageable pageable);
+
+    // Métodos para las recomendaciones
+
+    /**
+     * Busca libros que tengan géneros similares a los de los libros de la lista que se pasa como parámetro.
+     * Ignora los libros guardados en la biblioteca personal del usuario.
+     *
+     * @param bookIds Lista de IDs de libros
+     * @param userId ID del usuario
+     * @return Lista de libros resultantes
+     */
+    @Query(value = """
+    SELECT b.*, COUNT(*) AS generos_similares
+    FROM libro b
+    JOIN libro_genero lg ON b.id_libro = lg.id_libro
+    WHERE lg.id_genero IN (
+        SELECT lg2.id_genero
+        FROM libro_genero lg2
+        WHERE lg2.id_libro IN (:bookIds)
+    )
+    AND b.id_libro NOT IN (
+        SELECT ub.id_libro
+        FROM libro_biblioteca ub
+        WHERE ub.id_usuario = :userId
+    )
+    AND b.id_libro NOT IN (:bookIds)
+    AND b.activo = true
+    GROUP BY b.id_libro
+    ORDER BY generos_similares DESC,
+             (SELECT AVG(ub2.calificacion)
+              FROM libro_biblioteca ub2
+              WHERE ub2.id_libro = b.id_libro) DESC
+    LIMIT 30
+    """, nativeQuery = true)
+    List<Book> findSimilarBooksByFavoriteBooks(@Param("bookIds") List<Long> bookIds, @Param("userId") Long userId);
+
+    /**
+     * Busca libros que tengan géneros similares a los que se pasan como parámetro.
+     * Ignora los libros guardados en la biblioteca personal del usuario.
+     *
+     * @param genreIds Lista de IDs de géneros
+     * @param userId ID del usuario
+     * @return Lista de libros resultantes
+     */
+    @Query(value = """
+    SELECT b.*, COUNT(*) AS generos_similares
+    FROM libro b
+    JOIN libro_genero lg ON b.id_libro = lg.id_libro
+    WHERE lg.id_genero IN (:genreIds)
+    AND b.id_libro NOT IN (
+        SELECT ub.id_libro
+        FROM libro_biblioteca ub
+        WHERE ub.id_usuario = :userId
+    )
+    AND b.activo = true
+    GROUP BY b.id_libro
+    ORDER BY generos_similares DESC,
+             (SELECT AVG(ub2.calificacion)
+              FROM libro_biblioteca ub2
+              WHERE ub2.id_libro = b.id_libro) DESC
+    LIMIT 30
+    """, nativeQuery = true)
+    List<Book> findBooksWithSimilarGenres(@Param("genreIds") List<Long> genreIds, @Param("userId") Long userId);
+
+    /**
+     * Busca libros que tengan géneros similares los leídos y mejor calificados por el usuario.
+     * Ignora los libros guardados en la biblioteca personal del usuario.
+     *
+     * @param userId ID del usuario
+     * @return Lista de libros resultantes
+     */
+    @Query(value = """
+    SELECT b.*
+    FROM libro b
+    JOIN libro_genero lg ON b.id_libro = lg.id_libro
+    WHERE b.id_libro NOT IN (
+        SELECT ub.id_libro
+        FROM libro_biblioteca ub
+        WHERE ub.id_usuario = :userId
+    )
+    AND lg.id_genero IN (
+        SELECT DISTINCT lg2.id_genero
+        FROM libro_biblioteca ub2
+        JOIN libro_genero lg2 ON ub2.id_libro = lg2.id_libro
+        WHERE ub2.id_usuario = :userId AND ub2.estado_lectura = 2 AND ub2.calificacion >= 3
+    )
+    AND b.activo = true
+    GROUP BY b.id_libro
+    ORDER BY COUNT(lg.id_genero) DESC,
+             (SELECT AVG(ub3.calificacion)
+              FROM libro_biblioteca ub3
+              WHERE ub3.id_libro = b.id_libro) DESC
+    LIMIT 30
+    """, nativeQuery = true)
+    List<Book> findBooksSimilarToReadOnes(@Param("userId") Long userId);
+
+
+    /**
+     * Busca los libros con mejor calificación media, publicados a partir del año {@code minPublicationYear}.
+     * Ignora los libros guardados en la biblioteca personal del usuario.
+     *
+     * @param userId ID del usuario
+     * @param minPublicationYear Año mínimo de publicación
+     * @return Lista de libros resultantes
+     */
+    @Query(value = """
+    SELECT b.*
+    FROM libro b
+    WHERE b.activo = true
+      AND b.año_publicacion >= :minPublicationYear
+      AND b.id_libro NOT IN (
+          SELECT ub.id_libro
+          FROM libro_biblioteca ub
+          WHERE ub.id_usuario = :userId
+      )
+    ORDER BY (
+        SELECT COALESCE(AVG(ub2.calificacion), 0)
+        FROM libro_biblioteca ub2
+        WHERE ub2.id_libro = b.id_libro
+    ) DESC
+    LIMIT 30
+    """, nativeQuery = true)
+    List<Book> findGeneralRecommendations(@Param("userId") Long userId,
+                                          @Param("minPublicationYear") int minPublicationYear);
+
 }

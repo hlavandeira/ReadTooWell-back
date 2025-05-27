@@ -42,8 +42,8 @@ public class AuthenticationService {
         }
 
         User user = new User();
-        user.setUsername(registerDTO.getUsername());
-        user.setEmail(registerDTO.getEmail().toLowerCase());
+        user.setUsername(registerDTO.getUsername().replaceAll("\\s+", ""));
+        user.setEmail(registerDTO.getEmail().toLowerCase().trim());
 
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 

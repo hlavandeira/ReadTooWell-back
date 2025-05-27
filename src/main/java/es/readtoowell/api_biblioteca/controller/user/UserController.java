@@ -196,19 +196,6 @@ public class UserController {
     }
 
     /**
-     * Se promociona a un usuario a autor.
-     *
-     * @param idUser ID del usuario que se actualiza
-     * @return DTO con los datos del usuario actualizado
-     */
-    @PutMapping("/{idUser}/autor")
-    public ResponseEntity<UserDTO> promoteToAuthor(@PathVariable Long idUser) {
-        UserDTO user = userService.promoteToAuthor(idUser);
-
-        return ResponseEntity.ok(user);
-    }
-
-    /**
      * Añade géneros favoritos a un usuario.
      *
      * @param genreIds Lista de IDs de los géneros seleccionados

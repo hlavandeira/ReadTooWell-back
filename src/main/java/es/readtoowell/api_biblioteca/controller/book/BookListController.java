@@ -172,6 +172,15 @@ public class BookListController {
         return ResponseEntity.ok(updatedList);
     }
 
+    /**
+     * Devuelve todas las listas de un usuario que no contienen un libro específico.
+     *
+     * @param idBook ID del libro a excluir
+     * @param page Número de la página
+     * @param size Tamaño de la página
+     * @return Página con las listas resultantes de la búsqueda
+     * @throws AccessDeniedException Usuario no autenticado
+     */
     @GetMapping("/{idBook}/otras-listas")
     public ResponseEntity<Page<BookListDTO>> getListsWithoutBook(
                                                         @PathVariable Long idBook,
@@ -183,6 +192,24 @@ public class BookListController {
         }
 
         Page<BookListDTO> lists = listService.getListsWithoutBook(idBook, user.getId(), page, size);
+
+        return ResponseEntity.ok(lists);
+    }
+
+    /**
+     * Devuelve todas las listas de un usuario que tienen al menos un libro o un género asociado.
+     *
+     * @return Listado con las listas resultantes
+     * @throws AccessDeniedException Usuario no autenticado
+     */
+    @GetMapping("/todas-no-vacias")
+    public ResponseEntity<List<BookListDTO>> getAllListsExcludingEmpty() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            throw new AccessDeniedException("Usuario no autenticado.");
+        }
+
+        List<BookListDTO> lists = listService.getAllListsExcludingEmpty(user.getId());
 
         return ResponseEntity.ok(lists);
     }

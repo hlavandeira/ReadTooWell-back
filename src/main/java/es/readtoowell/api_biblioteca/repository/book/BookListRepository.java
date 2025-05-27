@@ -1,13 +1,13 @@
 package es.readtoowell.api_biblioteca.repository.book;
 
 import es.readtoowell.api_biblioteca.model.entity.BookList;
-import es.readtoowell.api_biblioteca.model.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BookListRepository extends JpaRepository<BookList, Long> {
@@ -28,4 +28,12 @@ public interface BookListRepository extends JpaRepository<BookList, Long> {
      */
     @Query("SELECT l FROM BookList l LEFT JOIN FETCH l.books LEFT JOIN FETCH l.genres WHERE l.id = :id")
     Optional<BookList> findByIdWithRelations(@Param("id") Long id);
+
+    /**
+     * Devuelve todas las listas de un usuario.
+     *
+     * @param idUser ID del usuario
+     * @return Lista con todas las listas del usuario
+     */
+    List<BookList> findAllByUserId(Long idUser);
 }

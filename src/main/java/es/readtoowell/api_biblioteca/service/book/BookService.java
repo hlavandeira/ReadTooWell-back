@@ -166,12 +166,12 @@ public class BookService {
             book.setIsbn(bookDTO.getIsbn());
         }
 
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
+        book.setTitle(bookDTO.getTitle().trim());
+        book.setAuthor(bookDTO.getAuthor().trim());
         book.setPublicationYear(bookDTO.getPublicationYear());
         book.setPageNumber(bookDTO.getPageNumber());
-        book.setPublisher(bookDTO.getPublisher());
-        book.setSynopsis(bookDTO.getSynopsis());
+        book.setPublisher(bookDTO.getPublisher().trim());
+        book.setSynopsis(bookDTO.getSynopsis().trim());
         book.setNumCollection(bookDTO.getNumCollection());
 
         if (bookDTO.getCover() == null || bookDTO.getCover().isBlank()) {

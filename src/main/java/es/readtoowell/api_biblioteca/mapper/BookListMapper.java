@@ -54,7 +54,7 @@ public class BookListMapper {
                 .collect(Collectors.toList()));
         list.setGenres(dto.getGenres().stream()
                 .map(genreMapper::toEntity)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
         return list;
     }
 }

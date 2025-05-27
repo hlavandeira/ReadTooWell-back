@@ -37,8 +37,8 @@ public class SuggestionService {
     public SuggestionDTO sendSuggestion(SuggestionDTO suggestionDTO, User user) {
         Suggestion suggestion = new Suggestion();
 
-        suggestion.setTitle(suggestionDTO.getTitle());
-        suggestion.setAuthor(suggestionDTO.getAuthor());
+        suggestion.setTitle(suggestionDTO.getTitle().trim());
+        suggestion.setAuthor(suggestionDTO.getAuthor().trim());
         suggestion.setPublicationYear(suggestionDTO.getPublicationYear());
         suggestion.setStatus(SuggestionStatus.PENDING.getValue());
         suggestion.setActive(true);
@@ -71,6 +71,10 @@ public class SuggestionService {
                 .orElseThrow(() -> new EntityNotFoundException("La sugerencia con ID " + idSuggestion + " no existe."));
 
         suggestion.setStatus(newStatus);
+
+        if (newStatus == SuggestionStatus.ADDED.getValue() || newStatus == SuggestionStatus.REJECTED.getValue()) {
+            suggestion.setActive(false);
+        }
 
         suggestion = suggestionRepository.save(suggestion);
 
