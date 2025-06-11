@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code User}
+ */
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Busca un usuario por su correo electrónico.

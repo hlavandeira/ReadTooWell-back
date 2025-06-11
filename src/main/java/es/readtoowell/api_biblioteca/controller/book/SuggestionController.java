@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las sugerencias de libros.
+ */
 @RestController
 @RequestMapping("/sugerencias")
 public class SuggestionController {
@@ -45,6 +48,7 @@ public class SuggestionController {
      * @param idSuggestion ID de la sugerencia
      * @param newStatus Nuevo estado para la sugerencia
      * @return DTO con los datos de la sugerencia actualizada
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @PutMapping("/{idSuggestion}")
     public ResponseEntity<SuggestionDTO> updateStatusSuggestion(@PathVariable Long idSuggestion,
@@ -65,6 +69,7 @@ public class SuggestionController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con las sugerencias como DTOs
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping
     public ResponseEntity<Page<SuggestionDTO>> getAllSuggestions(
@@ -88,6 +93,7 @@ public class SuggestionController {
      * @param size Tamaño de la página
      * @param status Estado de las sugerencias para filtrar
      * @return Página con las sugerencias filtradas como DTOs
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/estado")
     public ResponseEntity<Page<SuggestionDTO>> getSuggestionsWithStatus(
@@ -110,6 +116,7 @@ public class SuggestionController {
      *
      * @param idSuggestion ID de la sugerencia
      * @return DTO con los datos de la sugerencia
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/{idSuggestion}")
     public ResponseEntity<SuggestionDTO> getSuggestion(@PathVariable Long idSuggestion) {

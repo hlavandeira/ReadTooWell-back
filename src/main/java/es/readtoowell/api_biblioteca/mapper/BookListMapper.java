@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de listas entre entidades y DTOs.
+ */
 @Component
 public class BookListMapper {
     @Autowired

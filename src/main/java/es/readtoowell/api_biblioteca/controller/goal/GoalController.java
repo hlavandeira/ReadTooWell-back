@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a los objetivos de lectura.
+ */
 @RestController
 @RequestMapping("/objetivos")
 public class GoalController {
@@ -61,6 +64,7 @@ public class GoalController {
      * Devuelve los objetivos finalizados y completados por un usuario en el año actual.
      *
      * @return Lista con los objetivos completados en el año actual
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/terminados/año-actual")
     public ResponseEntity<List<GoalDTO>> getFinishedGoalsActualYear() {

@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code GoalDuration}
+ */
 public interface GoalDurationRepository extends JpaRepository<GoalDuration, Long> {
     /**
      * Busca una duración de objetivo por nombre.

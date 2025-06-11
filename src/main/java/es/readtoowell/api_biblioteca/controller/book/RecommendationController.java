@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las recomendaciones.
+ */
 @RestController
 @RequestMapping("/recomendaciones")
 public class RecommendationController {
@@ -26,6 +29,7 @@ public class RecommendationController {
      * Busca posibles recomendaciones a partir de los libros favoritos de un usuario.
      *
      * @return Lista con libros recomendados
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/libros-favoritos")
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByFavoriteBooks() {
@@ -43,6 +47,7 @@ public class RecommendationController {
      * Busca posibles recomendaciones a partir de los géneros favoritos de un usuario.
      *
      * @return Lista con libros recomendados
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/generos-favoritos")
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByFavoriteGenres() {
@@ -61,6 +66,7 @@ public class RecommendationController {
      * una calificación superior o igual a 3 sobre 5.
      *
      * @return Lista con libros recomendados
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/libros-leidos")
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByReadBooks() {
@@ -80,6 +86,7 @@ public class RecommendationController {
      *
      * @param idList ID de la lista
      * @return Lista con libros recomendados
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/lista/{idList}")
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByList(@PathVariable Long idList) {
@@ -98,6 +105,7 @@ public class RecommendationController {
      * publicados en los últimos años.
      *
      * @return Lista con libros recomendados
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/catalogo")
     public ResponseEntity<List<RatedBookDTO>> getGeneralRecommendations() {

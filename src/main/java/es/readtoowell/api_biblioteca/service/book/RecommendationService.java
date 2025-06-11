@@ -21,6 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las recomendaciones.
+ */
 @Service
 public class RecommendationService {
     @Autowired

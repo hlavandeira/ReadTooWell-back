@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las bibliotecas de los usuarios.
+ */
 @RestController
 @RequestMapping("/biblioteca")
 public class UserLibraryBookController {

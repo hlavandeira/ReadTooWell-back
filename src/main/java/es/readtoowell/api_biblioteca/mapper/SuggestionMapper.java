@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.DTO.SuggestionDTO;
 import es.readtoowell.api_biblioteca.model.entity.Suggestion;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de sugerencias de libros entre entidades y DTOs.
+ */
 @Component
 public class SuggestionMapper {
     /**

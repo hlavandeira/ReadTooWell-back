@@ -24,6 +24,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las solicitudes de verificación de autor.
+ */
 @Service
 public class AuthorRequestService {
     @Autowired

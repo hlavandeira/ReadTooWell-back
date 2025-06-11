@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las listas de libros.
+ */
 @RestController
 @RequestMapping("/listas")
 public class BookListController {
@@ -52,6 +55,7 @@ public class BookListController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return DTO con los detalles de la lista incluyendo paginación de libros
+     * @throws AccessDeniedException El usuario no está autenticado
      */
     @GetMapping("/{idList}")
     public ResponseEntity<BookListDetailsDTO> getListDetails(

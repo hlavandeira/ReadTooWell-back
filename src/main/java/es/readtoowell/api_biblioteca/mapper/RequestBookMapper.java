@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.DTO.RequestBookDTO;
 import es.readtoowell.api_biblioteca.model.entity.RequestBook;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de libros asociados a solicitudes de autor entre entidades y DTOs.
+ */
 @Component
 public class RequestBookMapper {
     /**

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.List;
 
+/**
+ * Repositorio para la gestión de entidades {@code Book}
+ */
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     /**

@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code Collection}
+ */
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
     /**
      * Busca una colección por su nombre.

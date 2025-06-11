@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las listas de libros.
+ */
 @Service
 public class BookListService {
     @Autowired
@@ -70,6 +73,7 @@ public class BookListService {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return DTO con los datos de la lista y los libros paginados
+     * @throws AccessDeniedException El usuario no es el propietario de la lista
      */
     public BookListDetailsDTO getListDetails(Long idUser, Long idList, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateAdded"));
@@ -154,7 +158,7 @@ public class BookListService {
      * @param idList ID de la lista a borrar
      * @return DTO con los datos de la lista borrada
      * @throws EntityNotFoundException La lista no existe
-     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     * @throws AccessDeniedException El usuario no es el propietario de la lista
      */
     public BookListDTO deleteList(Long idUser, Long idList) {
         BookList list = listRepository.findByIdWithRelations(idList)
@@ -177,7 +181,7 @@ public class BookListService {
      * @param idBook ID del libro que se va a añadir
      * @return DTO con los datos de la lista actualizada
      * @throws EntityNotFoundException La lista o el libro no existen
-     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     * @throws AccessDeniedException El usuario no es el propietario de la lista
      */
     public BookListDTO addBookToList(Long idUser, Long idList, Long idBook) {
         BookList list = listRepository.findByIdWithRelations(idList)
@@ -212,7 +216,7 @@ public class BookListService {
      * @param idBook ID del libro que se va a eliminar
      * @return DTO con los datos de la lista actualizada
      * @throws EntityNotFoundException La lista o el libro no existen
-     * @throws AccessDeniedException Otro usuario intenta acceder a la lista
+     * @throws AccessDeniedException El usuario no es el propietario de la lista
      */
     public BookListDTO deleteBookFromList(Long idUser, Long idList, Long idBook) {
         BookList list = listRepository.findByIdWithRelations(idList)

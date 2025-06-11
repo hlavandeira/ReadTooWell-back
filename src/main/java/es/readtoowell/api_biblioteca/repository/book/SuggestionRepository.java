@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+/**
+ * Repositorio para la gestión de entidades {@code Suggestion}
+ */
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
     /**
      * Busca sugerencias de libro según su estado.

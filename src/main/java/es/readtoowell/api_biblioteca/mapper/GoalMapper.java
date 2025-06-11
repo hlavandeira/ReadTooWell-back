@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de objetivos entre entidades y DTOs.
+ */
 @Component
 public class GoalMapper {
     /**

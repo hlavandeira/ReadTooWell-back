@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code BookList}
+ */
 public interface BookListRepository extends JpaRepository<BookList, Long> {
     /**
      * Devuelve las listas de un usuario.

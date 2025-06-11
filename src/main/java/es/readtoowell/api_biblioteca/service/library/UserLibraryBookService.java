@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las bibliotecas de usuarios.
+ */
 @Service
 public class UserLibraryBookService {
     @Autowired

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a los formatos de los libros de los usuarios.
+ */
 @RestController
 @RequestMapping("/biblioteca")
 public class UserBookFormatController {

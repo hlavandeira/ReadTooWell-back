@@ -9,7 +9,6 @@ import es.readtoowell.api_biblioteca.model.DTO.user.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.entity.Genre;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.Role;
-import es.readtoowell.api_biblioteca.repository.user.AuthorRequestRepository;
 import es.readtoowell.api_biblioteca.repository.book.BookRepository;
 import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
 import es.readtoowell.api_biblioteca.repository.user.UserRepository;
@@ -28,6 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con los usuarios.
+ */
 @Service
 public class UserService {
     @Autowired
@@ -98,6 +100,7 @@ public class UserService {
      *
      * @param id ID del usuario a eliminar
      * @return DTO con los datos del usuario eliminado
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserDTO deleteUser(Long id) {
         User user = userRepository.findById(id)
@@ -139,6 +142,7 @@ public class UserService {
      * @param idUser ID del usuario que edita su perfil
      * @param user Datos introducidos por el usuario
      * @return Datos actualizados del usuario
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserDTO updateUserProfile(Long idUser, UpdateProfileDTO user) {
         User usuario = userRepository.findById(idUser)
@@ -341,6 +345,7 @@ public class UserService {
      *
      * @param idUser ID del usuario del que se devuelven sus favoritos
      * @return DTO con los datos de los libros y géneros favoritos del usuario
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserFavoritesDTO getFavorites(Long idUser) {
         User user = userRepository.findById(idUser)
@@ -365,6 +370,13 @@ public class UserService {
         return user.getRole() == Role.ADMIN.getValue();
     }
 
+    /**
+     * Devuelve todos los usuarios que tienen el rol de autor.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los usuarios resultantes como DTOs
+     */
     public Page<UserDTO> getAuthors(int page, int size) {
         Page<User> users = userRepository.findAuthors(PageRequest.of(page, size));
         return users.map(userMapper::toDTO);

@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las solicitudes de verificación de autor.
+ */
 @RestController
 @RequestMapping("/solicitud-autor")
 public class AuthorRequestController {

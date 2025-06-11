@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a la autenticación de usuarios.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {

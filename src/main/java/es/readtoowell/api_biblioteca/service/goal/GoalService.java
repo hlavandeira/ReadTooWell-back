@@ -20,6 +20,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con los objetivos de lectura.
+ */
 @Service
 public class GoalService {
     @Autowired
