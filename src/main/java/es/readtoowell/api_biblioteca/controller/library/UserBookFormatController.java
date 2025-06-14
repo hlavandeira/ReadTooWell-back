@@ -5,6 +5,7 @@ import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.library.UserBookFormatService;
 import es.readtoowell.api_biblioteca.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,12 @@ public class UserBookFormatController {
      *
      * @param idBook ID del libro
      * @return Lista con los formatos que un usuario tiene de un libro
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/{idBook}/formatos")
     public ResponseEntity<List<FormatDTO>> getFormatsForUserBook(@PathVariable Long idBook) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<FormatDTO> formats = bookFormatService.getFormatsForUserBook(idBook, user.getId());
@@ -49,15 +49,14 @@ public class UserBookFormatController {
      *
      * @param idBook ID del libro
      * @param idFormat ID del formato a añadir
-     * @return DTO con el formato añadido al libro
-     * @throws AccessDeniedException Usuario no autenticado
+     * @return Lista con los formatos asociados al libro
      */
     @PostMapping("/{idBook}/formatos/{idFormat}")
     public ResponseEntity<List<FormatDTO>> addFormatToBook(@PathVariable Long idBook,
                                                            @PathVariable Long idFormat) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<FormatDTO> formats = bookFormatService.getFormatsForUserBook(idBook, user.getId());
@@ -72,14 +71,14 @@ public class UserBookFormatController {
      *
      * @param idBook ID del libro
      * @param idFormat ID del formato a eliminar
-     * @throws AccessDeniedException Usuario no autenticado
+     * @return Lista con los formatos asociados al libro
      */
     @DeleteMapping("/{idBook}/formatos/{idFormat}")
     public ResponseEntity<List<FormatDTO>> removeFormatFromBook(@PathVariable Long idBook,
                                                                 @PathVariable Long idFormat) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         bookFormatService.removeFormatFromBook(idBook, user.getId(), idFormat);

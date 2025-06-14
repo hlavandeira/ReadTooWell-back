@@ -44,8 +44,6 @@ public class BookListService {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
-    private BookMapper bookMapper;
-    @Autowired
     private BookListItemRepository bookItemRepository;
     @Autowired
     private BookListItemMapper bookItemMapper;

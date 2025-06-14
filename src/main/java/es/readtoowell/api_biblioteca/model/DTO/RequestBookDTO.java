@@ -1,11 +1,15 @@
 package es.readtoowell.api_biblioteca.model.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+
 /**
  * DTO que representa los detalles del libro de una solicitud de autor.
  */
 public class RequestBookDTO {
     private Long id;
+    @NotBlank(message = "El título del libro no puede estar en blanco")
     private String title;
+    @NotBlank(message = "El año de publicación del libro no puede estar en blanco")
     private int publicationYear;
 
     // Métodos Getters y Setters

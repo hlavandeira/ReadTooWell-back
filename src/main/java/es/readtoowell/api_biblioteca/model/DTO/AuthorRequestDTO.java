@@ -2,6 +2,7 @@ package es.readtoowell.api_biblioteca.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import es.readtoowell.api_biblioteca.model.entity.User;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Date;
 import java.util.List;
@@ -12,7 +13,9 @@ import java.util.List;
 public class AuthorRequestDTO {
     private Long id;
     private User user;
+    @NotBlank(message = "El nombre de la solicitud no puede estar en blanco")
     private String name;
+    @NotBlank(message = "La biografía de la solicitud no puede estar en blanco")
     private String biography;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Madrid")
     private Date dateSent;
