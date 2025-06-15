@@ -8,7 +8,6 @@ import es.readtoowell.api_biblioteca.model.DTO.user.LoginDTO;
 import es.readtoowell.api_biblioteca.model.DTO.user.RegisterDTO;
 import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
 import es.readtoowell.api_biblioteca.service.auth.AuthenticationService;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,4 +113,29 @@ class AuthenticationControllerTests {
         response.andExpect(status().isUnauthorized());
     }
 
+    /**
+     * Método de prueba. Validar un token válido
+     */
+    @Test
+    public void AuthenticationController_ValidateToken_ReturnToken() throws Exception {
+        given(authenticationService.validateToken(ArgumentMatchers.any())).willReturn(true);
+
+        ResultActions response = mockMvc.perform(get("/auth/validar")
+                .header("Authorization", "Bearer valid token"));
+
+        response.andExpect(status().isOk());
+    }
+
+    /**
+     * Método de prueba. Validar un token inválido
+     */
+    @Test
+    public void AuthenticationController_ValidateToken_InvalidToken() throws Exception {
+        given(authenticationService.validateToken(ArgumentMatchers.any())).willReturn(false);
+
+        ResultActions response = mockMvc.perform(get("/auth/validar")
+                .header("Authorization", "Bearer invalid token"));
+
+        response.andExpect(status().isUnauthorized());
+    }
 }

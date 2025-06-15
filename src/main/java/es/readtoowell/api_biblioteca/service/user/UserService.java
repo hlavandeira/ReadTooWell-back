@@ -250,8 +250,8 @@ public class UserService {
      * @param size Tamaño de la página
      * @return Página con los usuarios encontrados como DTOs
      */
-    public Page<UserDTO> searchUsers(String searchString, int page, int size) {
-        Page<User> users =  userRepository.searchUsers(searchString, PageRequest.of(page, size));
+    public Page<UserDTO> searchUsers(String searchString, Long idUser, int page, int size) {
+        Page<User> users =  userRepository.searchUsers(searchString, idUser, PageRequest.of(page, size));
         return users.map(userMapper::toDTO);
     }
 
@@ -289,8 +289,8 @@ public class UserService {
      * @throws EntityNotFoundException Alguno de los géneros no existe
      */
     public void addFavoriteGenres(User user, List<Long> genreIds) {
-        if (genreIds.size() > 10) {
-            throw new ValidationException("Sólo se pueden elegir 10 géneros favoritos como máximo.");
+        if (genreIds.size() > 5) {
+            throw new ValidationException("Sólo se pueden elegir 5 géneros favoritos como máximo.");
         }
 
         List<Genre> newGenres = new ArrayList<>(genreRepository.findAllById(genreIds));
@@ -301,13 +301,6 @@ public class UserService {
 
         user.setFavoriteGenres(newGenres);
         userRepository.save(user);
-
-        /*
-        Set<GenreDTO> genreDTOs = user.getGenerosFavoritos()
-                .stream().map(genreMapper::toDTO).collect(Collectors.toSet());
-
-        return genreDTOs;
-         */
     }
 
     /**
@@ -331,13 +324,6 @@ public class UserService {
 
         user.setFavoriteBooks(newBooks);
         userRepository.save(user);
-
-        /*
-        Set<BookDTO> bookDTOs = user.getLibrosFavoritos()
-                .stream().map(bookMapper::toDTO).collect(Collectors.toSet());
-
-        return bookDTOs;
-         */
     }
 
     /**

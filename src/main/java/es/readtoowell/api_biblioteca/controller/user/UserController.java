@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -224,7 +223,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Page<UserDTO> usuarios = userService.searchUsers(searchString, page, size);
+        Page<UserDTO> usuarios = userService.searchUsers(searchString, user.getId(), page, size);
 
         return ResponseEntity.ok(usuarios);
     }

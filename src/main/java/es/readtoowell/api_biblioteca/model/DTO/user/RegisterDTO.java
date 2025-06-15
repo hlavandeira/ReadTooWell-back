@@ -17,7 +17,7 @@ public class RegisterDTO {
     private String email;
     @NotBlank(message = "La contraseña no puede ser nula")
     @Pattern(regexp="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$",
-            message="La contraseña no tiene un formato válido")
+            message="La contraseña debe contener, al menos, una mayúscula, minúscula, número y carácter especial")
     private String password;
     @NotBlank(message = "Se debe confirmar la contraseña")
     private String confirmPassword;

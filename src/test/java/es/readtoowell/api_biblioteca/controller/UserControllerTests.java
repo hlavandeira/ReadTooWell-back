@@ -270,7 +270,7 @@ public class UserControllerTests {
     @Test
     public void UserController_SearchUsers_ReturnUsers() throws Exception {
         given(userService.getAuthenticatedUser()).willReturn(new User());
-        given(userService.searchUsers(any(), anyInt(), anyInt())).willReturn(usersPage);
+        given(userService.searchUsers(any(), any(), anyInt(), anyInt())).willReturn(usersPage);
 
         ResultActions response = mockMvc.perform(get("/usuarios/buscar?searchString=Búsqueda de usuarios"));
 

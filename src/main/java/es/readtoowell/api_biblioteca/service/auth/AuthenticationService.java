@@ -82,7 +82,7 @@ public class AuthenticationService {
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new ValidationException("Las contraseñas no coinciden");
+            throw new ValidationException("La contraseña es incorrecta");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
