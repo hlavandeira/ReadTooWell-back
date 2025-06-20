@@ -248,7 +248,7 @@ public class UserLibraryBookService {
             if (libro.getDateStart() == null) {
                 libro.setDateStart(Date.valueOf(LocalDate.now()));
             }
-            goalService.updateGoals(user.getId(), 0);
+            goalService.updateGoals(user.getId(), libro.getBook().getPageNumber());
         } else if (status == ReadingStatus.PENDING.getValue() && (lastStatus == ReadingStatus.PAUSED.getValue()
                     || lastStatus == ReadingStatus.ABANDONED.getValue())) {
             libro.setDateStart(null); // Si pasa de "Pausado" o "Abandonado" a "Pendiente", quitar fecha inicio

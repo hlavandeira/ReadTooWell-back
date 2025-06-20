@@ -1,4 +1,4 @@
-package es.readtoowell.api_biblioteca.service;
+package es.readtoowell.api_biblioteca.unit.service;
 
 import es.readtoowell.api_biblioteca.mapper.GenreMapper;
 import es.readtoowell.api_biblioteca.mapper.GoalMapper;
@@ -6,6 +6,7 @@ import es.readtoowell.api_biblioteca.mapper.UserLibraryBookMapper;
 import es.readtoowell.api_biblioteca.model.DTO.GoalDTO;
 import es.readtoowell.api_biblioteca.model.DTO.UserLibraryBookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.YearRecapDTO;
+import es.readtoowell.api_biblioteca.model.DTO.book.BookDTO;
 import es.readtoowell.api_biblioteca.model.DTO.book.GenreDTO;
 import es.readtoowell.api_biblioteca.model.DTO.book.RatingDTO;
 import es.readtoowell.api_biblioteca.model.entity.*;
@@ -321,11 +322,19 @@ public class UserLibraryBookServiceTests {
         user.setId(1L);
         book.setId(bookId);
         libraryBook.setReadingStatus(1);
+        libraryBook.setBook(book);
+
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setPageNumber(100);
+
+        UserLibraryBookDTO dto = new UserLibraryBookDTO();
+        dto.setBook(bookDTO);
+        dto.setReadingStatus(1);
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(libraryRepository.findByUserAndBook(user, book)).thenReturn(Optional.of(libraryBook));
         when(libraryRepository.save(any(UserLibraryBook.class))).thenReturn(libraryBook);
-        when(libraryMapper.toDTO(any(UserLibraryBook.class))).thenReturn(new UserLibraryBookDTO());
+        when(libraryMapper.toDTO(any(UserLibraryBook.class))).thenReturn(dto);
 
         UserLibraryBookDTO result = libraryService.updateReadingStatus(bookId, user, status);
 

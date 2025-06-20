@@ -192,7 +192,7 @@ public class UserService {
      * @param idFollowedUser ID del usuario al que sigue
      * @return DTO con los datos del usuario seguido
      * @throws EntityNotFoundException Alguno de los usuarios no existe
-     * @throws IllegalStateException Alguno de los usuarios es un administrador
+     * @throws IllegalStateException Alguno de los usuarios es un administrador o se intenta seguir al propio usuario
      */
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser)
@@ -202,6 +202,9 @@ public class UserService {
 
         if (user.getRole() == Role.ADMIN.getValue() || followedUser.getRole() == Role.ADMIN.getValue()) {
             throw new IllegalStateException("No se puede seguir a un usuario administrador.");
+        }
+        if (idUser.equals(idFollowedUser)) {
+            throw new IllegalStateException("Un usuario no puede seguirse a sí mismo.");
         }
 
         user.getFollowedUsers().add(followedUser);
@@ -220,7 +223,7 @@ public class UserService {
      * @param idUnfollowedUser ID del usuario al que deja de seguir
      * @return DTO con los datos del usuario que se ha dejado de seguir
      * @throws EntityNotFoundException Alguno de los usuarios no existe
-     * @throws IllegalStateException Alguno de los usuarios es un administrador
+     * @throws IllegalStateException Alguno de los usuarios es un admin o se intena dejar de seguir al propio usuario
      */
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser)
@@ -231,6 +234,9 @@ public class UserService {
 
         if (user.getRole() == Role.ADMIN.getValue() || unfollowedUser.getRole() == Role.ADMIN.getValue()) {
             throw new IllegalStateException("No se puede dejar de seguir a un usuario administrador.");
+        }
+        if (idUser.equals(idUnfollowedUser)) {
+            throw new IllegalStateException("Un usuario no puede dejar de seguirse a sí mismo.");
         }
 
         user.getFollowedUsers().remove(unfollowedUser);
