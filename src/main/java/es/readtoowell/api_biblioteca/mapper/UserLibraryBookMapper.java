@@ -5,6 +5,9 @@ import es.readtoowell.api_biblioteca.model.entity.UserLibraryBook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de libros de una biblioteca entre entidades y DTOs.
+ */
 @Component
 public class UserLibraryBookMapper {
     @Autowired

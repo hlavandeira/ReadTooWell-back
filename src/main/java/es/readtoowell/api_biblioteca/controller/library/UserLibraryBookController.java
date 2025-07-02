@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las bibliotecas de los usuarios.
+ */
 @RestController
 @RequestMapping("/biblioteca")
 public class UserLibraryBookController {
@@ -27,7 +30,6 @@ public class UserLibraryBookController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con los libros de la biblioteca del usuario como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/todos")
     public ResponseEntity<Page<UserLibraryBookDTO>> getLibraryBooks(
@@ -36,7 +38,7 @@ public class UserLibraryBookController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<UserLibraryBookDTO> libros = libraryService.getLibraryFromUser(user, page, size);
@@ -51,7 +53,6 @@ public class UserLibraryBookController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con los libros de la biblioteca del usuario filtrados como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping
     public ResponseEntity<Page<UserLibraryBookDTO>> getLibraryBooksByStatus(
@@ -61,7 +62,7 @@ public class UserLibraryBookController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<UserLibraryBookDTO> libros = libraryService.getLibraryByStatus(user, status, page, size);
@@ -74,13 +75,12 @@ public class UserLibraryBookController {
      *
      * @param idBook ID del libro a añadir
      * @return DTO con los datos del libro añadido
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PostMapping("/{idBook}")
     public ResponseEntity<UserLibraryBookDTO> addBookToLibrary(@PathVariable Long idBook) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserLibraryBookDTO addedBook = libraryService.addBookToLibrary(idBook, user);
@@ -93,13 +93,12 @@ public class UserLibraryBookController {
      *
      * @param idBook ID del libro a eliminar
      * @return DTO con los datos del libro eliminado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @DeleteMapping("/{idBook}")
     public ResponseEntity<UserLibraryBookDTO> deleteBookFromLibrary(@PathVariable Long idBook) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserLibraryBookDTO deletedBook = libraryService.deleteBookFromLibrary(idBook, user);
@@ -113,14 +112,13 @@ public class UserLibraryBookController {
      * @param idBook ID del libro
      * @param calificacion Calificación
      * @return DTO con los datos del libro actualizado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idBook}/calificar")
     public ResponseEntity<RatingDTO> rateBook(@PathVariable Long idBook,
-                                                       @RequestParam double calificacion) {
+                                              @RequestParam double calificacion) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         RatingDTO ratedBook = libraryService.rateBook(idBook, user, calificacion);
@@ -134,14 +132,13 @@ public class UserLibraryBookController {
      * @param idBook ID del libro
      * @param review Reseña
      * @return DTO con los datos del libro actualizado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idBook}/escribir-reseña")
     public ResponseEntity<UserLibraryBookDTO> reviewBook(@PathVariable Long idBook,
-                                                @RequestParam String review) {
+                                                         @RequestParam String review) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserLibraryBookDTO ratedBook = libraryService.reviewBook(idBook, user, review);
@@ -155,14 +152,13 @@ public class UserLibraryBookController {
      * @param idBook ID del libro
      * @param estado Nuevo estado de lectura
      * @return DTO con los datos del libro actualizado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idBook}/estado")
     public ResponseEntity<UserLibraryBookDTO> updateReadingStatus(@PathVariable Long idBook,
                                                                   @RequestParam int estado) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserLibraryBookDTO ratedBook = libraryService.updateReadingStatus(idBook, user, estado);
@@ -177,7 +173,6 @@ public class UserLibraryBookController {
      * @param progreso Nuevo progreso del libro
      * @param tipoProgreso Tipo de progreso
      * @return DTO con los datos del libro actualizado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idBook}/progreso")
     public ResponseEntity<UserLibraryBookDTO> updateProgress(@PathVariable Long idBook,
@@ -185,7 +180,7 @@ public class UserLibraryBookController {
                                                              @RequestParam String tipoProgreso) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserLibraryBookDTO updatedBook = libraryService.updateProgress(idBook, user, progreso, tipoProgreso);
@@ -197,13 +192,12 @@ public class UserLibraryBookController {
      * Devuelve el resumen anual de un usuario.
      *
      * @return DTO con los datos del resumen anual
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/resumen-anual")
     public ResponseEntity<YearRecapDTO> getYearRecap() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         YearRecapDTO recap = libraryService.getYearRecap(user);

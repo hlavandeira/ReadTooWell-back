@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repositorio para la gestión de entidades {@code Goal}
+ */
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     /**

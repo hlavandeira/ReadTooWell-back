@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con los libros.
+ */
 @Service
 public class BookService {
     @Autowired
@@ -117,6 +120,7 @@ public class BookService {
      * @param genreIds Lista con los IDs de los géneros asociados al libro
      * @return DTO con los datos del libro actualizado
      * @throws EntityNotFoundException El libro no existe
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public BookDTO updateBook(Long idBook, BookDTO book, List<Long> genreIds, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {
@@ -231,6 +235,7 @@ public class BookService {
      *
      * @param book DTO con los datos del libro a borrar
      * @return DTO con los datos del libro borrado
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public BookDTO deleteBook(BookDTO book, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {
@@ -248,6 +253,7 @@ public class BookService {
      *
      * @param book DTO con los datos del libro a reactivar
      * @return DTO con los datos del libro reactivado
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public BookDTO reactivateBook(BookDTO book, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {
@@ -434,7 +440,7 @@ public class BookService {
      * @param size Tamaño de la página
      * @param user Usario autenticado
      * @return Página con los libros resultantes como DTOs
-     * @throws AccessDeniedException El usuario no tiene el rol de administrador
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public Page<BookDTO> getDeletedBooks(int page, int size, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {

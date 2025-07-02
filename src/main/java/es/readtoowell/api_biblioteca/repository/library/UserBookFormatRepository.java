@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code UserBookFormat}
+ */
 public interface UserBookFormatRepository extends JpaRepository<UserBookFormat, UserBookFormatId> {
     /**
      * Busca los formatos de un libro de un usuario.

@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con los formatos de libros de usuarios.
+ */
 @Service
 public class UserBookFormatService {
     @Autowired

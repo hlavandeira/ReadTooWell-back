@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.entity.BookListItem;
 import es.readtoowell.api_biblioteca.model.DTO.book.BookListItemDTO;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de libros añadidos a listas entre entidades y DTOs.
+ */
 @Component
 public class BookListItemMapper {
     /**

@@ -5,6 +5,7 @@ import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.service.book.RecommendationService;
 import es.readtoowell.api_biblioteca.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las recomendaciones.
+ */
 @RestController
 @RequestMapping("/recomendaciones")
 public class RecommendationController {
@@ -31,7 +35,7 @@ public class RecommendationController {
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByFavoriteBooks() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<RatedBookDTO> recoms = recommendationService.getRecommendationsByFavoriteBooks(user.getId());
@@ -48,7 +52,7 @@ public class RecommendationController {
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByFavoriteGenres() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<RatedBookDTO> recoms = recommendationService.getRecommendationsByFavoriteGenres(user.getId());
@@ -66,7 +70,7 @@ public class RecommendationController {
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByReadBooks() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<RatedBookDTO> recoms = recommendationService.getRecommendationsByReadBooks(user.getId());
@@ -85,7 +89,7 @@ public class RecommendationController {
     public ResponseEntity<List<RatedBookDTO>> getRecommendationsByList(@PathVariable Long idList) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<RatedBookDTO> recoms = recommendationService.getRecommendationsByList(user.getId(), idList);
@@ -103,7 +107,7 @@ public class RecommendationController {
     public ResponseEntity<List<RatedBookDTO>> getGeneralRecommendations() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<RatedBookDTO> recoms = recommendationService.getGeneralRecommendations(user.getId());

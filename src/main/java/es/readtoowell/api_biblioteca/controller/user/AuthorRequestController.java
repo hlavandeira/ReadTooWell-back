@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las solicitudes de verificación de autor.
+ */
 @RestController
 @RequestMapping("/solicitud-autor")
 public class AuthorRequestController {
@@ -25,13 +28,12 @@ public class AuthorRequestController {
      *
      * @param dto DTO con los datos de la solicitud
      * @return DTO con los datos de la solicitud enviada
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PostMapping
     public ResponseEntity<AuthorRequestDTO> sendAuthorRequest(@Valid @RequestBody AuthorRequestDTO dto) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         AuthorRequestDTO request = requestService.sendAuthorRequest(user, dto);
@@ -45,14 +47,13 @@ public class AuthorRequestController {
      * @param idRequest ID de la solicitud a actualizar
      * @param newStatus Nuevo estado de la solicitud
      * @return DTO con los datos de la solicitud actualizada
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/{idRequest}")
     public ResponseEntity<AuthorRequestDTO> updateStatusRequest(@PathVariable Long idRequest,
                                                                 @RequestParam int newStatus) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         AuthorRequestDTO dto = requestService.updateStatusRequest(idRequest, newStatus, user);
@@ -66,7 +67,6 @@ public class AuthorRequestController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con las solicitudes como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping
     public ResponseEntity<Page<AuthorRequestDTO>> getAllRequests(
@@ -75,7 +75,7 @@ public class AuthorRequestController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<AuthorRequestDTO> requests = requestService.getAllRequests(page, size, user);
@@ -90,7 +90,6 @@ public class AuthorRequestController {
      * @param size Tamaño de la página
      * @param status Estado por el que se quieren filtrar
      * @return Página con las solicitudes filtradas como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/estado")
     public ResponseEntity<Page<AuthorRequestDTO>> getRequestsWithStatus(
@@ -100,7 +99,7 @@ public class AuthorRequestController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<AuthorRequestDTO> requests = requestService.getRequestsWithStatus(page, size, status, user);
@@ -113,13 +112,12 @@ public class AuthorRequestController {
      *
      * @param idRequest ID de la solicitud
      * @return DTO con los datos de la solicitud
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/{idRequest}")
     public ResponseEntity<AuthorRequestDTO> getRequest(@PathVariable Long idRequest) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         AuthorRequestDTO request = requestService.getRequest(idRequest, user);
@@ -136,7 +134,7 @@ public class AuthorRequestController {
     public ResponseEntity<Boolean> checkIfPendingRequest() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(requestService.checkIfPendingRequest(user));

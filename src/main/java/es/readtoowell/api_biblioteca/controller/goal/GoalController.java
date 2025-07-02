@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a los objetivos de lectura.
+ */
 @RestController
 @RequestMapping("/objetivos")
 public class GoalController {
@@ -25,13 +28,12 @@ public class GoalController {
      * Devuelve los objetivos en curso de un usuario.
      *
      * @return Lista con los objetivos como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/en-curso")
     public ResponseEntity<List<GoalDTO>> getGoalsInProgress() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<GoalDTO> objetivos = goalService.getGoalsInProgress(user.getId());
@@ -43,13 +45,12 @@ public class GoalController {
      * Devuelve los objetivos terminados de un usuario.
      *
      * @return Lista con los objetivos como DTOs
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/terminados")
     public ResponseEntity<List<GoalDTO>> getFinishedGoals() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<GoalDTO> objetivos = goalService.getFinishedGoals(user.getId());
@@ -66,7 +67,7 @@ public class GoalController {
     public ResponseEntity<List<GoalDTO>> getFinishedGoalsActualYear() {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         List<GoalDTO> objetivos = goalService.getFinishedGoalsActualYear(user.getId());
@@ -79,13 +80,12 @@ public class GoalController {
      *
      * @param goal DTO con los datos del objetivo a crear
      * @return DTO con los datos del objetivo creado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PostMapping
     public ResponseEntity<GoalDTO> createGoal(@Valid @RequestBody GoalDTO goal) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         GoalDTO objetivo = goalService.createGoal(user.getId(), goal);
@@ -98,13 +98,12 @@ public class GoalController {
      *
      * @param idGoal ID del objetivo a borrar
      * @return DTO con los datos del objetivo borrado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @DeleteMapping("/{idGoal}")
     public ResponseEntity<GoalDTO> deleteGoal(@PathVariable Long idGoal) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         GoalDTO objetivo = goalService.deleteGoal(user.getId(), idGoal);

@@ -110,13 +110,13 @@ public class BookListItem {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BookListItem)) return false;
         BookListItem that = (BookListItem) o;
-        return id.equals(that.id) && list.equals(that.list) && book.equals(that.book);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, list, book);
+        return Objects.hash(id);
     }
 }

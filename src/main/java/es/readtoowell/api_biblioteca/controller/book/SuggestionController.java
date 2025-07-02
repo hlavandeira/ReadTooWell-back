@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a las sugerencias de libros.
+ */
 @RestController
 @RequestMapping("/sugerencias")
 public class SuggestionController {
@@ -25,13 +28,12 @@ public class SuggestionController {
      *
      * @param suggestion DTO con los datos de la sugerencia
      * @return DTO con los datos de la sugerencia enviada
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PostMapping("/enviar-sugerencia")
     public ResponseEntity<SuggestionDTO> sendSuggestion(@Valid @RequestBody SuggestionDTO suggestion) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         SuggestionDTO dto = suggestionService.sendSuggestion(suggestion, user);
@@ -51,7 +53,7 @@ public class SuggestionController {
                                                                 @RequestParam int newStatus) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         SuggestionDTO dto = suggestionService.updateStatusSuggestion(idSuggestion, newStatus, user);
@@ -73,7 +75,7 @@ public class SuggestionController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<SuggestionDTO> suggestions = suggestionService.getAllSuggestions(page, size, user);
@@ -97,7 +99,7 @@ public class SuggestionController {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<SuggestionDTO> suggestions = suggestionService.getSuggestionsWithStatus(page, size, status, user);
@@ -115,7 +117,7 @@ public class SuggestionController {
     public ResponseEntity<SuggestionDTO> getSuggestion(@PathVariable Long idSuggestion) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         SuggestionDTO suggestion = suggestionService.getSuggestion(idSuggestion, user);

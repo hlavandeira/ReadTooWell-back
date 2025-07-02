@@ -19,6 +19,9 @@ import es.readtoowell.api_biblioteca.service.book.BookService;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a los libros.
+ */
 @RestController
 @RequestMapping("/libros")
 public class BookController {
@@ -68,7 +71,7 @@ public class BookController {
                                               @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         BookDTO newBook = bookService.createBook(book, genreIds, user);
@@ -90,7 +93,7 @@ public class BookController {
                                               @RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         BookDTO libro = bookService.updateBook(idBook, book, genreIds, user);
@@ -108,7 +111,7 @@ public class BookController {
     public ResponseEntity<BookDTO> deleteBook(@PathVariable Long idBook) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         BookDTO libro = bookService.getBook(idBook);
@@ -127,7 +130,7 @@ public class BookController {
     public ResponseEntity<BookDTO> reactivateBook(@PathVariable Long idBook) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         BookDTO libro = bookService.getBook(idBook);
@@ -158,6 +161,11 @@ public class BookController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size)
     {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Page<BookDTO> libros = bookService.filterBooks(searchString, minPages, maxPages, minYear,
                 maxYear, page, size);
 
@@ -176,6 +184,11 @@ public class BookController {
     public ResponseEntity<Page<BookDTO>> searchBooksByGenre(@RequestParam Long idGenre,
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Page<BookDTO> libros = bookService.filterBooksByGenre(idGenre, page, size);
 
         return ResponseEntity.ok(libros);
@@ -187,14 +200,13 @@ public class BookController {
      *
      * @param idBook ID del libro
      * @return DTO con los detalles completos del libro
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/{idBook}/detalles")
     public ResponseEntity<BookDetailsDTO> getBookDetails(@PathVariable Long idBook) {
 
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         BookDetailsDTO details = bookService.getBookDetails(idBook, user);
@@ -210,6 +222,11 @@ public class BookController {
      */
     @GetMapping("/{idAuthor}/autor")
     public ResponseEntity<AuthorDTO> getBooksByAuthor(@PathVariable Long idAuthor) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         AuthorDTO author = bookService.getBooksByAuthor(idAuthor);
 
         return ResponseEntity.ok(author);
@@ -225,6 +242,11 @@ public class BookController {
     public ResponseEntity<Page<BookDTO>> getAllBooksByAuthor(@RequestParam String authorName,
                                                              @RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Page<BookDTO> books = bookService.getAllBooksByAuthor(authorName, page, size);
 
         return ResponseEntity.ok(books);
@@ -238,6 +260,11 @@ public class BookController {
      */
     @GetMapping("/coleccion/{idBook}")
     public ResponseEntity<List<BookDTO>> getOtherBooksFromCollection(@PathVariable Long idBook) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         List<BookDTO> books = bookService.getOtherBooksFromCollection(idBook);
 
         return ResponseEntity.ok(books);
@@ -261,14 +288,13 @@ public class BookController {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con los libros desactivados
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/desactivados")
     public ResponseEntity<Page<BookDTO>> getDeletedBooks(@RequestParam(value = "page", defaultValue = "0") int page,
                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Page<BookDTO> books = bookService.getDeletedBooks(page, size, user);
@@ -296,6 +322,10 @@ public class BookController {
      */
     @PostMapping("/colecciones")
     public ResponseEntity<CollectionDTO> createCollection(@Valid @RequestBody CollectionDTO collection) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         CollectionDTO newCollection = bookService.createCollection(collection);
 

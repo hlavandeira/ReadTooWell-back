@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con la autenticación de usuarios.
+ */
 @Service
 public class AuthenticationService {
     @Autowired
@@ -79,7 +82,7 @@ public class AuthenticationService {
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new ValidationException("Los datos son incorrectos");
+            throw new ValidationException("La contraseña es incorrecta");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());

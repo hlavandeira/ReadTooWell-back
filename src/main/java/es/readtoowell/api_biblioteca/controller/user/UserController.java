@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador que gestiona las peticiones HTTP relativas a los usuarios.
+ */
 @RestController
 @RequestMapping("/usuarios")
 public class UserController {
@@ -31,6 +33,10 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserDTO>> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Page<UserDTO> userDTOPage = userService.getAllUsers(page, size);
 
@@ -45,6 +51,11 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable(value = "id") Long id) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         UserDTO usuario = userService.getUser(id);
 
         return ResponseEntity.ok(usuario);
@@ -58,6 +69,11 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO user) {
+        User userAuth = userService.getAuthenticatedUser();
+        if (userAuth == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         UserDTO newUser = userService.createUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
@@ -71,6 +87,11 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         UserDTO usuario = userService.deleteUser(id);
         if (usuario != null) {
             return ResponseEntity.ok(usuario);
@@ -84,13 +105,12 @@ public class UserController {
      *
      * @param userDTO DTO con los nuevos datos del usuario
      * @return DTO con los datos del usuario actualizado
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping
     public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserDTO usuario = userService.updateUser(user.getId(), userDTO);
@@ -107,7 +127,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody UpdateProfileDTO updateDTO) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserDTO usuario = userService.updateUserProfile(user.getId(), updateDTO);
@@ -122,6 +142,11 @@ public class UserController {
      */
     @GetMapping("/{id}/seguidos")
     public ResponseEntity<List<UserDTO>> getFollows(@PathVariable Long id) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         List<UserDTO> seguidos = userService.getFollows(id);
 
         return ResponseEntity.ok(seguidos);
@@ -135,6 +160,11 @@ public class UserController {
      */
     @GetMapping("/{id}/seguidores")
     public ResponseEntity<List<UserDTO>> getFollowers(@PathVariable Long id) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         List<UserDTO> seguidores = userService.getFollowers(id);
 
         return ResponseEntity.ok(seguidores);
@@ -145,13 +175,12 @@ public class UserController {
      *
      * @param idFollowed ID del usuario al que sigue
      * @return DTO con los datos del usuario seguido
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PostMapping("/seguir/{idFollowed}")
     public ResponseEntity<UserDTO> followUser(@PathVariable Long idFollowed) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserDTO followed = userService.followUser(user.getId(), idFollowed);
@@ -164,13 +193,12 @@ public class UserController {
      *
      * @param idUnfollowed ID del usuario al que deja de seguir
      * @return DTO con los datos del usuario que se ha dejado de seguir
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @DeleteMapping("/dejar-seguir/{idUnfollowed}")
     public ResponseEntity<UserDTO> unfollowUser(@PathVariable Long idUnfollowed) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserDTO unfollowed = userService.unfollowUser(user.getId(), idUnfollowed);
@@ -190,7 +218,12 @@ public class UserController {
     public ResponseEntity<Page<UserDTO>> searchUsers(@RequestParam String searchString,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
-        Page<UserDTO> usuarios = userService.searchUsers(searchString, page, size);
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Page<UserDTO> usuarios = userService.searchUsers(searchString, user.getId(), page, size);
 
         return ResponseEntity.ok(usuarios);
     }
@@ -200,13 +233,12 @@ public class UserController {
      *
      * @param genreIds Lista de IDs de los géneros seleccionados
      * @return DTO con los datos de los libros y géneros favoritos del usuario
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/generos-favoritos")
     public ResponseEntity<UserFavoritesDTO> updateFavoriteGenres(@RequestParam List<Long> genreIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userService.addFavoriteGenres(user, genreIds);
@@ -221,13 +253,12 @@ public class UserController {
      *
      * @param bookIds Lista de IDs de los libros seleccionados
      * @return DTO con los datos de los libros y géneros favoritos del usuario
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @PutMapping("/libros-favoritos")
     public ResponseEntity<UserFavoritesDTO> updateFavoriteBooks(@RequestParam List<Long> bookIds) {
         User user = userService.getAuthenticatedUser();
         if (user == null) {
-            throw new AccessDeniedException("Usuario no autenticado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userService.addFavoriteBooks(user, bookIds);
@@ -242,10 +273,14 @@ public class UserController {
      *
      * @param idUser ID del usuario del que se devuelven los favoritos
      * @return DTO con los datos de los libros y géneros favoritos del usuario
-     * @throws AccessDeniedException Usuario no autenticado
      */
     @GetMapping("/{idUser}/favoritos")
     public ResponseEntity<UserFavoritesDTO> getFavorites(@PathVariable Long idUser) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         UserFavoritesDTO favs = userService.getFavorites(idUser);
 
         return ResponseEntity.ok(favs);
@@ -263,9 +298,20 @@ public class UserController {
         return ResponseEntity.ok(userService.verifyAdmin(user));
     }
 
+    /**
+     * Devuelve los usuarios que tienen el rol de autor.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los usuarios resultantes como DTOs
+     */
     @GetMapping("/autores")
     public ResponseEntity<Page<UserDTO>> getAuthors(@RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Page<UserDTO> authors = userService.getAuthors(page, size);
 

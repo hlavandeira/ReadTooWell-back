@@ -9,7 +9,6 @@ import es.readtoowell.api_biblioteca.model.DTO.user.UserFavoritesDTO;
 import es.readtoowell.api_biblioteca.model.entity.Genre;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import es.readtoowell.api_biblioteca.model.enums.Role;
-import es.readtoowell.api_biblioteca.repository.user.AuthorRequestRepository;
 import es.readtoowell.api_biblioteca.repository.book.BookRepository;
 import es.readtoowell.api_biblioteca.repository.book.GenreRepository;
 import es.readtoowell.api_biblioteca.repository.user.UserRepository;
@@ -28,6 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con los usuarios.
+ */
 @Service
 public class UserService {
     @Autowired
@@ -98,6 +100,7 @@ public class UserService {
      *
      * @param id ID del usuario a eliminar
      * @return DTO con los datos del usuario eliminado
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserDTO deleteUser(Long id) {
         User user = userRepository.findById(id)
@@ -139,6 +142,7 @@ public class UserService {
      * @param idUser ID del usuario que edita su perfil
      * @param user Datos introducidos por el usuario
      * @return Datos actualizados del usuario
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserDTO updateUserProfile(Long idUser, UpdateProfileDTO user) {
         User usuario = userRepository.findById(idUser)
@@ -188,7 +192,7 @@ public class UserService {
      * @param idFollowedUser ID del usuario al que sigue
      * @return DTO con los datos del usuario seguido
      * @throws EntityNotFoundException Alguno de los usuarios no existe
-     * @throws IllegalStateException Alguno de los usuarios es un administrador
+     * @throws IllegalStateException Alguno de los usuarios es un administrador o se intenta seguir al propio usuario
      */
     public UserDTO followUser(Long idUser, Long idFollowedUser) {
         User user = userRepository.findById(idUser)
@@ -198,6 +202,9 @@ public class UserService {
 
         if (user.getRole() == Role.ADMIN.getValue() || followedUser.getRole() == Role.ADMIN.getValue()) {
             throw new IllegalStateException("No se puede seguir a un usuario administrador.");
+        }
+        if (idUser.equals(idFollowedUser)) {
+            throw new IllegalStateException("Un usuario no puede seguirse a sí mismo.");
         }
 
         user.getFollowedUsers().add(followedUser);
@@ -216,7 +223,7 @@ public class UserService {
      * @param idUnfollowedUser ID del usuario al que deja de seguir
      * @return DTO con los datos del usuario que se ha dejado de seguir
      * @throws EntityNotFoundException Alguno de los usuarios no existe
-     * @throws IllegalStateException Alguno de los usuarios es un administrador
+     * @throws IllegalStateException Alguno de los usuarios es un admin o se intena dejar de seguir al propio usuario
      */
     public UserDTO unfollowUser(Long idUser, Long idUnfollowedUser) {
         User user = userRepository.findById(idUser)
@@ -227,6 +234,9 @@ public class UserService {
 
         if (user.getRole() == Role.ADMIN.getValue() || unfollowedUser.getRole() == Role.ADMIN.getValue()) {
             throw new IllegalStateException("No se puede dejar de seguir a un usuario administrador.");
+        }
+        if (idUser.equals(idUnfollowedUser)) {
+            throw new IllegalStateException("Un usuario no puede dejar de seguirse a sí mismo.");
         }
 
         user.getFollowedUsers().remove(unfollowedUser);
@@ -246,8 +256,8 @@ public class UserService {
      * @param size Tamaño de la página
      * @return Página con los usuarios encontrados como DTOs
      */
-    public Page<UserDTO> searchUsers(String searchString, int page, int size) {
-        Page<User> users =  userRepository.searchUsers(searchString, PageRequest.of(page, size));
+    public Page<UserDTO> searchUsers(String searchString, Long idUser, int page, int size) {
+        Page<User> users =  userRepository.searchUsers(searchString, idUser, PageRequest.of(page, size));
         return users.map(userMapper::toDTO);
     }
 
@@ -285,8 +295,8 @@ public class UserService {
      * @throws EntityNotFoundException Alguno de los géneros no existe
      */
     public void addFavoriteGenres(User user, List<Long> genreIds) {
-        if (genreIds.size() > 10) {
-            throw new ValidationException("Sólo se pueden elegir 10 géneros favoritos como máximo.");
+        if (genreIds.size() > 5) {
+            throw new ValidationException("Sólo se pueden elegir 5 géneros favoritos como máximo.");
         }
 
         List<Genre> newGenres = new ArrayList<>(genreRepository.findAllById(genreIds));
@@ -297,13 +307,6 @@ public class UserService {
 
         user.setFavoriteGenres(newGenres);
         userRepository.save(user);
-
-        /*
-        Set<GenreDTO> genreDTOs = user.getGenerosFavoritos()
-                .stream().map(genreMapper::toDTO).collect(Collectors.toSet());
-
-        return genreDTOs;
-         */
     }
 
     /**
@@ -327,13 +330,6 @@ public class UserService {
 
         user.setFavoriteBooks(newBooks);
         userRepository.save(user);
-
-        /*
-        Set<BookDTO> bookDTOs = user.getLibrosFavoritos()
-                .stream().map(bookMapper::toDTO).collect(Collectors.toSet());
-
-        return bookDTOs;
-         */
     }
 
     /**
@@ -341,6 +337,7 @@ public class UserService {
      *
      * @param idUser ID del usuario del que se devuelven sus favoritos
      * @return DTO con los datos de los libros y géneros favoritos del usuario
+     * @throws EntityNotFoundException El usuario no existe
      */
     public UserFavoritesDTO getFavorites(Long idUser) {
         User user = userRepository.findById(idUser)
@@ -365,6 +362,13 @@ public class UserService {
         return user.getRole() == Role.ADMIN.getValue();
     }
 
+    /**
+     * Devuelve todos los usuarios que tienen el rol de autor.
+     *
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
+     * @return Página con los usuarios resultantes como DTOs
+     */
     public Page<UserDTO> getAuthors(int page, int size) {
         Page<User> users = userRepository.findAuthors(PageRequest.of(page, size));
         return users.map(userMapper::toDTO);

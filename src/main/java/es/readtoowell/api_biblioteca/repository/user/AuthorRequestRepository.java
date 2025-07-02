@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code AuthorRequest}
+ */
 public interface AuthorRequestRepository extends JpaRepository<AuthorRequest, Long> {
     /**
      * Comprueba si existe una solicitud de autor para un usuario con unos estados específicos.

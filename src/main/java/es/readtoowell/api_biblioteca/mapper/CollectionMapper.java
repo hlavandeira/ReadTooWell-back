@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.DTO.book.CollectionDTO;
 import es.readtoowell.api_biblioteca.model.entity.Collection;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de colecciones entre entidades y DTOs.
+ */
 @Component
 public class CollectionMapper {
     /**

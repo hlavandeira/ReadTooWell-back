@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las sugerencias de libros.
+ */
 @Service
 public class SuggestionService {
     @Autowired
@@ -58,6 +61,7 @@ public class SuggestionService {
      * @return DTO con los datos de la sugerencia actualizada
      * @throws ValidationException El nuevo estado es inválido
      * @throws EntityNotFoundException La sugerencia no existe
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public SuggestionDTO updateStatusSuggestion(Long idSuggestion, int newStatus, User user) {
         if (newStatus < 0 || newStatus > 3) {
@@ -87,6 +91,7 @@ public class SuggestionService {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @return Página con las sugerencias como DTOs
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public Page<SuggestionDTO> getAllSuggestions(int page, int size, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {
@@ -106,6 +111,7 @@ public class SuggestionService {
      * @param status Estado de las sugerencias para filtrar
      * @return Página con las sugerencias filtradas como DTOs
      * @throws ValidationException El estado de sugerencia es inválido
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public Page<SuggestionDTO> getSuggestionsWithStatus(int page, int size, int status, User user) {
         if (status < 0 || status > 3) {
@@ -126,6 +132,7 @@ public class SuggestionService {
      * @param idSuggestion ID de la sugerencia
      * @return DTO con los datos de la sugerencia
      * @throws EntityNotFoundException La sugerencia no existe
+     * @throws AccessDeniedException El usuario no es un administrador
      */
     public SuggestionDTO getSuggestion(Long idSuggestion, User user) {
         if (user.getRole() != Role.ADMIN.getValue()) {

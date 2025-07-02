@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code User}
+ */
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Busca un usuario por su correo electrónico.
@@ -31,8 +34,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
         lower(u.username) like lower(concat('%', :searchString, '%'))
         or lower(u.profileName) like lower(concat('%', :searchString, '%')))
         and u.role <> 2
+        and u.id <> :idUser
     """)
-    Page<User> searchUsers(@Param("searchString") String searchString, Pageable pageable);
+    Page<User> searchUsers(@Param("searchString") String searchString, @Param("idUser") Long idUser, Pageable pageable);
 
     @Query("select u from User u where u.role = 1")
     Page<User> findAuthors(Pageable pageable);

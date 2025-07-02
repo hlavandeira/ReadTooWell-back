@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.DTO.book.FormatDTO;
 import es.readtoowell.api_biblioteca.model.entity.Format;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de formatos entre entidades y DTOs.
+ */
 @Component
 public class FormatMapper {
     /**

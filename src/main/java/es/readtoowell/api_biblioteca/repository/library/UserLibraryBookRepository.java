@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la gestión de entidades {@code UserLibraryBook}
+ */
 public interface UserLibraryBookRepository extends JpaRepository<UserLibraryBook, UserLibraryBookId> {
     /**
      * Busca un libro de la biblioteca de un usuario.

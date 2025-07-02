@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio encargado de gestionar la lógica relacionada con las bibliotecas de usuarios.
+ */
 @Service
 public class UserLibraryBookService {
     @Autowired
@@ -82,7 +85,7 @@ public class UserLibraryBookService {
         } else if (status == ReadingStatus.PENDING.getValue()) {
             pageable = PageRequest.of(page, size);
         } else {
-            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "dateStart"));
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateStart"));
         }
 
         Page<UserLibraryBook> libros = libraryRepository.findByUserAndReadingStatus(user, status, pageable);
@@ -245,7 +248,7 @@ public class UserLibraryBookService {
             if (libro.getDateStart() == null) {
                 libro.setDateStart(Date.valueOf(LocalDate.now()));
             }
-            goalService.updateGoals(user.getId(), 0);
+            goalService.updateGoals(user.getId(), libro.getBook().getPageNumber());
         } else if (status == ReadingStatus.PENDING.getValue() && (lastStatus == ReadingStatus.PAUSED.getValue()
                     || lastStatus == ReadingStatus.ABANDONED.getValue())) {
             libro.setDateStart(null); // Si pasa de "Pausado" o "Abandonado" a "Pendiente", quitar fecha inicio

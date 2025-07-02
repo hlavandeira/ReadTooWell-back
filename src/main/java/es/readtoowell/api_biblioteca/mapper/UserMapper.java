@@ -4,6 +4,9 @@ import es.readtoowell.api_biblioteca.model.DTO.user.UserDTO;
 import es.readtoowell.api_biblioteca.model.entity.User;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapeador encargado de gestionar las conversiones de usuarios entre entidades y DTOs.
+ */
 @Component
 public class UserMapper {
     /**
