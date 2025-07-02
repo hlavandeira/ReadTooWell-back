@@ -85,7 +85,7 @@ public class UserLibraryBookService {
         } else if (status == ReadingStatus.PENDING.getValue()) {
             pageable = PageRequest.of(page, size);
         } else {
-            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "dateStart"));
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateStart"));
         }
 
         Page<UserLibraryBook> libros = libraryRepository.findByUserAndReadingStatus(user, status, pageable);
