@@ -58,6 +58,9 @@ public class UserServiceTests {
         user = new User();
     }
 
+    /**
+     * Método de prueba. Devolver todos los usuarios
+     */
     @Test
     public void UserService_GetAllUsers_ReturnUsers() {
         UserDTO userDTO = new UserDTO();
@@ -73,6 +76,9 @@ public class UserServiceTests {
         verify(userRepository).findAll(any(PageRequest.class));
     }
 
+    /**
+     * Método de prueba. Devolver un usuario
+     */
     @Test
     public void UserService_GetUser_ReturnUser() {
         Long userId = 1L;
@@ -87,6 +93,9 @@ public class UserServiceTests {
         verify(userRepository).findById(userId);
     }
 
+    /**
+     * Método de prueba. Devolver un usuario inexistente
+     */
     @Test
     public void UserService_GetUser_UnexistentUser() {
         Long userId = 1L;
@@ -100,6 +109,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver al usuario autenticado utilizando Principal
+     */
     @Test
     public void UserService_GetAuthenticatedUser_Principal() {
         Authentication authentication = mock(Authentication.class);
@@ -112,6 +124,9 @@ public class UserServiceTests {
         assertEquals(user, result);
     }
 
+    /**
+     * Método de prueba. Devolver al usuario autenticado utilizando UserDetails
+     */
     @Test
     public void UserService_GetAuthenticatedUser_UserDetails() {
         String email = "prueba@email.es";
@@ -128,6 +143,9 @@ public class UserServiceTests {
         assertEquals(user, result);
     }
 
+    /**
+     * Método de prueba. Devolver el usuario autenticado cuando no hay ninguno autenticado
+     */
     @Test
     public void UserService_GetAuthenticatedUser_NoUser() {
         Authentication authentication = mock(Authentication.class);
@@ -139,6 +157,9 @@ public class UserServiceTests {
         assertNull(result);
     }
 
+    /**
+     * Método de prueba. Crear un usuario
+     */
     @Test
     public void UserService_CreateUser_ReturnCreated() {
         UserDTO userDTO = new UserDTO();
@@ -154,6 +175,9 @@ public class UserServiceTests {
         verify(userRepository).save(user);
     }
 
+    /**
+     * Método de prueba. Eliminar un usuario
+     */
     @Test
     public void UserService_DeleteUser_ReturnDeleted() {
         Long userId = 1L;
@@ -168,6 +192,9 @@ public class UserServiceTests {
         verify(userRepository).delete(user);
     }
 
+    /**
+     * Método de prueba. Eliminar un usuario inexistente
+     */
     @Test
     public void UserService_DeleteUser_UnexistentUser() {
         Long userId = 1L;
@@ -181,6 +208,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar un usuario
+     */
     @Test
     public void UserService_UpdateUser_ReturnUpdated() {
         Long userId = 1L;
@@ -203,6 +233,9 @@ public class UserServiceTests {
         verify(userRepository).save(user);
     }
 
+    /**
+     * Método de prueba. Actualizar un usuario inexistente
+     */
     @Test
     public void UserService_UpdateUser_UnexistentUser() {
         Long userId = 1L;
@@ -225,6 +258,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el perfil de un usuario
+     */
     @Test
     public void UserService_UpdateUserProfile_ReturnUpdated() {
         Long userId = 1L;
@@ -245,6 +281,9 @@ public class UserServiceTests {
         verify(userRepository).save(user);
     }
 
+    /**
+     * Método de prueba. Actualizar el perfil de un usuario inexistente
+     */
     @Test
     public void UserService_UpdateUserProfile_UnexistentUser() {
         Long userId = 1L;
@@ -263,6 +302,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los usuarios seguidos por el usuario
+     */
     @Test
     public void UserService_GetFollows_ReturnUsers() {
         Long userId = 1L;
@@ -279,6 +321,9 @@ public class UserServiceTests {
         assertEquals(followedDTO, result.get(0));
     }
 
+    /**
+     * Método de prueba. Devolver los usuarios que siguen al usuario
+     */
     @Test
     public void UserService_GetFollowers_ReturnUsers() {
         Long userId = 1L;
@@ -295,6 +340,9 @@ public class UserServiceTests {
         assertEquals(followerDTO, result.get(0));
     }
 
+    /**
+     * Método de prueba. Seguir a otro usuario
+     */
     @Test
     public void UserService_FollowUser_ReturnUser() {
         Long userId = 1L;
@@ -319,6 +367,9 @@ public class UserServiceTests {
         verify(userRepository).save(followed);
     }
 
+    /**
+     * Método de prueba. Un usuario inexistente sigue a otro
+     */
     @Test
     public void UserService_FollowUser_UnexistentUser() {
         Long userId = 1L;
@@ -338,6 +389,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Un usuario sigue a otro usuario inexistente
+     */
     @Test
     public void UserService_FollowUser_UnexistentFollowedUser() {
         Long userId = 1L;
@@ -358,6 +412,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 2 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Seguir a un usuario con rol administrador
+     */
     @Test
     public void UserService_FollowUser_FollowedUserIsAdmin() {
         Long userId = 1L;
@@ -378,6 +435,9 @@ public class UserServiceTests {
         assertEquals("No se puede seguir a un usuario administrador.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Dejar de seguir a otro usuario
+     */
     @Test
     public void UserService_UnfollowUser_ReturnUser() {
         Long userId = 1L;
@@ -405,6 +465,9 @@ public class UserServiceTests {
         verify(userRepository).save(unfollowed);
     }
 
+    /**
+     * Método de prueba. Un usuario inexistente deja de seguir a otro
+     */
     @Test
     public void UserService_UnfollowUser_UnexistentUser() {
         Long userId = 1L;
@@ -427,6 +490,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Un usuario deja de seguir a otro inexistente
+     */
     @Test
     public void UserService_UnfollowUser_UnexistentUnfollowedUser() {
         Long userId = 1L;
@@ -450,6 +516,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 2 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Dejar de seguir a un usuario con rol administrador
+     */
     @Test
     public void UserService_UnfollowUser_UnfollowedUserIsAdmin() {
         Long userId = 1L;
@@ -470,6 +539,9 @@ public class UserServiceTests {
         assertEquals("No se puede dejar de seguir a un usuario administrador.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Buscar usuarios mediante un término de búsqueda
+     */
     @Test
     public void UserService_SearchUsers_ReturnUsers() {
         String search = "pepe";
@@ -486,6 +558,9 @@ public class UserServiceTests {
         assertEquals(1, result.getContent().size());
     }
 
+    /**
+     * Método de prueba. Promocionar a un usuario a autor
+     */
     @Test
     public void UserService_PromoteToAuthor_UpdatesUser() {
         AuthorRequestDTO request = new AuthorRequestDTO();
@@ -506,6 +581,9 @@ public class UserServiceTests {
         assertEquals(1, user.getRole());
     }
 
+    /**
+     * Método de prueba. Añadir géneros favoritos
+     */
     @Test
     public void UserService_AddFavoriteGenres_ReturnFavorites() {
         User user = new User();
@@ -520,6 +598,9 @@ public class UserServiceTests {
         verify(userRepository).save(user);
     }
 
+    /**
+     * Método de prueba. Añadir demasiados géneros favoritos
+     */
     @Test
     public void UserService_AddFavoriteGenres_TooManyGenres() {
         User user = new User();
@@ -533,6 +614,9 @@ public class UserServiceTests {
         assertEquals("Sólo se pueden elegir 5 géneros favoritos como máximo.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir géneros favoritos inexistentes
+     */
     @Test
     public void UserService_AddFavoriteGenres_UnexistentGenre() {
         User user = new User();
@@ -549,6 +633,9 @@ public class UserServiceTests {
         assertEquals("Uno o más géneros no existen.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir libros favoritos
+     */
     @Test
     public void UserService_AddFavoriteBooks_ReturnFavorites() {
         User user = new User();
@@ -563,6 +650,9 @@ public class UserServiceTests {
         verify(userRepository).save(user);
     }
 
+    /**
+     * Método de prueba. Añadir demasiados libros favoritos
+     */
     @Test
     public void UserService_AddFavoriteBooks_TooManyBooks() {
         User user = new User();
@@ -576,6 +666,9 @@ public class UserServiceTests {
         assertEquals("Sólo se pueden elegir 4 libros favoritos como máximo.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir libros favoritos inexistentes
+     */
     @Test
     public void UserService_AddFavoriteBooks_UnexistentBook() {
         User user = new User();
@@ -592,6 +685,9 @@ public class UserServiceTests {
         assertEquals("Uno o más libros no existen.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los libros y géneros favoritos de un usuario
+     */
     @Test
     public void UserService_GetFavorites_ReturnFavorites() {
         User user = new User();
@@ -607,6 +703,9 @@ public class UserServiceTests {
         assertEquals(1, result.getFavoriteGenres().size());
     }
 
+    /**
+     * Método de prueba. Devolver los libros y géneros favoritos de un usuario inexistente
+     */
     @Test
     public void UserService_GetFavorites_UnexistentUser() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
@@ -619,6 +718,9 @@ public class UserServiceTests {
         assertEquals("El usuario con ID 99 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Verificar que un usuario administrador tiene rol de administrador
+     */
     @Test
     public void UserService_VerifyAdmin_UserIsAdmin() {
         User user = new User();
@@ -627,6 +729,9 @@ public class UserServiceTests {
         assertTrue(userService.verifyAdmin(user));
     }
 
+    /**
+     * Método de prueba. Verificar que un usuario estándar no tiene rol de administrador
+     */
     @Test
     public void UserService_VerifyAdmin_UserIsNotAdmin() {
         User user = new User();
@@ -635,6 +740,9 @@ public class UserServiceTests {
         assertFalse(userService.verifyAdmin(user));
     }
 
+    /**
+     * Método de prueba. Devolver los autores verificados
+     */
     @Test
     public void UserService_GetAuthors_ReturnUsers() {
         int page = 0, size = 5;

@@ -54,6 +54,9 @@ public class SuggestionServiceTests {
         user = new User();
     }
 
+    /**
+     * Método de prueba. Enviar una sugerencia de libro
+     */
     @Test
     public void SuggestionService_SendSuggestion_ReturnCreated() {
         Suggestion suggestion = new Suggestion();
@@ -68,6 +71,9 @@ public class SuggestionServiceTests {
         verify(suggestionRepository).save(any(Suggestion.class));
     }
 
+    /**
+     * Método de prueba. Aceptar una sugerencia pendiente
+     */
     @Test
     public void SuggestionService_UpdateStatusSuggestion_AcceptAndReturn() {
         Long suggestionId = 1L;
@@ -90,6 +96,9 @@ public class SuggestionServiceTests {
         assertTrue(suggestion.isActive());
     }
 
+    /**
+     * Método de prueba. Rechazar una sugerencia pendiente
+     */
     @Test
     public void SuggestionService_UpdateStatusSuggestion_RejectAndReturn() {
         Long suggestionId = 1L;
@@ -111,6 +120,9 @@ public class SuggestionServiceTests {
         assertFalse(suggestion.isActive());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una sugerencia a un estado inválido
+     */
     @Test
     public void SuggestionService_UpdateStatusSuggestion_InvalidStatus() {
         Long suggestionId = 1L;
@@ -129,6 +141,9 @@ public class SuggestionServiceTests {
         assertEquals("El nuevo estado de la sugerencia es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una sugerencia cuando el usuario no es administrador
+     */
     @Test
     public void SuggestionService_UpdateStatusSuggestion_UserIsNotAdmin() {
         Long suggestionId = 1L;
@@ -147,6 +162,9 @@ public class SuggestionServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una sugerencia inexistente
+     */
     @Test
     public void SuggestionService_UpdateStatusSuggestion_UnexistentSuggestion() {
         Long suggestionId = 1L;
@@ -167,6 +185,9 @@ public class SuggestionServiceTests {
         assertEquals("La sugerencia con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las sugerencias
+     */
     @Test
     public void SuggestionService_GetAllSuggestions_ReturnSuggestions() {
         user.setRole(2);
@@ -180,6 +201,9 @@ public class SuggestionServiceTests {
         assertEquals(1, result.getContent().size());
     }
 
+    /**
+     * Método de prueba. Devolver todas las sugerencias cuando el usuario no es administrador
+     */
     @Test
     public void SuggestionService_GetAllSuggestions_UserIsNotAdmin() {
         user.setRole(0);
@@ -192,6 +216,9 @@ public class SuggestionServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las sugerencias con un estado
+     */
     @Test
     public void SuggestionService_GetSuggestionsWithStatus_ReturnSuggestions() {
         user.setRole(2);
@@ -206,6 +233,9 @@ public class SuggestionServiceTests {
         assertEquals(1, result.getContent().size());
     }
 
+    /**
+     * Método de prueba. Devolver todas las sugerencias con un estado inválido
+     */
     @Test
     public void SuggestionService_GetSuggestionsWithStatus_InvalidStatus() {
         user.setRole(2);
@@ -219,6 +249,9 @@ public class SuggestionServiceTests {
         assertEquals("El estado es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las sugerencias con un estado cuando el usuario no es administrador
+     */
     @Test
     public void SuggestionService_GetSuggestionsWithStatus_UserIsNotAdmin() {
         user.setRole(0);
@@ -232,6 +265,9 @@ public class SuggestionServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver una sugerencia
+     */
     @Test
     public void SuggestionStatus_GetSuggestion_ReturnSuggestion() {
         user.setRole(2);
@@ -245,6 +281,9 @@ public class SuggestionServiceTests {
         assertNotNull(result);
     }
 
+    /**
+     * Método de prueba. Devolver una sugerencia cuando el usuario no es administrador
+     */
     @Test
     public void SuggestionStatus_GetSuggestion_UserIsNotAdmin() {
         user.setRole(0);
@@ -257,6 +296,9 @@ public class SuggestionServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver una sugerencia inexistente
+     */
     @Test
     public void SuggestionStatus_GetSuggestion_UnexistentSuggestion() {
         user.setRole(2);

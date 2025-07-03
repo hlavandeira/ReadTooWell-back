@@ -65,6 +65,9 @@ public class AuthorRequestServiceTests {
         user = new User();
     }
 
+    /**
+     * Método de prueba. Envair solicitud de autor
+     */
     @Test
     public void AuthorRequestService_SendAuthorRequest_ReturnAuthorRequestDto() {
         when(requestRepository.existsByUserIdAndStatusIn(any(), anyList())).thenReturn(false);
@@ -79,6 +82,9 @@ public class AuthorRequestServiceTests {
         assertEquals(requestDTO.getName(), result.getName());
     }
 
+    /**
+     * Método de prueba. Enviar solicitud de autor habiendo una solicitud pendiente
+     */
     @Test
     public void AuthorRequestService_SendAuthorRequest_PendingRequestExists() {
         when(requestRepository.existsByUserIdAndStatusIn(any(), anyList())).thenReturn(true);
@@ -91,6 +97,9 @@ public class AuthorRequestServiceTests {
         assertEquals("El usuario ya tiene una solicitud en proceso o aceptada.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una solicitud de autor
+     */
     @Test
     public void AuthorRequestService_UpdateStatusRequest_ReturnAuthorRequestDto() {
         user.setRole(2);
@@ -107,6 +116,9 @@ public class AuthorRequestServiceTests {
         assertEquals(result.getStatus(), 2);
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una solicitud con un estado inválido
+     */
     @Test
     public void AuthorRequestService_UpdateStatusRequest_InvalidStatus() {
         user.setRole(2);
@@ -119,6 +131,9 @@ public class AuthorRequestServiceTests {
         assertEquals("El nuevo estado de la solicitud es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una solicitud cuando el usuario no es administrador
+     */
     @Test
     public void AuthorRequestService_UpdateStatusRequest_UserIsNotAdmin() {
         user.setRole(0);
@@ -131,6 +146,9 @@ public class AuthorRequestServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de una solicitud que no existe
+     */
     @Test
     public void AuthorRequestService_UpdateStatusRequest_UnexistentRequest() {
         user.setRole(2);
@@ -144,6 +162,9 @@ public class AuthorRequestServiceTests {
         assertEquals("La solicitud con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las solicitudes
+     */
     @Test
     public void AuthorRequestService_GetAllRequests_ReturnRequests() {
         user.setRole(2);
@@ -157,6 +178,9 @@ public class AuthorRequestServiceTests {
         assertEquals(1, result.getContent().size());
     }
 
+    /**
+     * Método de prueba. Devolver todas las solicitudes cuando el usuario no es administrador
+     */
     @Test
     public void AuthorRequestService_GetAllRequests_UserIsNotAdmin() {
         user.setRole(0);
@@ -169,6 +193,9 @@ public class AuthorRequestServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las solicitudes con un estado
+     */
     @Test
     public void AuthorRequestService_GetRequestsWithStatus_ReturnRequests() {
         user.setRole(2);
@@ -182,6 +209,9 @@ public class AuthorRequestServiceTests {
         assertEquals(1, result.getContent().size());
     }
 
+    /**
+     * Método de prueba. Devolver todas las solicitudes con un estado, indicando un estado inválido
+     */
     @Test
     public void AuthorRequestService_GetRequestsWithStatus_InvalidStatus() {
         user.setRole(2);
@@ -194,6 +224,9 @@ public class AuthorRequestServiceTests {
         assertEquals("El estado de la solicitud es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver todas las solicitudes con un estado cuando el usuario no es administrador
+     */
     @Test
     public void AuthorRequestService_GetRequestsWithStatus_UserIsNotAdmin() {
         user.setRole(0);
@@ -206,6 +239,9 @@ public class AuthorRequestServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver una solicitud
+     */
     @Test
     public void AuthorRequestService_GetRequest_ReturnAuthorRequestDto() {
         user.setRole(2);
@@ -218,6 +254,9 @@ public class AuthorRequestServiceTests {
         assertEquals(requestDTO.getName(), result.getName());
     }
 
+    /**
+     * Método de prueba. Devolver una solicitud cuando el usuario no es administrador
+     */
     @Test
     public void AuthorRequestService_GetRequest_UserIsNotAdmin() {
         user.setRole(0);
@@ -230,6 +269,9 @@ public class AuthorRequestServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver una solicitud inexistente
+     */
     @Test
     public void AuthorRequestService_GetRequest_UnexistentRequest() {
         user.setRole(2);

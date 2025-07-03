@@ -87,6 +87,7 @@ public class AuthorRequestService {
      *
      * @param idRequest ID de la solicitud a actualizar
      * @param newStatus Nuevo estado de la solicitud
+     * @param user Usuario autenticado
      * @return DTO con los datos de la solicitud actualizada
      * @throws ValidationException Estado de solicitud inválido
      * @throws EntityNotFoundException La solicitud no existe
@@ -122,6 +123,7 @@ public class AuthorRequestService {
      *
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
+     * @param user Usuario autenticado
      * @return Página con las solicitudes como DTOs
      * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
      */
@@ -142,6 +144,7 @@ public class AuthorRequestService {
      * @param page Número de la página que se quiere devolver
      * @param size Tamaño de la página
      * @param status Estado por el que se quieren filtrar
+     * @param user Usuario autenticado
      * @return Página con las solicitudes filtradas como DTOs
      * @throws ValidationException Estado de solicitud inválido
      * @throws AccessDeniedException El usuario autenticado no tiene rol de admin
@@ -163,6 +166,7 @@ public class AuthorRequestService {
      * Devuelve una solicitud de verificación de autor.
      *
      * @param idRequest ID de la solicitud
+     * @param user Usuario autenticado
      * @return DTO con los datos de la solicitud
      * @throws EntityNotFoundException La solicitud no existe
      * @throws AccessDeniedException El usuario autenticado no tiene rol de admin

@@ -45,6 +45,9 @@ public class RecommendationServiceTests {
     @InjectMocks
     private RecommendationService recommendationService;
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en libros favoritos
+     */
     @Test
     public void RecommendationService_GetRecommendationsByFavoriteBooks_ReturnBooks() {
         List<Book> books = List.of(new Book());
@@ -62,6 +65,9 @@ public class RecommendationServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en géneros favoritos
+     */
     @Test
     public void RecommendationService_GetRecommendationsByFavoriteGenres_ReturnBooks() {
         List<Book> books = List.of(new Book());
@@ -79,6 +85,9 @@ public class RecommendationServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en libros leídos
+     */
     @Test
     public void RecommendationService_GetRecommendationsByBooksRead_ReturnBooks() {
         List<Book> books = List.of(new Book());
@@ -91,6 +100,9 @@ public class RecommendationServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones generales del catálogo
+     */
     @Test
     public void RecommendationService_GetGeneralRecommendations_ReturnBooks() {
         List<Book> books = List.of(new Book());
@@ -103,6 +115,9 @@ public class RecommendationServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en una lista de libros
+     */
     @Test
     public void RecommendationService_GetRecommendationsByList_ReturnBooks() {
         Long idUser = 1L;
@@ -142,6 +157,9 @@ public class RecommendationServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en una lista inexistente
+     */
     @Test
     public void RecommendationService_GetRecommendationsByList_UnexistentList() {
         when(listRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -154,6 +172,9 @@ public class RecommendationServiceTests {
         assertEquals("La lista con ID 99 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en la lista de otro usuario
+     */
     @Test
     public void RecommendationService_GetRecommendationsByList_UserIsNotOwner() {
         Long idUser = 1L;
@@ -176,6 +197,9 @@ public class RecommendationServiceTests {
         assertEquals("Solo el propietario de la lista puede acceder a esta.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver recomendaciones basadas en una lista vacía
+     */
     @Test
     public void RecommendationService_GetRecommendationsByList_ListIsEmpty() {
         Long idUser = 1L;

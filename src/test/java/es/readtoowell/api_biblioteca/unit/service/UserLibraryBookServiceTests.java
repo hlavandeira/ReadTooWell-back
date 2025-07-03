@@ -64,6 +64,9 @@ public class UserLibraryBookServiceTests {
         libraryBook = new UserLibraryBook();
     }
 
+    /**
+     * Método de prueba. Devolver la biblioteca de un usuario
+     */
     @Test
     public void UserLibraryBookService_GetLibraryFromUser_ReturnBooks() {
         Pageable pageable = PageRequest.of(0, 10);
@@ -80,6 +83,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryRepository).findByUser(user, pageable);
     }
 
+    /**
+     * Método de prueba. Devolver los libros guardados por un usuario con un estado
+     */
     @Test
     public void UserLibraryBookService_GetLibraryByStatus_ReturnBooks() {
         int status = 2;
@@ -96,6 +102,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryRepository).findByUserAndReadingStatus(user, status, pageable);
     }
 
+    /**
+     * Método de prueba. Devolver los libros guardados por un usuario con un estado inválido
+     */
     @Test
     public void UserLibraryBookService_GetLibraryByStatus_InvalidStatus() {
         int status = 200;
@@ -108,6 +117,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El estado de lectura indicado es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un libro a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_AddBookToLibrary_ReturnAdded() {
         Long bookId = 1L;
@@ -128,6 +140,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryMapper).toDTO(any(UserLibraryBook.class));
     }
 
+    /**
+     * Método de prueba. Añadir un libro inexistente a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_AddBookToLibrary_UnexistentBook() {
         Long bookId = 999L;
@@ -144,6 +159,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("Libro con ID 999 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un libro de nuevo a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_AddBookToLibrary_BookAlreadyInLibrary() {
         Long bookId = 1L;
@@ -161,6 +179,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El libro ya pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. ELiminar un libro de la biblioteca de un usuario
+     */
     @Test
     public void UserLibraryBookService_DeleteBookFromLibrary_ReturnDeleted() {
         Long bookId = 1L;
@@ -176,6 +197,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryMapper).toDTO(libraryBook);
     }
 
+    /**
+     * Método de prueba. Eliminar un libro inexistente de la biblioteca
+     */
     @Test
     public void UserLibraryBookService_DeleteBookFromLibrary_UnexistentBook() {
         Long bookId = 999L;
@@ -190,6 +214,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("Libro con ID 999 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar un libro no añadido a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_DeleteBookFromLibrary_BookNotInLibrary() {
         Long bookId = 1L;
@@ -205,6 +232,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El libro no pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Calificar un libro
+     */
     @Test
     public void UserLibraryBookService_RateBook_ReturnUpdated() {
         Long bookId = 1L;
@@ -226,6 +256,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryRepository).save(any(UserLibraryBook.class));
     }
 
+    /**
+     * Método de prueba. Calificar un libro con una puntuación inválida
+     */
     @Test
     public void UserLibraryBookService_RateBook_InvalidRating() {
         Long bookId = 1L;
@@ -241,6 +274,9 @@ public class UserLibraryBookServiceTests {
                 exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Calificar un libro inexistente
+     */
     @Test
     public void UserLibraryBookService_RateBook_UnexistentBook() {
         Long bookId = 999L;
@@ -258,6 +294,9 @@ public class UserLibraryBookServiceTests {
                 exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Reseñar un libro
+     */
     @Test
     public void UserLibraryBookService_ReviewBook_ReturnUpdated() {
         Long bookId = 1L;
@@ -274,6 +313,9 @@ public class UserLibraryBookServiceTests {
         verify(libraryRepository).save(libraryBook);
     }
 
+    /**
+     * Método de prueba. Reseñar un libro con un texto demasiado largo
+     */
     @Test
     public void UserLibraryBookService_ReviewBook_ReviewTooLong() {
         Long bookId = 1L;
@@ -286,6 +328,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("La reseña es demasiado larga.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Reseñar un libro inexistente
+     */
     @Test
     public void UserLibraryBookService_ReviewBook_UnexistentBook() {
         Long bookId = 999L;
@@ -300,6 +345,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("Libro con ID 999 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Reseñar un libro no añadido a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_ReviewBook_BookNotInLibrary() {
         Long bookId = 999L;
@@ -315,6 +363,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El libro no pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de lectura de un libro
+     */
     @Test
     public void UserLibraryBookService_UpdateReadingStatus_ReturnUpdated() {
         int status = 2;
@@ -342,6 +393,9 @@ public class UserLibraryBookServiceTests {
         verify(goalService).updateGoals(user.getId(), 0);
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de lectura de un libro a un estado inválido
+     */
     @Test
     public void UserLibraryBookService_UpdatedReadingStatus_InvalidStatus() {
         int status = 100;
@@ -358,6 +412,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El estado de lectura proporcionado es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de lectura de un libro inexistente
+     */
     @Test
     public void UserLibraryBookService_UpdatedReadingStatus_UnexistentBook() {
         int status = 2;
@@ -376,6 +433,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("Libro con ID 1 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el estado de lectura de un libro que no pertenece a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_UpdatedReadingStatus_BookNotInLibrary() {
         int status = 2;
@@ -395,6 +455,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El libro no pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro
+     */
     @Test
     public void UserLibraryBookService_UpdateProgress_ReturnUpdated() {
         Long bookId = 1L;
@@ -417,6 +480,9 @@ public class UserLibraryBookServiceTests {
         verify(goalService).updateGoals(eq(user.getId()), anyInt());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro con un tipo de progreso inválido
+     */
     @Test
     public void UserLibraryBookService_UpdatedProgress_InvalidProgressType() {
         Long bookId = 1L;
@@ -439,6 +505,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El tipo de progreso de lectura proporcionado es inválido.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro a una cantidad inválida
+     */
     @Test
     public void UserLibraryBookService_UpdatedProgress_InvalidProgressAmount() {
         Long bookId = 1L;
@@ -461,6 +530,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("La cantidad del progreso es inválida.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro inexistente
+     */
     @Test
     public void UserLibraryBookService_UpdateProgress_UnexistentBook() {
         Long bookId = 1L;
@@ -485,6 +557,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("Libro con ID 1 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro que no pertenece a la biblioteca
+     */
     @Test
     public void UserLibraryBookService_UpdateProgress_BookNotInLibrary() {
         Long bookId = 1L;
@@ -510,6 +585,9 @@ public class UserLibraryBookServiceTests {
         assertEquals("El libro no pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar el progreso de un libro que no está en estado Leyendo
+     */
     @Test
     public void UserLibraryBookService_UpdateProgress_NotReadingStatus() {
         Long bookId = 1L;
@@ -535,6 +613,9 @@ public class UserLibraryBookServiceTests {
                 exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver el resumen anual
+     */
     @Test
     public void UserLibraryBookService_GetYearRecap_ReturnYearRecap() {
         user.setId(1L);

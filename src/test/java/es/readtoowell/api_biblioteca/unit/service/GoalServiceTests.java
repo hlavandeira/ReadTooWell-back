@@ -83,6 +83,9 @@ public class GoalServiceTests {
         finishedGoal.setDuration(duration);
     }
 
+    /**
+     * Método de prueba. Devolver los objetivos en curso
+     */
     @Test
     public void GoalService_GetGoalsInProgress_ReturnGoals() {
         Long userId = 1L;
@@ -95,6 +98,9 @@ public class GoalServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver los objetivos terminados
+     */
     @Test
     public void GoalService_GetFinishedGoals_ReturnGoals() {
         Long userId = 1L;
@@ -107,6 +113,9 @@ public class GoalServiceTests {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Método de prueba. Devolver los objetivos terminados en el año actual
+     */
     @Test
     public void GoalService_GetFinishedGoalsActualYear_ReturnGoals() {
         Long userId = 1L;
@@ -118,6 +127,9 @@ public class GoalServiceTests {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * Método de prueba. Crear un objetivo
+     */
     @Test
     public void GoalService_CreateGoal_ReturnCreated() {
         Long userId = 1L;
@@ -149,6 +161,9 @@ public class GoalServiceTests {
         assertEquals(1L, result.getUser().getId());
     }
 
+    /**
+     * Método de prueba. Crear un objetivo con mismo tipo y duración que otro en curso
+     */
     @Test
     public void GoalService_CreateGoal_RepeatedGoal() {
         Long userId = 1L;
@@ -173,6 +188,9 @@ public class GoalServiceTests {
         assertThrows(IllegalArgumentException.class, () -> goalService.createGoal(userId, dto));
     }
 
+    /**
+     * Método de prueba. Eliminar un objetivo
+     */
     @Test
     public void GoalService_DeleteGoal_ReturnDeleted() {
         Long userId = 1L;
@@ -191,6 +209,9 @@ public class GoalServiceTests {
         verify(goalRepository).delete(goal);
     }
 
+    /**
+     * Método de prueba. Eliminar un objetivo de otro usuario
+     */
     @Test
     public void GoalService_DeleteGoal_UserIsNotOwner() {
         Long userId = 1L;
@@ -205,6 +226,9 @@ public class GoalServiceTests {
         assertThrows(AccessDeniedException.class, () -> goalService.deleteGoal(userId, goalId));
     }
 
+    /**
+     * Método de prueba. Actualizar objetivos de un usuario
+     */
     @Test
     public void GoalService_UpdateGoals_UpdatesGoals() {
         Long userId = 1L;

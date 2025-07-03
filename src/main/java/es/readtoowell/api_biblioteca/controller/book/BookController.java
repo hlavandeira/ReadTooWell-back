@@ -236,6 +236,8 @@ public class BookController {
      * Devuelve los libros escritos por un autor.
      *
      * @param authorName Nombre del autor
+     * @param page Número de la página que se quiere devolver
+     * @param size Tamaño de la página
      * @return Lista con los libros escritos por el autor
      */
     @GetMapping("/libros-autor")

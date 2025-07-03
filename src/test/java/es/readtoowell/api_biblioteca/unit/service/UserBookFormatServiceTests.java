@@ -47,6 +47,9 @@ public class UserBookFormatServiceTests {
     @InjectMocks
     private UserBookFormatService formatService;
 
+    /**
+     * Método de prueba. Devolver los formatos de un libro de un usuario
+     */
     @Test
     public void UserBookFormatService_GetFormatsForUserBook_ReturnFormats() {
         Long idUser = 1L;
@@ -76,6 +79,9 @@ public class UserBookFormatServiceTests {
         assertEquals(2, result.size());
     }
 
+    /**
+     * Método de prueba. Añadir un formato a un libro de un usuario
+     */
     @Test
     public void UserBookFormatService_AddFormatToBook_ReturnFormats() {
         Long idUser = 1L;
@@ -104,6 +110,9 @@ public class UserBookFormatServiceTests {
         verify(userFormatRepository).save(any(UserBookFormat.class));
     }
 
+    /**
+     * Método de prueba. Añadir un formato a un libro de un usuario inexistente
+     */
     @Test
     public void UserBookFormatService_AddFormatToBook_UnexistentUser() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -116,6 +125,9 @@ public class UserBookFormatServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir formato a un libro que el usuario no tiene guardado
+     */
     @Test
     public void UserBookFormatService_AddFormatToBook_BookNotFromLibrary() {
         User user = new User(); user.setId(1L);
@@ -135,6 +147,9 @@ public class UserBookFormatServiceTests {
         assertEquals("El libro no pertenece a la biblioteca del usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un formato repetido a un libro de un usuario
+     */
     @Test
     public void UserBookFormatService_AddFormatToBook_FormatAlreadyAdded() {
         User user = new User(); user.setId(1L);
@@ -157,6 +172,9 @@ public class UserBookFormatServiceTests {
         assertEquals("El formato ya está asociado a este libro para el usuario.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar un formato de un libro de un usuario
+     */
     @Test
     public void UserBookFormatService_RemoveFormatFromBook_ReturnFormats() {
         Long idUser = 1L, idBook = 2L, idFormat = 3L;
@@ -183,6 +201,9 @@ public class UserBookFormatServiceTests {
         verify(userFormatRepository).delete(userBookFormat);
     }
 
+    /**
+     * Método de prueba. Eliminar un formato no asociado a un libro de un usuario
+     */
     @Test
     public void UserBookFormatService_RemoveFormatFromBook_FormatNotAdded() {
         User user = new User(); user.setId(1L);

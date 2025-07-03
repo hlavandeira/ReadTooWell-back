@@ -7,8 +7,11 @@ es.readtoowell.api_biblioteca.controller.goal
 es.readtoowell.api_biblioteca.controller.library
 es.readtoowell.api_biblioteca.controller.user
 es.readtoowell.api_biblioteca.exception
+es.readtoowell.api_biblioteca.integration
 es.readtoowell.api_biblioteca.mapper
 es.readtoowell.api_biblioteca.model.DTO
+es.readtoowell.api_biblioteca.model.DTO.book
+es.readtoowell.api_biblioteca.model.DTO.user
 es.readtoowell.api_biblioteca.model.entity
 es.readtoowell.api_biblioteca.model.entity.id
 es.readtoowell.api_biblioteca.model.enums
@@ -21,3 +24,5 @@ es.readtoowell.api_biblioteca.service.book
 es.readtoowell.api_biblioteca.service.goal
 es.readtoowell.api_biblioteca.service.library
 es.readtoowell.api_biblioteca.service.user
+es.readtoowell.api_biblioteca.unit.controller
+es.readtoowell.api_biblioteca.unit.service

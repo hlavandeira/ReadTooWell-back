@@ -79,6 +79,9 @@ public class BookServiceTests {
         user = new User();
     }
 
+    /**
+     * Método de prueba. Devolver todos los libros
+     */
     @Test
     public void BookService_GetAllBooks_ReturnBooks() {
         book.setTitle("Libro");
@@ -96,6 +99,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(book);
     }
 
+    /**
+     * Método de prueba. Devolver un libro
+     */
     @Test
     public void BookService_GetBook_ReturnBook() {
         book.setTitle("Libro");
@@ -113,6 +119,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(book);
     }
 
+    /**
+     * Método de prueba. Devolver un libro inexistente
+     */
     @Test
     public void BookService_GetBook_UnexistentBook() {
         when(bookRepository.findById(99L)).thenReturn(Optional.empty());
@@ -125,6 +134,9 @@ public class BookServiceTests {
         assertEquals("El libro con ID 99 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Crear un libro
+     */
     @Test
     public void BookService_CreateBook_ReturnCreated() {
         user.setRole(2);
@@ -164,6 +176,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(savedBook);
     }
 
+    /**
+     * Método de prueba. Crear un libro cuando el usuario no es administrador
+     */
     @Test
     public void BookService_CreateBook_UserIsNotAdmin() {
         user.setRole(0);
@@ -176,6 +191,9 @@ public class BookServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar un libro
+     */
     @Test
     public void BookService_UpdateBook_ReturnUpdated() {
         user.setRole(2);
@@ -212,6 +230,9 @@ public class BookServiceTests {
         verify(bookRepository).save(any(Book.class));
     }
 
+    /**
+     * Método de prueba. Actualizar un libro inexistente
+     */
     @Test
     public void BookService_UpdateBook_UnexistentBook() {
         user.setRole(2);
@@ -226,6 +247,9 @@ public class BookServiceTests {
         assertEquals("El libro con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar un libro cuando el usuario no es administrador
+     */
     @Test
     public void BookService_UpdateBook_UserIsNotAdmin() {
         user.setRole(0);
@@ -238,6 +262,9 @@ public class BookServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar un libro
+     */
     @Test
     public void BookService_DeleteBook_ReturnDeleted() {
         user.setRole(2);
@@ -266,6 +293,9 @@ public class BookServiceTests {
         verify(bookRepository).save(book);
     }
 
+    /**
+     * Método de prueba. Eliminar un libro cuando el usuario no es administrador
+     */
     @Test
     public void BookService_DeleteBook_UserIsNotAdmin() {
         user.setRole(0);
@@ -278,6 +308,9 @@ public class BookServiceTests {
         assertEquals("Solo los admins pueden realizar esta acción.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Reactivar un libro
+     */
     @Test
     public void BookService_ReactivateBook_ReturnReactivated() {
         user.setRole(2);
@@ -308,6 +341,9 @@ public class BookServiceTests {
         verify(bookRepository).save(book);
     }
 
+    /**
+     * Método de prueba. Buscar libros mediante un término de búsqueda y filtros
+     */
     @Test
     public void BookService_FilterBooks_ReturnBooks() {
         Page<Book> bookPage = new PageImpl<>(List.of(book));
@@ -320,6 +356,9 @@ public class BookServiceTests {
         assertEquals(1, result.getTotalElements());
     }
 
+    /**
+     * Método de prueba. Buscar libros por género
+     */
     @Test
     public void BookService_FilterBooksByGenre_ReturnBooks() {
         Page<Book> bookPage = new PageImpl<>(List.of(book));
@@ -332,6 +371,9 @@ public class BookServiceTests {
         verify(bookRepository).findByGenresId(eq(1L), any());
     }
 
+    /**
+     * Método de prueba. Consultar los detalles de un libro
+     */
     @Test
     public void BookService_GetBookDetails_ReturnBookDetaisl() {
         user.setUsername("Usuario");
@@ -369,6 +411,9 @@ public class BookServiceTests {
         assertEquals(4.5, result.getAverageRating());
     }
 
+    /**
+     * Método de prueba. Consultar los detalles de un libro inexistente
+     */
     @Test
     public void BookService_GetBookDetails_UnexistentBook() {
         when(bookRepository.findById(99L)).thenReturn(Optional.empty());
@@ -381,6 +426,9 @@ public class BookServiceTests {
         assertEquals("El libro con ID 99 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los libros de un autor verificado
+     */
     @Test
     public void BookService_GetBooksByAuthor_ReturnBooks() {
         user.setRole(1);
@@ -395,6 +443,9 @@ public class BookServiceTests {
         assertEquals(1, result.getBooks().size());
     }
 
+    /**
+     * Método de prueba. Devolver los libros de un autor verificado inexistente
+     */
     @Test
     public void BookService_GetBooksByAuthor_UnexistentUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
@@ -407,6 +458,9 @@ public class BookServiceTests {
         assertEquals("El usuario con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los libros de un usuario que no es autor
+     */
     @Test
     public void BookService_GetBooksByAuthor_UserIsNotAuthor() {
         user.setRole(0);
@@ -421,6 +475,9 @@ public class BookServiceTests {
         assertEquals("El usuario con ID 1 no es un autor.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los libros escritos por un autor
+     */
     @Test
     public void BookService_GetAllBooksByAuthor_ReturnBooks() {
         Page<Book> booksPage = new PageImpl<>(List.of(book));
@@ -433,6 +490,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(book);
     }
 
+    /**
+     * Método de prueba. Devolver los libros de la misma colección que otro
+     */
     @Test
     public void BookService_GetOtherBooksFromCollection_ReturnBooks() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
@@ -445,6 +505,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(book);
     }
 
+    /**
+     * Método de prueba. Devolver los libros de la misma colección que otro inexistente
+     */
     @Test
     public void BookService_GetOtherBooksFromCollection_UnexistentBook() {
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
@@ -457,6 +520,9 @@ public class BookServiceTests {
         assertEquals("El libro con ID 1 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los géneros
+     */
     @Test
     public void BookService_GetGenres_ReturnGenres() {
         Genre genre = new Genre(); genre.setId(1L); genre.setName("Género");
@@ -471,6 +537,9 @@ public class BookServiceTests {
         assertEquals("Género", result.get(0).getName());
     }
 
+    /**
+     * Método de prueba. Devolver los libros eliminados
+     */
     @Test
     public void BookService_GetDeletedBooks_ReturnBooks() {
         user.setRole(2);
@@ -485,6 +554,9 @@ public class BookServiceTests {
         verify(bookMapper).toDTO(book);
     }
 
+    /**
+     * Método de prueba. Devolver los libros eliminados cuando el usuario no es administrador
+     */
     @Test
     public void BookService_GetDeletedBooks_UserIsNotAdmin() {
         user.setRole(0);
@@ -493,6 +565,9 @@ public class BookServiceTests {
                 () -> bookService.getDeletedBooks(0, 10, user));
     }
 
+    /**
+     * Método de prueba. Devolver las colecciones
+     */
     @Test
     public void BookService_GetCollections_ReturnCollections() {
         Collection collection = new Collection(); collection.setId(1L); collection.setName("Colección");
@@ -507,6 +582,9 @@ public class BookServiceTests {
         assertEquals("Colección", result.get(0).getName());
     }
 
+    /**
+     * Método de prueba. Crear una colección
+     */
     @Test
     public void BookService_CreateCollection_ReturnCreated() {
         CollectionDTO dto = new CollectionDTO(); dto.setName("Nueva colección");
@@ -522,6 +600,9 @@ public class BookServiceTests {
         assertEquals("Nueva colección", result.getName());
     }
 
+    /**
+     * Método de prueba. Crear una colección con nombre repetido
+     */
     @Test
     public void BookService_CreateCollection_RepeatedCollection() {
         CollectionDTO dto = new CollectionDTO(); dto.setName("Repetida");

@@ -96,6 +96,9 @@ public class BookListServiceTests {
         genreDTO.setName("Fantasía");
     }
 
+    /**
+     * Método de prueba. Devolver las listas de un usuario
+     */
     @Test
     public void BookListService_GetListsByUser_ReturnLists() {
         int page = 0;
@@ -113,6 +116,9 @@ public class BookListServiceTests {
         assertEquals(bookListDTO.getId(), result.getContent().get(0).getId());
     }
 
+    /**
+     * Método de prueba. Devolver los detalles de una lista
+     */
     @Test
     public void BookListService_GetListDetails_ReturnListDetailsDto() {
         int page = 0, size = 10;
@@ -136,6 +142,9 @@ public class BookListServiceTests {
         assertEquals("Fantasía", result.getGenres().get(0).getName());
     }
 
+    /**
+     * Método de prueba. Devolver los detalles de una lista inexistente
+     */
     @Test
     public void BookListService_GetListDetails_UnexistentList() {
         when(listRepository.findByIdWithRelations(100L)).thenReturn(Optional.empty());
@@ -148,6 +157,9 @@ public class BookListServiceTests {
         assertEquals("La lista con ID 100 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver los detalles de una lista de otro usuario
+     */
     @Test
     public void BookListService_GetListDetails_UserIsNotOwner() {
         User otherUser = new User();
@@ -164,6 +176,9 @@ public class BookListServiceTests {
         assertEquals("No tienes permiso para consultar esta lista.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Crear una nueva lista
+     */
     @Test
     public void BookListService_CreateList_ReturnBookListDto() {
         User user = new User();
@@ -187,6 +202,9 @@ public class BookListServiceTests {
         assertEquals(2L, result.getId());
     }
 
+    /**
+     * Método de prueba. Actualizar una lista
+     */
     @Test
     public void BookListService_UpdateList_ReturnBookListDto() {
         Long idUser = 1L;
@@ -210,6 +228,9 @@ public class BookListServiceTests {
         assertEquals("Nueva descripción", result.getDescription());
     }
 
+    /**
+     * Método de prueba. Actualizar una lista inexistente
+     */
     @Test
     public void BookListService_UpdateList_UnexistentList() {
         when(listRepository.findByIdWithRelations(999L)).thenReturn(Optional.empty());
@@ -222,6 +243,9 @@ public class BookListServiceTests {
         assertEquals("La lista con ID 999 no existe.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Actualizar una lista de otro usuario
+     */
     @Test
     public void BookListService_UpdateList_UserIsNotOwner() {
         bookList.getUser().setId(2L);
@@ -236,6 +260,9 @@ public class BookListServiceTests {
         assertEquals("No tienes permiso para editar esta lista.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar una lista
+     */
     @Test
     public void BookListService_DeleteList_ReturnBookListDto() {
         Long idUser = 1L;
@@ -253,6 +280,9 @@ public class BookListServiceTests {
         verify(listRepository).delete(bookList);
     }
 
+    /**
+     * Método de prueba. Eliminar una lista inexistente
+     */
     @Test
     public void BookListService_DeleteList_UnexistentList() {
         when(listRepository.findByIdWithRelations(999L)).thenReturn(Optional.empty());
@@ -265,6 +295,9 @@ public class BookListServiceTests {
         assertEquals("Lista con ID 999 no encontrada.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar una lista de otro usuario
+     */
     @Test
     public void BookListService_DeleteList_UserIsNotOwner() {
         bookList.getUser().setId(2L);
@@ -279,6 +312,9 @@ public class BookListServiceTests {
         assertEquals("No tienes permiso para borrar esta lista.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un libro a una lista
+     */
     @Test
     public void BookListService_AddBookToList_ReturnBookListDto() {
         Long idUser = 1L;
@@ -303,6 +339,9 @@ public class BookListServiceTests {
         verify(listRepository).save(any());
     }
 
+    /**
+     * Método de prueba. Añadir un libro a una lista inexistente
+     */
     @Test
     public void BookListService_AddBookToList_UnexistentList() {
         when(listRepository.findByIdWithRelations(any())).thenReturn(Optional.empty());
@@ -315,6 +354,9 @@ public class BookListServiceTests {
         assertEquals("Lista con ID 999 no encontrada.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un libro a una lista de otro usuario
+     */
     @Test
     public void BookListService_AddBookToList_UserIsNotOwner() {
         bookList.getUser().setId(2L);
@@ -329,6 +371,9 @@ public class BookListServiceTests {
         assertEquals("No tienes permiso para acceder a esta lista.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Añadir un libro inexistente a una lista
+     */
     @Test
     public void BookListService_AddBookToList_UnexistentBook() {
         bookList.getUser().setId(1L);
@@ -344,6 +389,9 @@ public class BookListServiceTests {
         assertEquals("Libro con ID 200 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar un libro de una lista
+     */
     @Test
     public void BookListService_DeleteBookFromList_ReturnBookListDto() {
         Long idUser = 1L;
@@ -373,6 +421,9 @@ public class BookListServiceTests {
         verify(listRepository).save(any());
     }
 
+    /**
+     * Método de prueba. Eliminar un libro de una lista inexistente
+     */
     @Test
     public void BookListService_DeleteBookFromList_UnexistentList() {
         when(listRepository.findByIdWithRelations(any())).thenReturn(Optional.empty());
@@ -385,6 +436,9 @@ public class BookListServiceTests {
         assertEquals("Lista con ID 999 no encontrada.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Eliminar un libro de una lista de otro usuario
+     */
     @Test
     public void BookListService_DeleteBookFromList_UserIsNotOwner() {
         bookList.getUser().setId(2L);
@@ -399,6 +453,9 @@ public class BookListServiceTests {
         assertEquals("No tienes permiso para acceder a esta lista.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver listas que no contienen un libro concreto
+     */
     @Test
     public void BookListService_GetListsWithoutBooks_ReturnLists() {
         Long idUser = 1L;
@@ -419,6 +476,9 @@ public class BookListServiceTests {
         assertEquals(bookListDTO, result.getContent().get(0));
     }
 
+    /**
+     * Método de prueba. Devolver listas que no contienen un libro concreto inexistente
+     */
     @Test
     public void BookListService_GetListsWithoutBooks_UnexistentBook() {
         Long idBook = 999L;
@@ -433,6 +493,9 @@ public class BookListServiceTests {
         assertEquals("Libro con ID 999 no encontrado.", exception.getMessage());
     }
 
+    /**
+     * Método de prueba. Devolver listas no vacías
+     */
     @Test
     public void BookListService_GetAllListsExcludingEmpty_ReturnLists() {
         bookList.setBooks(List.of(new BookListItem()));
@@ -448,6 +511,9 @@ public class BookListServiceTests {
         assertEquals(bookListDTO, result.get(0));
     }
 
+    /**
+     * Método de prueba. Devolver listas no vacías, pero todas lo están
+     */
     @Test
     public void BookListService_GetAllListsExcludingEmpty_AllListsAreEmpty() {
         bookList.setBooks(List.of());
